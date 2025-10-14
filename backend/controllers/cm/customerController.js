@@ -36,9 +36,20 @@ exports.updateMyProfile = async (req, res) => {
       name, phone, addressLine1, addressLine2, city, country, wholesalePreferred, loyaltyPoints,
     } = req.body;
 
+    // Check if phone number is already used by another customer
+    if (phone !== undefined && phone !== "") {
+      const existingPhone = await CustomerProfile.findOne({ 
+        phone: phone, 
+        user: { $ne: userId } 
+      });
+      if (existingPhone) {
+        return res.status(400).json({ message: "Phone number already exists" });
+      }
+    }
+
     let profile = await CustomerProfile.findOne({ user: userId });
     if (!profile) {
-      // 🔧 also guard here in case someone’s first touch is PUT
+      // 🔧 also guard here in case someone's first touch is PUT
       profile = await CustomerProfile.create({
         user: userId,
         customerId: `CUST-${uuidv4()}`
@@ -87,6 +98,14 @@ exports.createCustomer = async (req, res) => {
     const existing = await User.findOne({ email });
     if (existing) {
       return res.status(400).json({ message: "Email already registered" });
+    }
+
+    // Check if phone number is already used
+    if (phone) {
+      const existingPhone = await CustomerProfile.findOne({ phone });
+      if (existingPhone) {
+        return res.status(400).json({ message: "Phone number already exists" });
+      }
     }
 
     // Create User (role = customer)

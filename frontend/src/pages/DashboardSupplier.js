@@ -244,10 +244,17 @@ export default function SupplierDashboard() {
             </div>
           </div>
 
-          <h1>Welcome back, Supplier ⚙️</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px' }}>
+            <img 
+              src="/vijayaElectronics.jpg" 
+              alt="Vijaya Electronics" 
+              style={{ height: '60px', borderRadius: '8px' }} 
+            />
+            <h1>Welcome back, Supplier ⚙️</h1>
+          </div>
           <p>
             Step into your power zone! Manage your <span style={{ color: "#FFD166" }}>products</span>,
-            track <span style={{ color: "#FFD166" }}>orders</span>, and stay updated with Electra's latest
+            track <span style={{ color: "#FFD166" }}>orders</span>, and stay updated with Vijaya Electronics' latest
             supplier announcements — all through a seamless and elegant experience.
           </p>
         </motion.section>
@@ -273,7 +280,7 @@ export default function SupplierDashboard() {
             {
               icon: Bell,
               title: "Announcements",
-              text: "Stay in the loop with the latest Electra updates.",
+              text: "Stay in the loop with the latest Vijaya Electronics updates.",
             },
           ].map((card, i) => (
             <motion.div
@@ -314,8 +321,8 @@ export default function SupplierDashboard() {
 
         {/* Footer */}
         <footer className="footer">
-          ⚡ Powered by Electra Supplier Suite <br />
-          © {new Date().getFullYear()} Electra Technologies — All Rights Reserved
+          ⚡ Powered by Vijaya Electronics Supplier Suite <br />
+          © {new Date().getFullYear()} Vijaya Electronics Technologies — All Rights Reserved
         </footer>
       </div>
     </>

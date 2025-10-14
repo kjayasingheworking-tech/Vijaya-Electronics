@@ -228,12 +228,19 @@ export default function AdminDashboard() {
         <main className="adminMain">
           <div className="heroSection">
             <div className="heroText">
-              <h2 className="heroTitle">
-                Welcome Back, Admin <ZapOff size={34} style={{ verticalAlign: "middle" }} />
-              </h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px' }}>
+                <img 
+                  src="/vijayaElectronics.jpg" 
+                  alt="Vijaya Electronics" 
+                  style={{ height: '60px', borderRadius: '8px' }} 
+                />
+                <h2 className="heroTitle">
+                  Welcome Back, Admin <ZapOff size={34} style={{ verticalAlign: "middle" }} />
+                </h2>
+              </div>
               <p className="heroSub">
-                You’re the <span className="highlight-yellow">spark</span> that keeps
-                <span className="highlight-blue"> Electra </span> glowing — empowering teams,
+                You're the <span className="highlight-yellow">spark</span> that keeps
+                <span className="highlight-blue"> Vijaya Electronics </span> glowing — empowering teams,
                 energizing progress, and leading innovation forward.
               </p>
             </div>
@@ -248,7 +255,7 @@ export default function AdminDashboard() {
             <Card
               icon={<Zap size={32} color="#FFD166" />}
               title="Empower"
-              text="Each supplier you onboard amplifies Electra’s strength — driving reliability and innovation."
+              text="Each supplier you onboard amplifies Vijaya Electronics' strength — driving reliability and innovation."
             />
             <Card
               icon={<Heart size={32} color="#FF6EC7" />}
@@ -269,7 +276,7 @@ export default function AdminDashboard() {
           </p>
 
           <footer className="footer">
-            © {new Date().getFullYear()} <b>Electra Admin</b> · Crafted with ⚡{" "}
+            © {new Date().getFullYear()} <b>Vijaya Electronics Admin</b> · Crafted with ⚡{" "}
             <span className="highlight-blue">vision</span> and purpose.
           </footer>
         </main>

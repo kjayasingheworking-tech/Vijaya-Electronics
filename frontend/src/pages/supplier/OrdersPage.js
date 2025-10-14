@@ -2,9 +2,135 @@ import React, { useEffect, useState } from "react";
 import { listSupplierPOs } from "../../api/supplier";
 import PoStatusBadge from "../../components/supplier/PoStatusBadge";
 import { Link } from "react-router-dom";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const money = (n) =>
   new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR" }).format(Number(n || 0));
+
+const downloadOrdersReport = (orders, statusFilter) => {
+  if (!orders || orders.length === 0) {
+    alert("No orders to download");
+    return;
+  }
+
+  // Create PDF directly
+  const generatePDF = () => {
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const currentDate = new Date().toLocaleDateString('en-GB');
+    const filterText = statusFilter ? ` (${statusFilter.toUpperCase()})` : ' (ALL ORDERS)';
+    
+    // Set up colors
+    const primaryColor = [14, 165, 233]; // Blue
+    const textColor = [31, 41, 55]; // Dark gray
+    const lightBg = [248, 250, 252]; // Light gray
+    
+    // Header with gradient background simulation
+    pdf.setFillColor(...primaryColor);
+    pdf.rect(0, 0, 210, 45, 'F');
+    
+    // Company logo and title
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(24);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('VIJAYA ELECTRONICS', 105, 20, { align: 'center' });
+    
+    pdf.setFontSize(16);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`Supplier Orders Report${filterText}`, 105, 30, { align: 'center' });
+    
+    pdf.setFontSize(12);
+    pdf.text(`Generated on ${currentDate}`, 105, 38, { align: 'center' });
+    
+    // Reset text color for body
+    pdf.setTextColor(...textColor);
+    
+    // Summary statistics
+    const totalOrders = orders.length;
+    const totalValue = orders.reduce((sum, o) => sum + (o.totals?.grandTotal || 0), 0);
+    
+    // Summary boxes
+    pdf.setFillColor(...lightBg);
+    pdf.rect(20, 55, 50, 25, 'F');
+    pdf.rect(80, 55, 50, 25, 'F');
+    pdf.rect(140, 55, 50, 25, 'F');
+    
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('TOTAL ORDERS', 45, 63, { align: 'center' });
+    pdf.text('TOTAL VALUE', 105, 63, { align: 'center' });
+    pdf.text('REPORT DATE', 165, 63, { align: 'center' });
+    
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(totalOrders.toString(), 45, 72, { align: 'center' });
+    pdf.text(`Rs. ${totalValue.toLocaleString()}`, 105, 72, { align: 'center' });
+    pdf.text(currentDate, 165, 72, { align: 'center' });
+    
+    // Table data preparation
+    const tableData = orders.map(order => [
+      order.poNumber || `PO-${order._id.slice(-6)}`,
+      order.status || 'N/A',
+      `${order.items?.length || 0} items`,
+      `Rs. ${(order.totals?.grandTotal || 0).toLocaleString()}`,
+      new Date(order.createdAt).toLocaleDateString('en-GB')
+    ]);
+    
+    // Add total row
+    tableData.push([
+      'TOTAL',
+      '',
+      '',
+      `Rs. ${totalValue.toLocaleString()}`,
+      ''
+    ]);
+    
+    // Create table
+    autoTable(pdf, {
+      startY: 90,
+      head: [['PO Number', 'Status', 'Items', 'Amount (LKR)', 'Created Date']],
+      body: tableData,
+      theme: 'grid',
+      headStyles: {
+        fillColor: primaryColor,
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+        fontSize: 10
+      },
+      bodyStyles: {
+        fontSize: 9,
+        textColor: textColor
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252]
+      },
+      columnStyles: {
+        3: { halign: 'right' } // Right align amount column
+      },
+      didParseCell: function(data) {
+        // Style the total row
+        if (data.row.index === tableData.length - 1) {
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fillColor = lightBg;
+        }
+      },
+      margin: { top: 20, right: 20, bottom: 20, left: 20 },
+    });
+    
+    // Footer
+    const finalY = (pdf.lastAutoTable && pdf.lastAutoTable.finalY) ? pdf.lastAutoTable.finalY + 20 : 200;
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('Vijaya Electronics - Supplier Portal', 105, finalY, { align: 'center' });
+    pdf.text(`Report generated on ${new Date().toLocaleString()} | Confidential Document`, 105, finalY + 7, { align: 'center' });
+    
+    // Save the PDF
+    const fileName = `supplier-orders-${statusFilter || 'all'}-${new Date().toISOString().split('T')[0]}.pdf`;
+    pdf.save(fileName);
+  };
+  
+  generatePDF();
+};
 
 const FILTERS = [
   { key: "", label: "All" },
@@ -48,6 +174,35 @@ export default function OrdersPage() {
           <h2 style={{ margin: 0, color: "#0f172a" }}>Supplier Orders</h2>
           <div style={{ color: "#64748b" }}>Browse purchase orders assigned to you.</div>
         </div>
+
+        <button
+          onClick={() => downloadOrdersReport(rows, status)}
+          style={{
+            padding: "12px 20px",
+            background: "linear-gradient(135deg, #10b981, #059669)",
+            color: "#fff",
+            border: "none",
+            borderRadius: 10,
+            cursor: "pointer",
+            fontWeight: 600,
+            fontSize: "14px",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            boxShadow: "0 4px 12px rgba(16,185,129,0.25)",
+            transition: "all 0.3s ease"
+          }}
+          onMouseOver={e => {
+            e.target.style.transform = "translateY(-2px) scale(1.02)";
+            e.target.style.boxShadow = "0 6px 20px rgba(16,185,129,0.4)";
+          }}
+          onMouseOut={e => {
+            e.target.style.transform = "translateY(0) scale(1)";
+            e.target.style.boxShadow = "0 4px 12px rgba(16,185,129,0.25)";
+          }}
+        >
+          � Download PDF Report
+        </button>
 
         <div style={filterWrap}>
           {FILTERS.map((f) => (
