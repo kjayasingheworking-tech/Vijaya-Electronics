@@ -105,19 +105,22 @@ export default function CustomerTicketsPage() {
     setFields({ ...fields, [e.target.name]: e.target.value });
 
   const handleFileChange = (e) => {
-  const files = Array.from(e.target.files);
+    const files = Array.from(e.target.files);
 
-  if (files.length > 5) {
-    setPhotoError("You can upload a maximum of 5 photos.");
-    setPhotos(files.slice(0, 5)); // only keep first 5
-  } else if (files.length < 1) {
-    setPhotoError("Please upload at least 1 photo.");
-    setPhotos([]);
-  } else {
+    if (files.length > 5) {
+      setPhotoError("You can upload a maximum of 5 photos.");
+      setPhotos(files.slice(0, 5)); // only keep first 5
+    } else {
+      setPhotoError("");
+      setPhotos(files);
+    }
+  };
+
+  const removePhoto = (index) => {
+    const newPhotos = photos.filter((_, i) => i !== index);
+    setPhotos(newPhotos);
     setPhotoError("");
-    setPhotos(files);
-  }
-};
+  };
 
 
   const handleCreateClick = () => {
@@ -158,19 +161,15 @@ if (!/^\d{10}$/.test(phone)) {
         return;
       }
       if (!hasPhoto) {
-        toast.error("Please attach at least one photo for complaints.");
+        toast.error("Please attach at least one photo for product complaints.");
         return;
       }
+    }
 
-      if (photos.length < 1) {
-        toast.error("Please attach at least one photo.");
-        return;
-      }
-      if (photos.length > 5) {
-        toast.error("You can upload a maximum of 5 photos.");
-        return;
-      }
-
+    // General photo validation (for all ticket types)
+    if (photos.length > 5) {
+      toast.error("You can upload a maximum of 5 photos.");
+      return;
     }
 
     // Delivery Delay: require delivery date
@@ -348,6 +347,69 @@ if (!/^\d{10}$/.test(phone)) {
     modalTitle: { color: "#93c5fd", fontWeight: 900, marginBottom: 12 },
     form: { display: "flex", flexDirection: "column", gap: 10 },
     label: { color: "#9ca3af", marginTop: 4, fontSize: 14 },
+    
+    // Photo preview styles
+    photoPreview: {
+      marginTop: 12,
+      padding: 16,
+      background: "rgba(15, 23, 42, 0.5)",
+      borderRadius: 12,
+      border: "1px solid #334155",
+    },
+    photoGrid: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
+      gap: 12,
+      marginBottom: 12,
+    },
+    photoItem: {
+      position: "relative",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      padding: 8,
+      background: "rgba(30, 41, 59, 0.5)",
+      borderRadius: 8,
+      border: "1px solid #475569",
+    },
+    photoThumb: {
+      width: 80,
+      height: 80,
+      objectFit: "cover",
+      borderRadius: 6,
+      marginBottom: 6,
+    },
+    removeBtn: {
+      position: "absolute",
+      top: 2,
+      right: 2,
+      background: "rgba(239, 68, 68, 0.9)",
+      color: "white",
+      border: "none",
+      borderRadius: "50%",
+      width: 20,
+      height: 20,
+      fontSize: 12,
+      fontWeight: "bold",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    photoName: {
+      fontSize: 11,
+      color: "#94a3b8",
+      textAlign: "center",
+      wordBreak: "break-word",
+      lineHeight: 1.2,
+    },
+    photoCount: {
+      fontSize: 12,
+      color: "#64748b",
+      textAlign: "center",
+      fontWeight: 600,
+    },
+    
     // skeleton
     skelCard: {
       borderRadius: 18,
@@ -758,6 +820,16 @@ if (!/^\d{10}$/.test(phone)) {
                         placeholder="Description"
                         onChange={handleChange}
                       />
+                      
+                      {/* Photo Upload for Product Inquiry */}
+                      <label style={S.label}>Upload Photos (Optional)</label>
+                      <input
+                        style={S.input}
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleFileChange}
+                      />
                     </>
                   )}
 
@@ -796,7 +868,9 @@ if (!/^\d{10}$/.test(phone)) {
                         placeholder="Issue Description"
                         onChange={handleChange}
                       />
-                      <label style={S.label}>Upload Photos</label>
+                      <label style={S.label}>
+                        Upload Photos {type === "Product Complaint" ? "*" : "(Optional)"}
+                      </label>
                       <input
                         style={S.input}
                         type="file"
@@ -804,6 +878,38 @@ if (!/^\d{10}$/.test(phone)) {
                         accept="image/*"
                         onChange={handleFileChange}
                       />
+                      
+                      {/* Photo Preview */}
+                      {photos.length > 0 && (
+                        <div style={S.photoPreview}>
+                          <div style={S.photoGrid}>
+                            {photos.map((photo, index) => (
+                              <div key={index} style={S.photoItem}>
+                                <img
+                                  src={URL.createObjectURL(photo)}
+                                  alt={`Preview ${index + 1}`}
+                                  style={S.photoThumb}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => removePhoto(index)}
+                                  style={S.removeBtn}
+                                >
+                                  ×
+                                </button>
+                                <div style={S.photoName}>
+                                  {photo.name.length > 20 
+                                    ? photo.name.substring(0, 20) + "..." 
+                                    : photo.name}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          <div style={S.photoCount}>
+                            {photos.length} photo{photos.length !== 1 ? 's' : ''} selected (Max: 5)
+                          </div>
+                        </div>
+                      )}
                     </>
                   )}
                   {photoError && (
@@ -841,6 +947,16 @@ if (!/^\d{10}$/.test(phone)) {
                         placeholder="Description"
                         onChange={handleChange}
                       />
+                      
+                      {/* Photo Upload for Delivery Delay */}
+                      <label style={S.label}>Upload Photos (Optional)</label>
+                      <input
+                        style={S.input}
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleFileChange}
+                      />
                     </>
                   )}
 
@@ -857,6 +973,16 @@ if (!/^\d{10}$/.test(phone)) {
                         name="description"
                         placeholder="What guidance do you need?"
                         onChange={handleChange}
+                      />
+                      
+                      {/* Photo Upload for Product Usage Guidelines */}
+                      <label style={S.label}>Upload Photos (Optional)</label>
+                      <input
+                        style={S.input}
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleFileChange}
                       />
                     </>
                   )}
@@ -893,7 +1019,49 @@ if (!/^\d{10}$/.test(phone)) {
                         placeholder="Describe the issue / request"
                         onChange={handleChange}
                       />
+                      
+                      {/* Photo Upload for Service Request */}
+                      <label style={S.label}>Upload Photos (Optional)</label>
+                      <input
+                        style={S.input}
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleFileChange}
+                      />
                     </>
+                  )}
+
+                  {/* General Photo Preview for all ticket types */}
+                  {type !== "Product Complaint" && photos.length > 0 && (
+                    <div style={S.photoPreview}>
+                      <div style={S.photoGrid}>
+                        {photos.map((photo, index) => (
+                          <div key={index} style={S.photoItem}>
+                            <img
+                              src={URL.createObjectURL(photo)}
+                              alt={`Preview ${index + 1}`}
+                              style={S.photoThumb}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removePhoto(index)}
+                              style={S.removeBtn}
+                            >
+                              ×
+                            </button>
+                            <div style={S.photoName}>
+                              {photo.name.length > 20 
+                                ? photo.name.substring(0, 20) + "..." 
+                                : photo.name}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={S.photoCount}>
+                        {photos.length} photo{photos.length !== 1 ? 's' : ''} selected (Max: 5)
+                      </div>
+                    </div>
                   )}
 
                   <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>

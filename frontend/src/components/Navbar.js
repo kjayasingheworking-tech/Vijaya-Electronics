@@ -39,7 +39,19 @@ const isInvoicesActive = location.pathname.startsWith("/admin/invoices");
 
   return (
   <header className="nav">
-    <div className="brand">⚡ Electra</div>
+    <div className="brand">
+      <img 
+        src="/vijayaElectronics.jpg" 
+        alt="Vijaya Electronics" 
+        style={{
+          height: '40px',
+          width: 'auto',
+          marginRight: '10px',
+          borderRadius: '4px'
+        }}
+      />
+      Vijaya Electronics
+    </div>
 
     <nav>
       <Link to={homePath} className={isHomeActive ? 'active' : ''}>Home</Link>

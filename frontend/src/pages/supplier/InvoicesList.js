@@ -2,9 +2,139 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { listMyInvoices } from "../../api/supplier";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const money = (n) =>
   new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR" }).format(Number(n || 0));
+
+const downloadInvoicesReport = (invoices, filters) => {
+  if (!invoices || invoices.length === 0) {
+    alert("No invoices to download");
+    return;
+  }
+
+  // Create PDF directly
+  const generatePDF = () => {
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const currentDate = new Date().toLocaleDateString('en-GB');
+    const activeFilters = Object.entries(filters).filter(([_, value]) => value).map(([key, value]) => `${key}: ${value}`).join(', ');
+    const filterText = activeFilters ? ` (Filtered: ${activeFilters})` : ' (ALL INVOICES)';
+    
+    // Set up colors
+    const primaryColor = [16, 185, 129]; // Green
+    const textColor = [31, 41, 55]; // Dark gray
+    const lightBg = [240, 253, 244]; // Light green
+    
+    // Header with gradient background simulation
+    pdf.setFillColor(...primaryColor);
+    pdf.rect(0, 0, 210, 45, 'F');
+    
+    // Company logo and title
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(24);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('VIJAYA ELECTRONICS', 105, 20, { align: 'center' });
+    
+    pdf.setFontSize(16);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('Supplier Invoices Report', 105, 30, { align: 'center' });
+    
+    pdf.setFontSize(12);
+    pdf.text(`Generated on ${currentDate}${filterText}`, 105, 38, { align: 'center' });
+    
+    // Reset text color for body
+    pdf.setTextColor(...textColor);
+    
+    // Summary statistics
+    const totalInvoices = invoices.length;
+    const totalValue = invoices.reduce((sum, inv) => sum + (inv.totals?.grandTotal || 0), 0);
+    
+    // Summary boxes
+    pdf.setFillColor(...lightBg);
+    pdf.rect(20, 55, 50, 25, 'F');
+    pdf.rect(80, 55, 50, 25, 'F');
+    pdf.rect(140, 55, 50, 25, 'F');
+    
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('TOTAL INVOICES', 45, 63, { align: 'center' });
+    pdf.text('TOTAL VALUE', 105, 63, { align: 'center' });
+    pdf.text('REPORT DATE', 165, 63, { align: 'center' });
+    
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(totalInvoices.toString(), 45, 72, { align: 'center' });
+    pdf.text(`Rs. ${totalValue.toLocaleString()}`, 105, 72, { align: 'center' });
+    pdf.text(currentDate, 165, 72, { align: 'center' });
+    
+    // Table data preparation
+    const tableData = invoices.map(invoice => [
+      invoice.invoiceNumber || `INV-${invoice._id.slice(-6)}`,
+      invoice.type || 'original',
+      invoice.status || 'issued',
+      `Rs. ${(invoice.totals?.grandTotal || 0).toLocaleString()}`,
+      invoice.purchaseOrder || 'N/A',
+      new Date(invoice.createdAt).toLocaleDateString('en-GB')
+    ]);
+    
+    // Add total row
+    tableData.push([
+      'TOTAL',
+      '',
+      '',
+      `Rs. ${totalValue.toLocaleString()}`,
+      '',
+      ''
+    ]);
+    
+    // Create table
+    autoTable(pdf, {
+      startY: 90,
+      head: [['Invoice Number', 'Type', 'Status', 'Amount (LKR)', 'PO Reference', 'Created Date']],
+      body: tableData,
+      theme: 'grid',
+      headStyles: {
+        fillColor: primaryColor,
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+        fontSize: 10
+      },
+      bodyStyles: {
+        fontSize: 9,
+        textColor: textColor
+      },
+      alternateRowStyles: {
+        fillColor: [240, 253, 244]
+      },
+      columnStyles: {
+        3: { halign: 'right' } // Right align amount column
+      },
+      didParseCell: function(data) {
+        // Style the total row
+        if (data.row.index === tableData.length - 1) {
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fillColor = lightBg;
+        }
+      },
+      margin: { top: 20, right: 20, bottom: 20, left: 20 },
+    });
+    
+    // Footer
+    const finalY = (pdf.lastAutoTable && pdf.lastAutoTable.finalY) ? pdf.lastAutoTable.finalY + 20 : 200;
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('Vijaya Electronics - Supplier Portal', 105, finalY, { align: 'center' });
+    pdf.text(`Report generated on ${new Date().toLocaleString()} | Confidential Document`, 105, finalY + 7, { align: 'center' });
+    
+    // Save the PDF
+    const filterSuffix = Object.values(filters).filter(Boolean).join("-") || "all";
+    const fileName = `supplier-invoices-${filterSuffix}-${new Date().toISOString().split('T')[0]}.pdf`;
+    pdf.save(fileName);
+  };
+  
+  generatePDF();
+};
 
 export default function InvoicesList() {
   const [rows, setRows] = useState([]);
@@ -74,7 +204,31 @@ export default function InvoicesList() {
             <h2 style={title}>My Invoices</h2>
             <div style={subtitle}>All your Invoices</div>
           </div>
-          <button onClick={load} style={btn}>{loading ? "…" : "Refresh"}</button>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button 
+              onClick={() => downloadInvoicesReport(visibleRows, { invoiceNumber, status, type })}
+              style={{
+                ...btn,
+                background: "linear-gradient(135deg, #10b981, #059669)",
+                boxShadow: "0 4px 12px rgba(16,185,129,0.25)",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                transition: "all 0.3s ease"
+              }}
+              onMouseOver={e => {
+                e.target.style.transform = "translateY(-2px)";
+                e.target.style.boxShadow = "0 6px 20px rgba(16,185,129,0.4)";
+              }}
+              onMouseOut={e => {
+                e.target.style.transform = "translateY(0)";
+                e.target.style.boxShadow = "0 4px 12px rgba(16,185,129,0.25)";
+              }}
+            >
+              � Download PDF Report
+            </button>
+            <button onClick={load} style={btn}>{loading ? "…" : "Refresh"}</button>
+          </div>
         </header>
 
         <section style={filters}>

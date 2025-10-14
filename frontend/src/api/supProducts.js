@@ -1,7 +1,7 @@
 // src/api/supProducts.js
 import axios from "axios";
 
-const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5001";
 
 const api = axios.create({
   baseURL: `${API_BASE}/api/supproducts`,
@@ -21,8 +21,12 @@ export const createMyProduct = (formData) =>
     headers: { "Content-Type": "multipart/form-data" },
   });
 
-export const updateMyProduct = (id, payload) =>
-  api.patch(`/me/products/${id}`, payload);
+export const updateMyProduct = (id, payload) => {
+  const isFormData = payload instanceof FormData;
+  return api.patch(`/me/products/${id}`, payload, {
+    headers: isFormData ? { "Content-Type": "multipart/form-data" } : {},
+  });
+};
 
 export const deleteMyProduct = (id) => api.delete(`/me/products/${id}`);
 

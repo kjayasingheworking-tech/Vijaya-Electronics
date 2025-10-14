@@ -6,7 +6,6 @@ import {
   updateMyProduct,
   deleteMyProduct,
   getProductHistory,
-  uploadProductImages,
 } from "../../api/supProducts";
 
 const C = {
@@ -252,7 +251,9 @@ function ProductForm({ initial, onCreated, onUpdated, onCancel }) {
   const [categories, setCategories] = useState((initial?.categories || []).join(", "));
   const [sku, setSku] = useState(initial?.sku || "");
   const [specifications, setSpecifications] = useState(initial?.specifications || []);
-  const [images, setImages] = useState(null); // only on create
+  const [images, setImages] = useState(null); // for create and edit
+  const [newImages, setNewImages] = useState(null); // for adding new images during edit
+  const [existingImages, setExistingImages] = useState(initial?.images || []); // current images for editing
   const [saving, setSaving] = useState(false);
 
   const submit = async (e) => {
@@ -278,19 +279,32 @@ function ProductForm({ initial, onCreated, onUpdated, onCancel }) {
         const { data } = await createMyProduct(fd);
         onCreated?.(data);
       } else {
-        const payload = {
-          name,
-          description,
-          unitPrice: Number(unitPrice || 0),
-          isAvailable,
-          sku,
-          categories: categories
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean),
-          specifications,
-        };
-        const { data } = await updateMyProduct(initial._id, payload);
+        // For editing, we need to handle both regular updates and image updates
+        const fd = new FormData();
+        fd.append("name", name);
+        fd.append("unitPrice", String(unitPrice || 0));
+        fd.append("isAvailable", String(isAvailable));
+        if (description) fd.append("description", description);
+        if (sku) fd.append("sku", sku);
+        
+        const cats = categories
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        cats.forEach((c) => fd.append("categories", c));
+        fd.append("specifications", JSON.stringify(specifications));
+        
+        // Include existing images that weren't removed
+        if (existingImages && existingImages.length > 0) {
+          fd.append("existingImages", JSON.stringify(existingImages));
+        }
+        
+        // Add new images if any
+        if (newImages && newImages.length) {
+          Array.from(newImages).forEach((f) => fd.append("images", f));
+        }
+        
+        const { data } = await updateMyProduct(initial._id, fd);
         onUpdated?.(data);
       }
     } catch (err) {
@@ -352,19 +366,136 @@ function ProductForm({ initial, onCreated, onUpdated, onCancel }) {
           <label>Specifications</label>
           <SpecRows value={specifications} onChange={setSpecifications} />
         </div>
-        {!editing && (
-          <div className="col-span">
-            <label>Images (max 5)</label>
-            <input
-              className="inp"
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={(e) => setImages(e.target.files)}
-            />
-            <small className="muted">You can also store image URLs on the backend if supported.</small>
-          </div>
-        )}
+        {/* Images section for both create and edit */}
+        <div className="col-span">
+          <label>{editing ? 'Manage Product Images' : 'Images (max 5)'}</label>
+          
+          {/* Show existing images when editing */}
+          {editing && existingImages && existingImages.length > 0 && (
+            <div style={{ marginBottom: '12px' }}>
+              <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>Current Images:</p>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {existingImages.map((imageUrl, index) => (
+                  <div key={index} style={{ position: 'relative', display: 'inline-block' }}>
+                    <img 
+                      src={`http://localhost:5001${imageUrl}`} 
+                      alt={`Product ${index + 1}`}
+                      style={{ 
+                        width: '60px', 
+                        height: '60px', 
+                        objectFit: 'cover', 
+                        borderRadius: '4px',
+                        border: '1px solid #ddd'
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updatedImages = existingImages.filter((_, i) => i !== index);
+                        setExistingImages(updatedImages);
+                      }}
+                      style={{
+                        position: 'absolute',
+                        top: '-4px',
+                        right: '-4px',
+                        width: '18px',
+                        height: '18px',
+                        borderRadius: '50%',
+                        background: '#ff4444',
+                        color: 'white',
+                        border: 'none',
+                        fontSize: '10px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                      title="Remove this image"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* File input for new images */}
+          <input
+            className="inp"
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={(e) => {
+              if (editing) {
+                setNewImages(e.target.files);
+              } else {
+                setImages(e.target.files);
+              }
+            }}
+          />
+          
+          {/* Preview new images */}
+          {((editing && newImages && newImages.length > 0) || (!editing && images && images.length > 0)) && (
+            <div style={{ marginTop: '12px' }}>
+              <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                {editing ? 'New Images to Add:' : 'Preview:'}
+              </p>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {Array.from(editing ? newImages : images).map((file, index) => (
+                  <div key={index} style={{ position: 'relative', display: 'inline-block' }}>
+                    <img 
+                      src={URL.createObjectURL(file)} 
+                      alt={`Preview ${index + 1}`}
+                      style={{ 
+                        width: '60px', 
+                        height: '60px', 
+                        objectFit: 'cover', 
+                        borderRadius: '4px',
+                        border: '1px solid #ddd'
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (editing) {
+                          const updatedFiles = Array.from(newImages).filter((_, i) => i !== index);
+                          setNewImages(updatedFiles.length > 0 ? updatedFiles : null);
+                        } else {
+                          const updatedFiles = Array.from(images).filter((_, i) => i !== index);
+                          setImages(updatedFiles.length > 0 ? updatedFiles : null);
+                        }
+                      }}
+                      style={{
+                        position: 'absolute',
+                        top: '-4px',
+                        right: '-4px',
+                        width: '18px',
+                        height: '18px',
+                        borderRadius: '50%',
+                        background: '#ff4444',
+                        color: 'white',
+                        border: 'none',
+                        fontSize: '10px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                      title="Remove this image"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <small className="muted">
+            {editing ? 'Add new images or remove existing ones. Changes will be saved when you click Save.' : 'You can also store image URLs on the backend if supported.'}
+          </small>
+        </div>
       </div>
       <div style={{ display: "flex", gap: 12, marginTop: 16, justifyContent: "flex-end" }}>
         <button type="button" className="btn ghost" onClick={onCancel}>
@@ -385,7 +516,6 @@ export default function MyProducts() {
   const [mode, setMode] = useState("list"); // list | create | edit
   const [current, setCurrent] = useState(null);
   const [histOpen, setHistOpen] = useState(false);
-  const [imgUploading, setImgUploading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
 
@@ -444,20 +574,7 @@ const onDelete = async (p) => {
   }
 };
 
-  const onUploadImages = async (p, files) => {
-    if (!files || !files.length) return;
-    setImgUploading(true);
-    try {
-      const fd = new FormData();
-      Array.from(files).forEach((f) => fd.append("images", f));
-      const { data } = await uploadProductImages(p._id, fd);
-      setRows(rows.map((r) => (r._id === p._id ? data.product : r)));
-    } catch (e) {
-      alert(e?.response?.data?.message || e.message);
-    } finally {
-      setImgUploading(false);
-    }
-  };
+
 
   const isModalOpen = mode === "create" || (mode === "edit" && current);
 
@@ -512,8 +629,40 @@ const onDelete = async (p) => {
                         <div className="cell">
                           <div className="thumbs">
                             {(p.images || []).slice(0, 3).map((u, i) => (
-                              <img key={i} src={u} alt="" />
+                              <img 
+                                key={i} 
+                                src={u.startsWith('http') ? u : `http://localhost:5001${u}`} 
+                                alt={`${p.name} image ${i + 1}`}
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                  console.log('Failed to load image:', u);
+                                }}
+                                style={{
+                                  width: '38px',
+                                  height: '38px', 
+                                  borderRadius: '6px',
+                                  objectFit: 'cover',
+                                  border: '1px solid #e2e8f0',
+                                  backgroundColor: '#f8fafc'
+                                }}
+                              />
                             ))}
+                            {(!p.images || p.images.length === 0) && (
+                              <div style={{
+                                width: '38px',
+                                height: '38px',
+                                borderRadius: '6px',
+                                border: '1px dashed #cbd5e1',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '12px',
+                                color: '#64748b',
+                                backgroundColor: '#f8fafc'
+                              }}>
+                                📷
+                              </div>
+                            )}
                           </div>
                           <div>
                             <div style={{ fontWeight: 600 }}>{p.name}</div>
@@ -529,16 +678,6 @@ const onDelete = async (p) => {
                       <td className="center">
 
                         <div className="row-actions">
-                          <label className="btn ghost">
-                            {imgUploading ? "Uploading…" : "Add Images"}
-                            <input
-                              type="file"
-                              multiple
-                              accept="image/*"
-                              style={{ display: "none" }}
-                              onChange={(e) => onUploadImages(p, e.target.files)}
-                            />
-                          </label>
                           <button
                             className="btn ghost"
                             onClick={() => {

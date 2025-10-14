@@ -21,7 +21,11 @@ export default function MyProfile() {
     country: "",
   });
 
-  const [errors, setErrors] = useState({ phone: "" });
+  const [errors, setErrors] = useState({ 
+    phone: "", 
+    addressLine1: "", 
+    country: "" 
+  });
 
   const clearClientAuth = () => {
     try {
@@ -37,6 +41,20 @@ export default function MyProfile() {
     else if (digits.length !== 10) err = "Phone must be exactly 10 digits";
     setErrors((prev) => ({ ...prev, phone: err }));
     return err === "";
+  };
+
+  const validateRequired = (field, value, label) => {
+    let err = "";
+    if (!value || value.trim() === "") err = `${label} is required`;
+    setErrors((prev) => ({ ...prev, [field]: err }));
+    return err === "";
+  };
+
+  const validateForm = () => {
+    const phoneValid = validatePhone(form.phone);
+    const addressValid = validateRequired("addressLine1", form.addressLine1, "Address Line 1");
+    const countryValid = validateRequired("country", form.country, "Country");
+    return phoneValid && addressValid && countryValid;
   };
 
   const load = async () => {
@@ -95,8 +113,8 @@ export default function MyProfile() {
 
   const onSave = async (e) => {
     e.preventDefault();
-    if (!validatePhone(form.phone)) {
-      toast.error("Please enter a valid 10-digit phone number");
+    if (!validateForm()) {
+      toast.error("Please fill in all required fields correctly");
       return;
     }
 
@@ -246,6 +264,7 @@ export default function MyProfile() {
       boxShadow: "0 0 0 3px rgba(255,120,120,0.15)",
     },
     errorText: { color: "#ff9898", fontSize: 12, marginTop: 6, fontWeight: 700 },
+    error: { color: "#ff9898", fontSize: 12, marginTop: 4, fontWeight: 600 },
     row: { display: "flex", gap: 10, marginTop: 16, alignItems: "center" },
     primary: {
       background: "linear-gradient(90deg,#1e90ff,#2b7bff)",
@@ -324,7 +343,7 @@ export default function MyProfile() {
                 form="profileForm"
                 type="submit"
                 style={styles.primary}
-                disabled={saving || !!errors.phone}
+                disabled={saving || !!errors.phone || !!errors.addressLine1 || !!errors.country}
               >
                 {saving ? "Saving…" : "Save"}
               </button>
@@ -375,7 +394,7 @@ export default function MyProfile() {
             </div>
 
             <div style={styles.field}>
-              <label style={styles.label}>Phone (10 digits)</label>
+              <label style={styles.label}>Phone (10 digits) *</label>
               <input
                 name="phone"
                 value={form.phone}
@@ -406,14 +425,23 @@ export default function MyProfile() {
             </div>
 
             <div style={styles.field}>
-              <label style={styles.label}>Address Line 1</label>
+              <label style={styles.label}>Address Line 1 *</label>
               <input
                 name="addressLine1"
                 value={form.addressLine1}
-                onChange={onChange}
-                style={styles.input}
+                onChange={(e) => {
+                  onChange(e);
+                  if (editMode) validateRequired("addressLine1", e.target.value, "Address Line 1");
+                }}
+                style={{
+                  ...styles.input,
+                  ...(errors.addressLine1 ? styles.inputError : {}),
+                }}
                 disabled={!editMode}
               />
+              {errors.addressLine1 && (
+                <div style={styles.errorText}>{errors.addressLine1}</div>
+              )}
             </div>
 
             <div style={styles.field}>
@@ -428,14 +456,23 @@ export default function MyProfile() {
             </div>
 
             <div style={styles.field}>
-              <label style={styles.label}>Country</label>
+              <label style={styles.label}>Country *</label>
               <input
                 name="country"
                 value={form.country}
-                onChange={onChange}
-                style={styles.input}
+                onChange={(e) => {
+                  onChange(e);
+                  if (editMode) validateRequired("country", e.target.value, "Country");
+                }}
+                style={{
+                  ...styles.input,
+                  ...(errors.country ? styles.inputError : {}),
+                }}
                 disabled={!editMode}
               />
+              {errors.country && (
+                <div style={styles.errorText}>{errors.country}</div>
+              )}
             </div>
           </div>
 
