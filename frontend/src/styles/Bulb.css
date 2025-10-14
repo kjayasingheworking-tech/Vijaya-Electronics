@@ -1,0 +1,43 @@
+:root{
+  --orange:#FFA500; --blue:#0057B8;
+  --nav-h:58px;
+  --pulse-h:18vh; /* keep in sync with CustomerHome.css */
+}
+
+.bulbWrap{
+  position:relative;
+  display:flex; align-items:flex-end; justify-content:center;
+  pointer-events:none;
+  z-index:1; opacity:0.95;
+  height: 100%;
+  min-height: 0;
+  margin-bottom: 6px;          /* tiny lift above the pulses */
+}
+
+/* a touch bigger but capped so pulses stay on-screen */
+.bulbSVG{
+  height: min(84vh, calc(100vh - var(--nav-h) - var(--pulse-h) - 56px)); /* was 82vh / 52px */
+  width: auto;
+}
+
+/* push slightly to the right on wide screens */
+@media (min-width: 1200px){
+  .bulbSVG{ transform: translateX(5%); }  /* was 3% */
+}
+
+/* mobile cap */
+@media (max-width: 900px){
+  .bulbSVG{
+    height: min(74vh, calc(100vh - var(--nav-h) - var(--pulse-h) - 40px));
+    transform: none;
+  }
+}
+
+/* animations unchanged … */
+.halo{ animation: haloPulse 3.6s ease-in-out infinite; filter: drop-shadow(0 0 28px rgba(255,165,0,.5)); }
+@keyframes haloPulse{ 0%,100%{ transform:scale(.98); opacity:.30 } 50%{ transform:scale(1.07); opacity:.50 } }
+.filament{ filter: drop-shadow(0 0 8px rgba(255,165,0,.9)) drop-shadow(0 0 14px rgba(255,165,0,.7)); animation: filamentPulse 2.8s ease-in-out infinite; }
+@keyframes filamentPulse{ 0%,100%{ stroke-width:3; opacity:.9 } 30%{ stroke-width:3.6; opacity:1 } 60%{ stroke-width:3; opacity:.85 } }
+.orbits{ transform-origin: 100px 120px; animation: orbitsSpin 24s linear infinite; filter: drop-shadow(0 0 10px rgba(0,87,184,.45)); stroke-width: 1.35; }
+@keyframes orbitsSpin{ from{ transform: rotate(0deg) } to{ transform: rotate(360deg) } }
+@media (prefers-reduced-motion: reduce){ .halo, .filament, .orbits{ animation: none } }

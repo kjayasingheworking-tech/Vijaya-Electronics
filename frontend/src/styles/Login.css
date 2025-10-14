@@ -1,0 +1,26 @@
+:root{ --orange:#FFA500; --blue:#0057B8; --bg:#0b0f1a; --card:#0f1729; --text:#f2f6ff; --muted:#98a2b3; }
+*{ box-sizing:border-box }
+body{ margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial; background:var(--bg); color:var(--text) }
+
+.loginWrap{ min-height:calc(100vh - 58px); position:relative; display:grid; place-items:center; overflow:hidden; }
+.gridBg{ position:absolute; inset:0; background-image: linear-gradient(rgba(255,165,0,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(0,87,184,.08) 1px, transparent 1px); background-size: 40px 40px; filter: blur(.2px); animation: drift 20s linear infinite; opacity:.6 }
+@keyframes drift{ from{background-position:0 0,0 0} to{ background-position: 0 40px, 40px 0 } }
+
+.floatIcons{ position:absolute; inset:0; margin:0; padding:0; list-style:none; pointer-events:none }
+.floatIcons li{ position:absolute; font-size:32px; animation: float 12s ease-in-out infinite; opacity:.7 }
+.floatIcons li:nth-child(1){ left:10%; top:20% }
+.floatIcons li:nth-child(2){ left:75%; top:28%; animation-delay: -2s }
+.floatIcons li:nth-child(3){ left:20%; top:70%; animation-delay: -4s }
+.floatIcons li:nth-child(4){ left:60%; top:65%; animation-delay: -6s }
+.floatIcons li:nth-child(5){ left:85%; top:45%; animation-delay: -8s }
+@keyframes float{ 0%,100%{ transform: translateY(0) } 50%{ transform: translateY(-18px) } }
+
+.card{ position:relative; width:min(92vw, 420px); background: radial-gradient(120% 120% at 0% 0%, rgba(255,165,0,.2), rgba(0,87,184,.12)), var(--card); border:1px solid rgba(255,255,255,.08); border-radius:20px; padding:26px; box-shadow: 0 20px 60px rgba(0,0,0,.5) }
+.card h1{ margin:0 0 6px; font-size:28px }
+.sub{ margin:0 0 22px; color: var(--muted) }
+label{ display:grid; gap:6px; margin-bottom:16px }
+input{ background:#0b1220; border:1px solid rgba(255,255,255,.08); color:var(--text); padding:12px 14px; border-radius:12px; outline:none }
+button{ width:100%; padding:12px 14px; border-radius:12px; border:0; cursor:pointer; font-weight:700; color:#002; background: linear-gradient(90deg, var(--orange), var(--blue)); box-shadow:0 8px 24px rgba(255,165,0,.25) }
+button:disabled{ opacity:.7; cursor:not-allowed }
+.error{ background: rgba(255,0,0,.12); border:1px solid rgba(255,0,0,.35); color:#ffb3b3; padding:8px 10px; border-radius:10px; margin-bottom:10px }
+.hint{ color: var(--muted); font-size:12px; margin-top:10px }

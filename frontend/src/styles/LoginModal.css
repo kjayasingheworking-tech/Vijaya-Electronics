@@ -1,0 +1,150 @@
+:root {
+  --orange: #FFA500;
+  --blue: #0057B8;
+  --bg: #0b0f1a;
+  --card: #0f1729;
+  --text: #f2f6ff;
+  --muted: #98a2b3;
+}
+
+/* === BACKDROP === */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(120% 120% at 0% 0%, rgba(255,165,0,.10), rgba(0,87,184,.10)),
+              rgba(3,7,18,0.75);
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+
+/* === MODAL CARD === */
+.modalCard {
+  position: relative;
+  width: min(92vw, 520px);
+  background: linear-gradient(
+      180deg,
+      rgba(16, 22, 38, 0.95) 0%,
+      rgba(8, 12, 24, 0.98) 100%
+    );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  border-radius: 18px;
+  padding: 24px 26px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  animation: pop 0.15s ease;
+}
+
+/* === CLOSE BUTTON === */
+.xBtn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.xBtn:hover { transform: scale(1.05); background: rgba(255, 255, 255, 0.2); }
+
+/* === TABS === */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px;
+  border-radius: 14px;
+}
+.tab {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: transparent;
+  color: #d4d8e2;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.tab:hover { color: #fff; }
+.tab.active {
+  background: linear-gradient(90deg, var(--orange), var(--blue));
+  color: #002;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* === INPUT FIELDS === */
+label { display: grid; gap: 6px; font-weight: 600; }
+.stack { display: grid; gap: 14px; margin-top: 8px; }
+
+input {
+  width: 100%;
+  background: #101624;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f9fafb;
+  font-size: 15px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  outline: none;
+  transition: 0.2s;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(0, 87, 184, 0.25);
+}
+input::placeholder { color: #c9d0de; }
+
+/* === BUTTONS === */
+button.primary {
+  width: 100%;
+  background: linear-gradient(90deg, var(--orange), var(--blue));
+  color: #002;
+  border: 0;
+  font-weight: 800;
+  padding: 13px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+button.primary:hover { filter: brightness(1.05); transform: scale(1.01); }
+
+/* === TEXT === */
+.tiny { font-size: 12px; margin-top: 8px; text-align: center; }
+.muted { color: var(--muted); }
+
+/* === FEEDBACK MESSAGES === */
+.error {
+  background: rgba(255, 0, 0, 0.12);
+  border: 1px solid rgba(255, 0, 0, 0.35);
+  color: #ffb3b3;
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+.ok {
+  background: rgba(0, 255, 179, 0.12);
+  border: 1px solid rgba(0, 255, 179, 0.35);
+  color: #9fffe3;
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+
+/* === MOBILE POLISH === */
+@media (max-width: 420px) {
+  .modalCard { padding: 18px; border-radius: 16px; }
+  .tabs { gap: 6px; padding: 5px; }
+  .tab { padding: 8px 10px; }
+}

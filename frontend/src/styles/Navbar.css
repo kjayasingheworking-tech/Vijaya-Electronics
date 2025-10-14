@@ -1,0 +1,68 @@
+.nav{
+  --orange:#FFA500; --blue:#0057B8; --glass:rgba(255,255,255,0.08);
+  position: sticky; top: 0; z-index: 50;
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 12px 20px; backdrop-filter: blur(8px);
+  background: linear-gradient(90deg, var(--blue), var(--orange));
+  color: #fff; box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+.brand{ font-weight: 800; letter-spacing: .5px; }
+nav{ display:flex; gap: 12px; align-items:center; }
+nav a{ color:#fff; text-decoration:none; padding:8px 12px; border-radius:10px; opacity:.9 }
+nav a.active{ background: var(--glass); opacity:1 }
+
+.logout{
+  border:0; padding:8px 12px; border-radius:10px; cursor:pointer; color:#003;
+  background:#fff; font-weight:700;
+}
+.loginBtn{
+  border:0; padding:8px 14px; border-radius:10px; cursor:pointer; font-weight:800; color:#002;
+  background: linear-gradient(90deg, var(--orange), var(--blue));
+  box-shadow:0 8px 20px rgba(0,0,0,.25);
+}
+.rightTools {
+  display: flex;
+  align-items: center;
+  gap: 16px;              /* space between bell and button */
+}
+
+/* Notifications bell wrapper (if it's just inline) */
+.rightTools > * {
+  display: flex;
+  align-items: center;
+}
+
+/* Logout button refinement */
+.logout {
+  border: 0;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #0f172a;
+  background: #fff;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+.logout:hover {
+  background: #f1f5f9;
+}
+
+/* Ensure bell icon + badge stay centered */
+.notifications-bell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.notifications-bell .badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #ef4444; /* red badge */
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 50%;
+  padding: 2px 6px;
+}

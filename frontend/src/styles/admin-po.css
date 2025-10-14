@@ -1,0 +1,320 @@
+/* Page scaffolding */
+.po-page { padding: 24px; background: #f6f8fb; }
+.po-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:16px; gap:12px; }
+.muted { color:#64748b; }
+.small { font-size:12px; color:#64748b; }
+.center { padding:48px; text-align:center; }
+.right { text-align:right; }
+.mt-8 { margin-top:8px; } .mt-16 { margin-top:16px; }
+
+/* Filters */
+.filters { display:flex; gap:12px; margin: 12px 0 20px; flex-wrap: wrap; }
+.filters input, .filters select {
+  padding:10px 12px; border:1px solid #e5e7eb; border-radius:10px; min-width: 220px;
+  background:#fff; color:#0f172a; outline: none;
+}
+.filters input::placeholder { color:#94a3b8; }
+
+/* Table (used in PO pages) */
+.table { width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; }
+.table th, .table td { padding:12px 14px; border-bottom:1px solid #e5e7eb; text-align:left; }
+.table thead th { background:#f8fafc; font-weight:600; }
+
+/* Product grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+/* Product card (reduced height, tighter spacing) */
+.card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow .2s ease, transform .12s ease;
+  min-height: 280px; /* reduced height */
+}
+.card:hover {
+  box-shadow: 0 6px 14px rgba(0,0,0,.06);
+  transform: translateY(-2px);
+}
+
+/* Image area (smaller) */
+.thumb {
+  width: 100%;
+  height: 140px; /* reduced height */
+  background: #f1f5f9 center/contain no-repeat;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.card-body h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+  color: #0f172a;
+}
+/* Card body (tighter spacing) */
+.card-body {
+  flex: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;   /* was 8–10px, reduced */
+}
+
+/* Product title */
+.card-body h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;           /* remove default h3 margin */
+  line-height: 1.3;
+}
+
+/* Supplier line */
+.card-body .muted {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Description */
+.desc {
+  font-size: 12px;
+  color: #475569;
+  margin: 0;
+  line-height: 1.40;
+  min-height: unset;   /* let it shrink naturally */
+}
+
+/* Price row spacing */
+.row {
+  margin-top: 4px;     /* smaller gap before price row */
+}
+
+.price {
+  font-weight: 700;
+  font-size: 14px;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+/* Chips (smaller, cleaner) */
+/* --- Fix weird icon on chips --- */
+.chips,
+.chips * {
+  list-style: none;
+}
+
+/* If chips were rendered as <li>, kill the marker */
+.chips li::marker {
+  content: none;
+}
+
+/* Block any leftover pseudo-element decorations */
+.chip::before,
+.chip::after {
+  content: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+/* Solid, compact chip style */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  font-size: 11px;
+  line-height: 1;
+  color: #374151;
+  box-shadow: none;
+}
+.chip .icon {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+/* Buttons smaller */
+.btn {
+  background: #111827;
+  color: #fff;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+.btn.ghost {
+  background: #fff;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+}
+
+.link { color:#2563eb; text-decoration:none; }
+
+/* PO Cart (sidebar card) */
+.cart-box {
+  min-width: 320px; border:1px solid #e5e7eb; border-radius:12px; padding:16px; background:#fff;
+  box-shadow: 0 2px 8px rgba(2,6,23,.05);
+}
+.cart-items { display:flex; flex-direction:column; gap:10px; max-height:260px; overflow:auto; }
+.cart-row { display:grid; grid-template-columns: 1fr 90px 90px 86px; align-items:center; gap:8px; }
+.cart-name { font-size:14px; color:#0f172a; }
+.cart-price, .cart-total { font-weight:800; text-align:right; color:#0f172a; }
+.cart-footer, .cart-actions { display:flex; align-items:center; justify-content:space-between; margin-top:10px; }
+
+/* Sections used in PO details page */
+.po-sections { display:grid; grid-template-columns: 1fr; gap:16px; }
+.section { border:1px solid #e5e7eb; border-radius:12px; padding:12px; background:#fff; }
+
+/* Error toast */
+.error {
+  color: #b91c1c; background:#fee2e2; border:1px solid #fecaca;
+  padding:10px 12px; border-radius:10px;
+}
+
+/* Two-column page layout */
+.po-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px; /* left grows, right fixed */
+  gap: 24px;
+}
+
+/* Make the right column sticky (below your top navbar) */
+.sticky {
+  position: sticky;
+  top: 88px;               /* tweak to match your navbar height */
+}
+
+/* Responsive: stack on smaller screens */
+@media (max-width: 1024px) {
+  .po-layout {
+    grid-template-columns: 1fr;
+  }
+  .sticky {
+    top: 0;
+    position: static;      /* disable stickiness on small screens */
+  }
+}
+
+/* Align cart row items nicely (from earlier) */
+.cart-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 0;
+}
+.cart-name { flex: 1; }
+.cart-price { min-width: 80px; text-align: right; font-weight: 700; }
+
+/* ---------- Safe visual enhancements (append-only) ---------- */
+
+/* Page + header polish */
+.po-page { padding: 20px; background: #f8fafc; }
+.po-head {
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: linear-gradient(90deg, rgba(59,130,246,.06) 0%, rgba(14,165,233,.06) 100%);
+  box-shadow: 0 8px 24px rgba(2,6,23,.05);
+  padding: 16px;
+}
+.po-head h1 { margin: 0; font-size: 22px; letter-spacing: .2px; }
+
+/* Inputs/selects: subtle focus ring */
+.filters input,
+.filters select {
+  transition: box-shadow .12s ease, border-color .12s ease;
+}
+.filters input:focus,
+.filters select:focus {
+  border-color: #94a3b8;
+  box-shadow: 0 0 0 4px rgba(2,132,199,.12);
+}
+
+/* Table: card look + sticky head + zebra rows + hover */
+.table {
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(2,6,23,.05);
+}
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: rgba(255,255,255,.98);
+  backdrop-filter: saturate(180%) blur(4px);
+}
+.table tbody tr:nth-child(odd) { background: #fcfdff; }
+.table tbody tr:hover { background: #f1f5f9; }
+
+/* Buttons: hover/disabled + variants (use if needed) */
+.btn {
+  transition: box-shadow .12s ease, transform .12s ease;
+}
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(2,6,23,.08);
+}
+.btn:disabled { opacity: .6; cursor: not-allowed; }
+
+.btn.primary {
+  background: linear-gradient(180deg,#0ea5e9 0%, #0284c7 100%);
+  border: 1px solid #0284c7;
+  color: #fff;
+}
+.btn.ghost { background: #fff; color: #111827; border: 1px solid #e5e7eb; }
+
+/* Links */
+.link { color: #0284c7; text-decoration: none; font-weight: 700; }
+.link:hover { text-decoration: underline; }
+
+/* Cards + images */
+.card { border-radius: 12px; box-shadow: 0 8px 24px rgba(2,6,23,.05); border: 1px solid #e5e7eb; }
+.thumb { border-bottom: 1px solid #e5e7eb; }
+
+/* Numeric alignment for prices if you use .price */
+.price {
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Sticky side panels: adjust to your navbar height */
+.sticky { top: 88px; }
+
+/* ---------- Fix “ugly pill” note input in Next Status ---------- */
+/* Make the note field look like a normal input (was inheriting .btn styles) */
+.section .row input[type="text"],
+.section .row input:not([type]),
+.section .row textarea,
+.section .row input.btn {
+  background: #fff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 10px !important;
+  padding: 10px 12px !important;
+  height: 40px;
+  line-height: 1.4;
+  box-shadow: none !important;
+  width: min(520px, 100%);
+}
+
+/* Placeholder color */
+.section .row input::placeholder,
+.section .row textarea::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
+
+/* Keep the button nicely spaced from the input */
+.section .row .btn { margin-left: 8px; }

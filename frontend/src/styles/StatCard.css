@@ -1,0 +1,10 @@
+.statCard{
+  --orange:#FFA500; --blue:#0057B8; --card:#0f1729; --text:#f2f6ff; --muted:#98a2b3;
+  background: radial-gradient(120% 120% at 0% 0%, rgba(255,165,0,.16), rgba(0,87,184,.1)), var(--card);
+  color: var(--text); padding:18px; border-radius:18px; box-shadow: 0 12px 30px rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.06); transition: transform .25s ease;
+}
+.statCard:hover{ transform: translateY(-4px); }
+.statCard .title{ font-size:14px; color: var(--muted); margin-bottom:6px }
+.statCard .value{ font-size:28px; font-weight:800 }
+.statCard .hint{ font-size:12px; color: var(--muted); margin-top:6px }

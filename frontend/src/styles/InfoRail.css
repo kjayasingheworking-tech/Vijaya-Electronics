@@ -1,0 +1,33 @@
+/* Overlay stays the same */
+.infoRail{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  z-index: 2; pointer-events:none;
+}
+
+/* move slightly right + up; respect the text gap */
+.rail{
+  transform: translate(calc(12% + var(--mid-gap)), -2vh);  /* was translate(12%, -2.2vh) */
+  display:flex; flex-direction:column; gap:12px;
+  width: clamp(240px, 24vw, 320px);
+}
+
+
+/* rest unchanged … */
+.chip{ position:relative; display:flex; gap:10px; align-items:center; padding:10px 12px 10px 46px;
+  border-radius:14px; color:#f2f6ff;
+  background: radial-gradient(120% 120% at 0% 0%, rgba(255,165,0,.12), rgba(0,87,184,.10)), #0f1729;
+  border:1px solid rgba(255,255,255,.08); box-shadow: 0 10px 22px rgba(0,0,0,.30); animation: floaty 5.5s ease-in-out infinite;
+}
+.chip:nth-child(2){ animation-delay:.2s } .chip:nth-child(3){ animation-delay:.4s }
+@keyframes floaty{ 0%,100%{ transform: translateY(0) } 50%{ transform: translateY(-4px) } }
+.chip::before{ content:""; position:absolute; left:10px; top:50%; transform:translateY(-50%); width:8px; height:60%;
+  border-radius:8px; background: linear-gradient(180deg, #FFA500, #0057B8);
+  filter: drop-shadow(0 0 8px rgba(255,165,0,.7)) drop-shadow(0 0 10px rgba(0,87,184,.6));
+}
+.icon{ width:28px; height:28px; display:grid; place-items:center; border-radius:8px; background: rgba(255,255,255,.06); color:#fff; }
+.icon svg{ width:18px; height:18px; opacity:.9 }
+.txt{ line-height:1.1 } .txt strong{ display:block; font-size:14px; font-weight:800 } .txt small{ display:block; font-size:12px; opacity:.8 }
+
+@media (max-width:1000px){ .rail{ transform: translate(0, -1.5vh); } }
+@media (max-width:900px){ .infoRail{ display:none } }

@@ -1,0 +1,36 @@
+:root{ --orange:#FFA500; --blue:#0057B8; --card:#0f1729; --text:#f2f6ff; --muted:#98a2b3; --bg:#0b0f1a; }
+
+.portalWrap{ padding: 22px; max-width: 1200px; margin: 0 auto; color: var(--text); }
+.hero{
+  background: radial-gradient(160% 160% at 100% 0%, rgba(0,87,184,.18), rgba(255,165,0,.10)), var(--card);
+  border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:24px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.35); margin-bottom:20px;
+}
+.hero h1{ margin:0 0 6px; font-size:28px; }
+.hero p{ margin:0; color: var(--muted) }
+
+.portalGrid{
+  display:grid; gap:16px;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+}
+@media (max-width: 1000px){ .portalGrid{ grid-template-columns: 1fr; } }
+
+.panel{
+  background: radial-gradient(120% 120% at 0% 0%, rgba(255,165,0,.14), rgba(0,87,184,.10)), var(--card);
+  border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:16px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.35);
+}
+
+.stack{ display:grid; gap:10px }
+label{ display:grid; gap:6px }
+input{
+  background:#0b1220; border:1px solid rgba(255,255,255,.08); color:var(--text);
+  padding:12px 14px; border-radius:12px; outline:none
+}
+button.primary{
+  background: linear-gradient(90deg, var(--orange), var(--blue)); color:#002;
+  border:0; font-weight:800; padding:10px 14px; border-radius:12px; cursor:pointer
+}
+.error{ background: rgba(255,0,0,.12); border:1px solid rgba(255,0,0,.35);
+  color:#ffb3b3; padding:8px 10px; border-radius:10px }
+.tiny{ font-size:12px }
