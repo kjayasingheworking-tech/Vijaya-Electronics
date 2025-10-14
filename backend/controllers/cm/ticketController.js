@@ -18,7 +18,6 @@ const requiredFields = {
     "order_no",
     "purchase_date",
     "issue_description",
-    "photos",
   ],
   "Delivery Delay": ["order_no", "delivery_date", "description"],
   "Product Usage Guidelines": ["product_model", "description"],
@@ -71,6 +70,15 @@ exports.createTicket = async (req, res) => {
       return res
         .status(400)
         .json({ message: `Missing required fields: ${missing.join(", ")}` });
+
+    // Special validation for Product Complaint - photos are required
+    if (type === "Product Complaint") {
+      if (!fields.photos || fields.photos.length === 0) {
+        return res
+          .status(400)
+          .json({ message: "At least one photo is required for product complaints" });
+      }
+    }
 
     const ticketNo = await generateTicketNo();
 

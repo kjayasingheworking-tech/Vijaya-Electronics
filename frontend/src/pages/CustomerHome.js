@@ -20,7 +20,19 @@ export default function CustomerHome(){
     <main className="homeWrap">
       <section className="hero heroGrid">
         <div className="hero-inner">
-          <h1>Power your day with Electra</h1>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+            <img 
+              src="/vijayaElectronics.jpg" 
+              alt="Vijaya Electronics" 
+              style={{
+                height: '60px',
+                width: 'auto',
+                marginRight: '15px',
+                borderRadius: '8px'
+              }}
+            />
+            <h1>Power your day with Vijaya Electronics</h1>
+          </div>
           
         <p>Shop trusted electrical brands with seamless ordering, live order tracking, 24–48h dispatch, PCI-secure payments, loyalty rewards, and up to 2-year warranty.</p>
 

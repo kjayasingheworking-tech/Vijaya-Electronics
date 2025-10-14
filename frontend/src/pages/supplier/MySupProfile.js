@@ -54,18 +54,45 @@ export default function MySupProfile() {
     const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!emailRegex.test(profile.contactDetails.email)) {
+    // Required field validation
+    if (!profile.name?.trim()) {
+      newErrors["name"] = "Company name is required.";
+    }
+    if (!profile.contactDetails?.address?.trim()) {
+      newErrors["contactDetails.address"] = "Address is required.";
+    }
+    if (!profile.contactDetails?.country?.trim()) {
+      newErrors["contactDetails.country"] = "Country is required.";
+    }
+    if (!profile.contactPerson?.name?.trim()) {
+      newErrors["contactPerson.name"] = "Contact person name is required.";
+    }
+
+    // Email validation
+    if (!profile.contactDetails?.email?.trim()) {
+      newErrors["contactDetails.email"] = "Email is required.";
+    } else if (!emailRegex.test(profile.contactDetails.email)) {
       newErrors["contactDetails.email"] = "Please enter a valid email address.";
     }
-    if (!/^\d{10}$/.test(profile.contactDetails.phone)) {
+
+    // Phone validation
+    if (!profile.contactDetails?.phone?.trim()) {
+      newErrors["contactDetails.phone"] = "Phone number is required.";
+    } else if (!/^\d{10}$/.test(profile.contactDetails.phone)) {
       newErrors["contactDetails.phone"] = "Phone number must be 10 digits.";
     }
+
     if (
       profile.contactPerson.phone &&
       !/^\d{10}$/.test(profile.contactPerson.phone)
     ) {
       newErrors["contactPerson.phone"] =
         "Contact person number must be 10 digits.";
+    }
+
+    // Business details validation
+    if (!profile.businessType?.trim()) {
+      newErrors["businessType"] = "Business type is required.";
     }
 
     setErrors(newErrors);
@@ -120,7 +147,7 @@ export default function MySupProfile() {
               <h3>🏢 Company Details</h3>
               <div className="formGrid">
                 <div className="formGroup">
-                  <label>Company Name</label>
+                  <label>Company Name <span style={{color: '#ef4444'}}>*</span></label>
                   <input
                     type="text"
                     value={profile.companyName || ""}
@@ -128,17 +155,31 @@ export default function MySupProfile() {
                       handleChange("companyName", e.target.value)
                     }
                     disabled={!editMode}
+                    style={{
+                      borderColor: errors["name"] ? '#ef4444' : '',
+                      backgroundColor: errors["name"] ? '#fef2f2' : ''
+                    }}
                   />
+                  {errors["name"] && (
+                    <span className="error" style={{color: '#ef4444', fontSize: '12px'}}>{errors["name"]}</span>
+                  )}
                 </div>
 
                 <div className="formGroup">
-                  <label>Address</label>
+                  <label>Address <span style={{color: '#ef4444'}}>*</span></label>
                   <input
                     type="text"
                     value={profile.address || ""}
                     onChange={(e) => handleChange("address", e.target.value)}
                     disabled={!editMode}
+                    style={{
+                      borderColor: errors["contactDetails.address"] ? '#ef4444' : '',
+                      backgroundColor: errors["contactDetails.address"] ? '#fef2f2' : ''
+                    }}
                   />
+                  {errors["contactDetails.address"] && (
+                    <span className="error" style={{color: '#ef4444', fontSize: '12px'}}>{errors["contactDetails.address"]}</span>
+                  )}
                 </div>
 
                 <div className="formGroup">
@@ -202,7 +243,7 @@ export default function MySupProfile() {
               <h3>📞 Contact Details</h3>
               <div className="formGrid">
                 <div className="formGroup">
-                  <label>Email (Login)</label>
+                  <label>Email (Login) <span style={{color: '#ef4444'}}>*</span></label>
                   <input
                     type="email"
                     value={profile.contactDetails?.email || ""}
@@ -210,14 +251,18 @@ export default function MySupProfile() {
                       handleChange("contactDetails.email", e.target.value)
                     }
                     disabled={!editMode}
+                    style={{
+                      borderColor: errors["contactDetails.email"] ? '#ef4444' : '',
+                      backgroundColor: errors["contactDetails.email"] ? '#fef2f2' : ''
+                    }}
                   />
                   {errors["contactDetails.email"] && (
-                    <span className="error">{errors["contactDetails.email"]}</span>
+                    <span className="error" style={{color: '#ef4444', fontSize: '12px'}}>{errors["contactDetails.email"]}</span>
                   )}
                 </div>
 
                 <div className="formGroup">
-                  <label>Phone</label>
+                  <label>Phone <span style={{color: '#ef4444'}}>*</span></label>
                   <input
                     type="text"
                     value={profile.contactDetails?.phone || ""}
@@ -229,9 +274,13 @@ export default function MySupProfile() {
                     }
                     disabled={!editMode}
                     maxLength={10}
+                    style={{
+                      borderColor: errors["contactDetails.phone"] ? '#ef4444' : '',
+                      backgroundColor: errors["contactDetails.phone"] ? '#fef2f2' : ''
+                    }}
                   />
                   {errors["contactDetails.phone"] && (
-                    <span className="error">{errors["contactDetails.phone"]}</span>
+                    <span className="error" style={{color: '#ef4444', fontSize: '12px'}}>{errors["contactDetails.phone"]}</span>
                   )}
                 </div>
               </div>
@@ -241,7 +290,7 @@ export default function MySupProfile() {
               <h3>👤 Contact Person</h3>
               <div className="formGrid">
                 <div className="formGroup">
-                  <label>Name</label>
+                  <label>Name <span style={{color: '#ef4444'}}>*</span></label>
                   <input
                     type="text"
                     value={profile.contactPerson?.name || ""}
@@ -249,7 +298,14 @@ export default function MySupProfile() {
                       handleChange("contactPerson.name", e.target.value)
                     }
                     disabled={!editMode}
+                    style={{
+                      borderColor: errors["contactPerson.name"] ? '#ef4444' : '',
+                      backgroundColor: errors["contactPerson.name"] ? '#fef2f2' : ''
+                    }}
                   />
+                  {errors["contactPerson.name"] && (
+                    <span className="error" style={{color: '#ef4444', fontSize: '12px'}}>{errors["contactPerson.name"]}</span>
+                  )}
                 </div>
 
                 <div className="formGroup">
@@ -265,7 +321,7 @@ export default function MySupProfile() {
                 </div>
 
                 <div className="formGroup">
-                  <label>Phone</label>
+                  <label>Phone *</label>
                   <input
                     type="text"
                     value={profile.contactPerson?.phone || ""}

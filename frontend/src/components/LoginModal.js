@@ -75,7 +75,7 @@ export default function LoginModal({ open, onClose }) {
     try {
       const { data } = await api.post('/auth/login', authForm);
       if (!data?.token || !data?.user?.role) throw new Error('Invalid login response');
-      login({ token: data.token, ...data.user });
+      login({ token: data.token, user: data.user });
 
       const role = data.user.role;
       const target = role === 'admin' ? '/admin' : role === 'supplier' ? '/supplier' : '/';

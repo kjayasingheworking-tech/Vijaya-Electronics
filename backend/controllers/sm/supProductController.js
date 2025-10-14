@@ -114,7 +114,30 @@ exports.listSupProducts = async (req, res, next) => {
 exports.updateSupProduct = async (req, res, next) => {
   try {
     const id = req.params.id;
-    let { specifications, categories, unitPrice, isAvailable } = req.body || {};
+    let { specifications, categories, unitPrice, isAvailable, existingImages } = req.body || {};
+
+    // Handle image updates
+    const fileUrls = (req.files || []).map(
+      f => `/uploads/${f.filename}`
+    );
+
+    // Parse existing images if provided
+    let finalImages = [];
+    if (existingImages) {
+      try {
+        const parsed = JSON.parse(existingImages);
+        if (Array.isArray(parsed)) {
+          finalImages = parsed;
+        }
+      } catch (e) {
+        console.log('Error parsing existingImages:', e);
+      }
+    }
+
+    // Add new uploaded images
+    if (fileUrls.length > 0) {
+      finalImages = [...finalImages, ...fileUrls];
+    }
 
     // --- normalize like createSupProduct ---
     if (typeof specifications === "string") {
@@ -134,10 +157,24 @@ exports.updateSupProduct = async (req, res, next) => {
     const before = await SupProduct.findById(id).lean();
     if (!before) return res.status(404).json({ message: "Product not found" });
 
+    // Prepare update data
+    const updateData = {
+      ...req.body,
+      specifications,
+      categories,
+      isAvailable,
+      unitPrice
+    };
+
+    // Only update images if we have image changes
+    if (req.files || existingImages) {
+      updateData.images = finalImages;
+    }
+
     // apply update
     const doc = await SupProduct.findByIdAndUpdate(
       id,
-      { ...req.body, specifications, categories, isAvailable, unitPrice },
+      updateData,
       { new: true, runValidators: true }
     );
 
