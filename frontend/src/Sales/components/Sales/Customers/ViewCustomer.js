@@ -89,51 +89,6 @@ const ViewCustomer = ({ customer, onClose, onCustomerUpdate, onEdit }) => {
     }
   };
 
-  const handleUpdateCredit = async () => {
-    if (!customerDetails) return;
-
-    setUpdating(true);
-    
-    try {
-      // Send request to update credit information
-      const response = await fetch(`${API}${API_ENDPOINTS.CUSTOMER_UPDATE_CREDIT(customerDetails._id)}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update credit information");
-      }
-
-      const result = await response.json();
-      
-      // Update local customer data with new credit information
-      setCustomerDetails(prev => ({
-        ...prev,
-        creditLimit: result.customer.creditLimit,
-        currentCreditUsed: result.customer.currentCreditUsed,
-        creditAvailable: result.customer.creditAvailable
-      }));
-      
-      // Tell parent component about the update
-      if (onCustomerUpdate) {
-        onCustomerUpdate({
-          ...customerDetails,
-          creditLimit: result.customer.creditLimit,
-          currentCreditUsed: result.customer.currentCreditUsed,
-          creditAvailable: result.customer.creditAvailable
-        });
-      }
-
-      alert(result.message);
-      
-    } catch (err) {
-      console.error("Error updating credit information:", err);
-      alert(`Error: ${err.message}`);
-    } finally {
-      setUpdating(false);
-    }
-  };
 
   const formatDate = (date) => {
     if (!date) return "N/A";
@@ -245,18 +200,18 @@ const ViewCustomer = ({ customer, onClose, onCustomerUpdate, onEdit }) => {
               </div>
               
               {/* User Information (for wholesale customers) */}
-              {customerDetails.userId && (
+              {customerDetails.user && (
                 <div className="pt-3 border-t">
                   <h5 className="font-semibold text-gray-900 mb-2">User Account</h5>
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-gray-600">User Role:</span>
-                      <span className="font-medium capitalize">{customerDetails.userId.role}</span>
+                      <span className="font-medium capitalize">{customerDetails.user.role}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Account Status:</span>
-                      <span className={`font-medium ${customerDetails.userId.isActive ? 'text-green-600' : 'text-red-600'}`}>
-                        {customerDetails.userId.isActive ? 'Active' : 'Inactive'}
+                      <span className={`font-medium ${customerDetails.user.isActive ? 'text-green-600' : 'text-red-600'}`}>
+                        {customerDetails.user.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </div>
                   </div>
@@ -284,13 +239,6 @@ const ViewCustomer = ({ customer, onClose, onCustomerUpdate, onEdit }) => {
               <div className="space-y-3 pt-4 border-t">
                 <div className="flex justify-between items-center">
                   <h5 className="font-semibold text-gray-900">Wholesale Information</h5>
-                  <button
-                    onClick={handleUpdateCredit}
-                    disabled={updating}
-                    className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-                  >
-                    {updating ? "Updating..." : "Refresh Credit"}
-                  </button>
                 </div>
                 
                 <div className="flex justify-between">

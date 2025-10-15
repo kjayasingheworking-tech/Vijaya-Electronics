@@ -5,7 +5,7 @@ const { calculateCreditLimit, updateCustomerCredit } = require("../services/cred
 const listCustomers = async (req, res, next) => {
   try {
     const customers = await Customer.find()
-      .populate('userId', 'name email role isActive')
+      .populate('user', 'name email role isActive')
       .limit(200);
     res.json(customers);
   } catch (err) { next(err); }
@@ -27,7 +27,7 @@ const createCustomer = async (req, res, next) => {
     await user.save();
     
     // Create Customer record with User ID
-    customerData.userId = user._id;
+    customerData.user = user._id;
     
     // Set tier to silver for all new customers
     customerData.tier = "silver";
@@ -50,7 +50,7 @@ const createCustomer = async (req, res, next) => {
     await customer.save();
     
     // Get user details and send response
-    await customer.populate('userId', 'name email role isActive');
+    await customer.populate('user', 'name email role isActive');
     res.status(201).json(customer);
     
   } catch (err) { 
@@ -140,7 +140,7 @@ const updateCustomerBlockStatus = async (req, res, next) => {
     await customer.save();
 
     // Step 3: Get user details if customer has user account
-    await customer.populate('userId', 'name email role isActive');
+    await customer.populate('user', 'name email role isActive');
 
     // Step 4: Send response with success message
     let message;

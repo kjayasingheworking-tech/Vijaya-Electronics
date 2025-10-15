@@ -1,10 +1,16 @@
 import { useState } from "react";
-import { Bell, User } from "lucide-react";
+import { Bell, LogOut, User } from "lucide-react";
+import { useAuth } from "../../../context/AuthContext";
 import "../../styles/sales.css";
 import SalesNotificationModal from "./SalesNotificationModal";
 
 const SalesHeader = ({ salesManagerId, user }) => { // Add user parameter
   const [showNotifications, setShowNotifications] = useState(false);
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <header className="bg-gradient-primary text-white shadow-elegant sticky top-0 z-50">
@@ -36,9 +42,20 @@ const SalesHeader = ({ salesManagerId, user }) => { // Add user parameter
             >
               <Bell className="h-5 w-5 group-hover:scale-110 transition-transform" />
             </button>
-            <button className="hover:bg-white/15 p-3 rounded-xl transition-all duration-200 group">
-              <User className="h-5 w-5 group-hover:scale-110 transition-transform" />
-            </button>
+            {user ? (
+              <button 
+                onClick={handleLogout}
+                className="hover:bg-white/15 p-3 rounded-xl transition-all duration-200 group flex items-center space-x-2"
+                title="Logout"
+              >
+                <LogOut className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                <span className="text-sm font-medium">Logout</span>
+              </button>
+            ) : (
+              <button className="hover:bg-white/15 p-3 rounded-xl transition-all duration-200 group">
+                <User className="h-5 w-5 group-hover:scale-110 transition-transform" />
+              </button>
+            )}
           </div>
         </div>
       </div>

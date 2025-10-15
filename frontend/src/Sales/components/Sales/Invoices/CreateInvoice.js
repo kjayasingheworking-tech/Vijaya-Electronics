@@ -147,36 +147,6 @@ const CreateInvoice = ({ onClose, onCreate }) => {
     }
   };
 
-  // Refresh customer credit information
-  const refreshCustomerCredit = async () => {
-    if (!invoiceForm.customerId) return;
-
-    try {
-      const response = await fetch(`${API}${API_ENDPOINTS.CUSTOMER_UPDATE_CREDIT(invoiceForm.customerId)}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        
-        // Update customer credit information in the form
-        setInvoiceForm(prev => ({
-          ...prev,
-          customerCreditLimit: result.customer.creditLimit,
-          customerCurrentCreditUsed: result.customer.currentCreditUsed,
-          customerCreditAvailable: result.customer.creditAvailable,
-        }));
-
-        alert("Customer credit information updated successfully");
-      } else {
-        throw new Error("Failed to update credit information");
-      }
-    } catch (err) {
-      console.error("Error updating customer credit:", err);
-      alert(`Error: ${err.message}`);
-    }
-  };
 
   //if customerPoints change, ensure pointsToRedeem is not more than that
   useEffect(() => {
@@ -461,15 +431,6 @@ const CreateInvoice = ({ onClose, onCreate }) => {
                     <p>Credit Limit: Rs.{selectedCustomer.creditLimit?.toFixed(2) || "0.00"}</p>
                     <p>Available Credit: Rs.{selectedCustomer.creditAvailable?.toFixed(2) || "0.00"}</p>
                   </div>
-                  {invoiceForm.paymentMethod === "Credit" && (
-                    <button
-                      type="button"
-                      onClick={refreshCustomerCredit}
-                      className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-                    >
-                      Refresh Credit
-                    </button>
-                  )}
                 </div>
               </div>
             )}
