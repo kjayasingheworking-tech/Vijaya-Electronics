@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   //password: { type: String, required: true, minlength: 6 },
   role: { type: String, enum: ["customer", "supplier", "admin", "sales_manager"], default: "customer" },
   isActive: { type: Boolean, default: true }
-}, { timestamps: true });
+}, { timestamps: true, collection: 'users' });
 
 const User = mongoose.model("UserTemp", userSchema);
 module.exports = User;

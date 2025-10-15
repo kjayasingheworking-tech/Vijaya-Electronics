@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
 import { Users, FileText, CreditCard, DollarSign, Calendar, } from "lucide-react";
+import { useAuth } from "../../../context/AuthContext";
 import "../../styles/sales.css";
 import CreateInvoice from "../../components/Sales/Invoices/CreateInvoice";
 import CreateWholesaleCustomer from "../../components/Sales/Customers/CreateWholesaleCustomer";
 import { API, API_ENDPOINTS } from "../../constants/salesApi";
 
 const Dashboard = () => {
+  const { user } = useAuth(); // Get logged-in user
+  const salesManagerId = user?._id; // Use user's ID
+
   const [dashboardData, setDashboardData] = useState({
     customers: [],
     invoices: [],

@@ -31,7 +31,7 @@ const customerSchema = new mongoose.Schema({
 
   // track claimed discounts to prevent duplicate claims
   claimedDiscounts: [{ type: mongoose.Schema.Types.ObjectId, ref: "SalesDiscount" }]
-}, { timestamps: true });
+}, { timestamps: true, collection: 'customerprofiles' });
 
 const Customer = mongoose.model("Customer", customerSchema);
 module.exports = Customer;

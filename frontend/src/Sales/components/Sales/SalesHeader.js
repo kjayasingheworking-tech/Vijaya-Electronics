@@ -3,7 +3,7 @@ import { Bell, User } from "lucide-react";
 import "../../styles/sales.css";
 import SalesNotificationModal from "./SalesNotificationModal";
 
-const SalesHeader = ({ salesManagerId }) => {
+const SalesHeader = ({ salesManagerId, user }) => { // Add user parameter
   const [showNotifications, setShowNotifications] = useState(false);
 
   return (
@@ -21,7 +21,9 @@ const SalesHeader = ({ salesManagerId }) => {
             </div>
             <div>
               <h1 className="text-2xl font-bold">Vijaya Electronics</h1>
-              <p className="text-sm text-white/70 font-medium">Sales Management Portal</p>
+              <p className="text-sm text-white/70 font-medium">
+                Sales Management Portal - {user?.name || 'Sales Manager'}
+              </p>
             </div>
           </div>
 

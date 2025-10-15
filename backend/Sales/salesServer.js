@@ -43,12 +43,3 @@ app.use("/reports", reportsRoutes);
 app.use(errorHandler);
 
 module.exports = app;
-
-// database + server
-//connectDB()
-//  .then(() => {
-//    app.listen(config.port, () => {
-//      console.log(`Server running on port ${config.port}`);
-//    });
-//  })
-//  .catch((err) => console.error("Server startup error:", err));

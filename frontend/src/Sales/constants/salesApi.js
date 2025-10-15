@@ -1,5 +1,5 @@
 // Sales API constants
-export const API = process.env.REACT_APP_API || 'http://localhost:5000/api/sales';
+export const API = process.env.REACT_APP_API_BASE || 'http://localhost:5001/api/sales';
 
 export const API_ENDPOINTS = {
   // Customer endpoints

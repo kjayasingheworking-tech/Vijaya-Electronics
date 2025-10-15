@@ -111,7 +111,9 @@ export default function App() {
           <Route path="/customer/tickets/:id" element={<ProtectedRoute roles={['customer']}><TicketDetailCustomer /></ProtectedRoute>} />
 
           {/* Customer Routes */}
-          <Route path="/customer/*" element={<CustomerApp />} />
+          <Route path="/customer/*" element={
+              <CustomerApp />
+          } />
 
           {/* Sales Module Routes */}
           <Route path="/sales/*" element={<SalesApp />} />

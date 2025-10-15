@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import SalesManagerLayout from "./layouts/SalesManagerLayout";
 import Dashboard from "./pages/Sales/SalesDashboard"; 
 import Invoices from "./pages/Sales/SalesInvoices";
@@ -11,7 +12,8 @@ import PaymentHistory from "./pages/Sales/PaymentHistory";
 import Reports from "./pages/Sales/SalesReports";
 
 function SalesApp() {
-  const salesManagerId = "68e6fe7594c840643ce3918d"; // Hard-coded for testing
+  const { user } = useAuth(); // Get logged-in user
+  const salesManagerId = user?._id; // Use user's ID instead of hardcoded
 
   return (
     <Routes>
