@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import utility classes */
+@import './salesreports.css';
+
+/* Global and custom utilities */
+body {
+  @apply bg-light-gray text-dark-charcoal font-sans;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* theme utilities */
+.bg-gradient-primary {
+  background: linear-gradient(90deg, #0057B8, #FFA500);
+}
+.bg-gradient-button {
+  background: linear-gradient(90deg, #FFA500, #0057B8);
+}
+
+/* small utilities used by components */
+.bg-tech-white { background-color: #FFFFFF; }
+
+
+/* Create Buttons - Specific style for create actions */
+.btn-create {
+  @apply flex items-center gap-2 bg-electric-blue text-white px-4 py-2 rounded-lg shadow hover:bg-electric-blue-dark transition;
+}
+
+/* Primary Buttons - Main actions (Create, Update, Save) */
+.btn-primary {
+  @apply px-4 py-2 bg-gradient-button text-white rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 87, 184, 0.3);
+}
+
+/* Secondary Buttons - Secondary actions (Edit, Update) */
+.btn-secondary {
+  @apply px-4 py-2 bg-gradient-button text-white rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 165, 0, 0.3);
+}
+
+/* Cancel Buttons - Cancel, Close actions */
+.btn-cancel {
+  @apply px-4 py-2 bg-gray-500 text-white rounded-lg font-medium transition-all duration-200 hover:bg-gray-600 hover:shadow-lg;
+}
+
+.btn-cancel:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+}
+
+/* Danger Buttons - Delete, Remove actions */
+.btn-danger {
+  @apply px-4 py-2 bg-red-500 text-white rounded-lg font-medium transition-all duration-200 hover:bg-red-600 hover:shadow-lg;
+}
+
+.btn-danger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Success Buttons - Confirm, Approve actions */
+.btn-success {
+  @apply px-4 py-2 bg-electric-blue text-white rounded-lg font-medium transition-all duration-200 hover:bg-electric-blue-dark hover:shadow-lg;
+}
+
+.btn-success:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+/* Small Buttons - Compact actions */
+.btn-sm {
+  @apply px-3 py-1.5 text-sm;
+}
+
+/* Button Groups */
+.btn-group {
+  @apply flex gap-2;
+}
+
+.btn-group-end {
+  @apply flex justify-end gap-2;
+}
+
+/* Legacy button classes for backward compatibility */
+.button-primary { @apply btn-primary; }
+.button-secondary { @apply btn-secondary; }
+.button-cancle { @apply btn-cancel; }
+.button-primary-sales { @apply btn-primary; }
+.button-secondary-sales { @apply btn-secondary; }
+.button-cancle-sales { @apply btn-cancel; }
+
+/*remove spinner*/
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: #0057B8;
+}
+
+/* Status themes */
+.status-pending {
+  @apply bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs font-medium;
+}
+
+.status-active {
+  @apply bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-medium;
+}
+
+.status-expired {
+  @apply bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium;
+}

@@ -2,6 +2,8 @@ import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './routes/ProtectedRoute';
 import { ToastProvider } from './components/ToastProvider'; // ⬅️ add this
+import SalesApp from './Sales/SalesApp';
+import CustomerApp from './Sales/CustomerApp';
 
 import Navbar from './components/Navbar';
 import CustomerHome from './pages/CustomerHome';
@@ -44,72 +46,78 @@ export default function App() {
         <Routes>
           <Route path="/" element={<CustomerHome />} />
           <Route path="/notifications" element={<AllNotifications />} />
-          
+
 
           {/* Supplier pages */}
 
           <Route path="/supplier" element={
-            <ProtectedRoute roles={['supplier']}><DashboardSupplier/></ProtectedRoute>
-          }/>
+            <ProtectedRoute roles={['supplier']}><DashboardSupplier /></ProtectedRoute>
+          } />
           <Route path="/supplier/myproducts" element={
-            <ProtectedRoute roles={['supplier']}><MyProducts/></ProtectedRoute>
-          }/>
+            <ProtectedRoute roles={['supplier']}><MyProducts /></ProtectedRoute>
+          } />
           <Route path="/supplier/orders" element={
-            <ProtectedRoute roles={['supplier']}><OrdersPage/></ProtectedRoute>
-          }/>
+            <ProtectedRoute roles={['supplier']}><OrdersPage /></ProtectedRoute>
+          } />
           <Route path="/supplier/orders/:id" element={
-            <ProtectedRoute roles={['supplier']}><OrderView/></ProtectedRoute>
-          }/>
+            <ProtectedRoute roles={['supplier']}><OrderView /></ProtectedRoute>
+          } />
           <Route path="/supplier/invoices" element={
-            <ProtectedRoute roles={['supplier']}><InvoicesList/></ProtectedRoute>
-          }/>
+            <ProtectedRoute roles={['supplier']}><InvoicesList /></ProtectedRoute>
+          } />
           <Route path="/supplier/invoices/:id" element={
-            <ProtectedRoute roles={['supplier']}><InvoiceView/></ProtectedRoute>
-          }/>
+            <ProtectedRoute roles={['supplier']}><InvoiceView /></ProtectedRoute>
+          } />
           <Route path="/supplier/profile" element={
-              <ProtectedRoute roles={['supplier']}><MySupProfile/></ProtectedRoute>
-          }/>
-          
+            <ProtectedRoute roles={['supplier']}><MySupProfile /></ProtectedRoute>
+          } />
+
 
           {/* Admin pages */}
           <Route path="/admin" element={
-            <ProtectedRoute roles={['admin']}><AdminDashboard/></ProtectedRoute>
-          }/>
+            <ProtectedRoute roles={['admin']}><AdminDashboard /></ProtectedRoute>
+          } />
           <Route path="/admin/suppliers" element={
-            <ProtectedRoute roles={['admin']}><SupplierManagement/></ProtectedRoute>
-          }/>
+            <ProtectedRoute roles={['admin']}><SupplierManagement /></ProtectedRoute>
+          } />
           <Route path="/admin/products" element={
-            <ProtectedRoute roles={['admin']}><ProductsAdmin/></ProtectedRoute>
-          }/>
+            <ProtectedRoute roles={['admin']}><ProductsAdmin /></ProtectedRoute>
+          } />
           <Route path="/admin/purchase-orders" element={
-            <ProtectedRoute roles={['admin']}><POListAdmin/></ProtectedRoute>
-          }/>
+            <ProtectedRoute roles={['admin']}><POListAdmin /></ProtectedRoute>
+          } />
           <Route path="/admin/purchase-orders/:id" element={
-            <ProtectedRoute roles={['admin']}><PODetailAdmin/></ProtectedRoute>
-          }/>
+            <ProtectedRoute roles={['admin']}><PODetailAdmin /></ProtectedRoute>
+          } />
           <Route path="/admin/invoices" element={
-            <ProtectedRoute roles={['admin']}><InvoicesAdmin/></ProtectedRoute>
-          }/>
+            <ProtectedRoute roles={['admin']}><InvoicesAdmin /></ProtectedRoute>
+          } />
           <Route path="/admin/invoices/:id" element={
-            <ProtectedRoute roles={['admin']}><InvoiceDetailAdmin/></ProtectedRoute>
-          }/>
+            <ProtectedRoute roles={['admin']}><InvoiceDetailAdmin /></ProtectedRoute>
+          } />
           <Route path="/admin/damage-inquiries" element={
-            <ProtectedRoute roles={['admin']}><DamageInquiriesAdmin/></ProtectedRoute>
-          }/>
+            <ProtectedRoute roles={['admin']}><DamageInquiriesAdmin /></ProtectedRoute>
+          } />
           <Route path="/admin/damage-inquiries/:id" element={
-            <ProtectedRoute roles={['admin']}><DamageInquiryDetailAdmin/></ProtectedRoute>
-          }/>
-          <Route path="/admin/tickets" element={<ProtectedRoute roles={['admin']}><AdminTicketsList/></ProtectedRoute>} />
-            <Route path="/admin/tickets/:id" element={<ProtectedRoute roles={['admin']}><AdminTicketDetail/></ProtectedRoute>} />
-          <Route path="/admin/customers" element={<ProtectedRoute roles={['admin']}><CustomersList/></ProtectedRoute>} />
+            <ProtectedRoute roles={['admin']}><DamageInquiryDetailAdmin /></ProtectedRoute>
+          } />
+          <Route path="/admin/tickets" element={<ProtectedRoute roles={['admin']}><AdminTicketsList /></ProtectedRoute>} />
+          <Route path="/admin/tickets/:id" element={<ProtectedRoute roles={['admin']}><AdminTicketDetail /></ProtectedRoute>} />
+          <Route path="/admin/customers" element={<ProtectedRoute roles={['admin']}><CustomersList /></ProtectedRoute>} />
 
           <Route path="/about" element={<AboutUs />} />
-          <Route path="/customer/tickets" element={<CustomerTicketsPage/>} />
+          <Route path="/customer/tickets" element={<CustomerTicketsPage />} />
           <Route path="/profile" element={<MyProfile />} />
-          <Route path="/customer/tickets/:id" element={<ProtectedRoute roles={['customer']}><TicketDetailCustomer/></ProtectedRoute>} />
+          <Route path="/customer/tickets/:id" element={<ProtectedRoute roles={['customer']}><TicketDetailCustomer /></ProtectedRoute>} />
+
+          {/* Customer Routes */}
+          <Route path="/customer/*" element={<CustomerApp />} />
+
+          {/* Sales Module Routes */}
+          <Route path="/sales/*" element={<SalesApp />} />
 
 
-          <Route path="*" element={<NotFound/>} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </ToastProvider>
     </AuthProvider>

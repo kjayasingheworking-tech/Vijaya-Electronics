@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db");
+const salesServer = require("./Sales/salesServer.js"); 
 
 const authRoutes = require("./routes/authRoutes");  
 const supplierRoutes = require("./routes/sm/supplierRoutes");
@@ -34,6 +35,9 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/inv", invoiceRoutes);
 
 app.use("/api/tickets", ticketRoutes);
+
+//sales
+app.use("/api/sales", salesServer);
 
 // 404
 app.use((req, res) => res.status(404).json({ message: "Route not found" }));
