@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Eye, Users, Edit2, History, UserCheck, UserX } from "lucide-react";
+import { useAuth } from "../../../context/AuthContext";
 import "../../styles/sales.css";
 import CreateWholesaleCustomer from "../../components/Sales/Customers/CreateWholesaleCustomer";
 import ViewCustomer from "../../components/Sales/Customers/ViewCustomer";
@@ -10,6 +11,7 @@ import { ROUTES } from "../../constants/salesRoutes";
 
 const SalesCustomers = () => {
   const navigate = useNavigate();
+  const { user } = useAuth(); // Get main app user data for fallback
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -18,6 +20,17 @@ const SalesCustomers = () => {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all"); // all, regular, wholesale
+
+  // Helper function to merge customer data with user data for fallback
+  const getCustomerDisplayData = (customer) => {
+    return {
+      ...customer,
+      name: customer.name || user?.name ,
+      email: customer.email || user?.email ,
+      phone: customer.phone || user?.phone ,
+      // Keep original customer data but provide fallbacks for missing fields
+    };
+  };
 
   useEffect(() => {
     fetchCustomers();
@@ -104,10 +117,13 @@ const SalesCustomers = () => {
   };
 
   const filteredCustomers = customers.filter(customer => {
-    // Check if customer matches search term
-    const nameMatch = customer.name?.toLowerCase().includes(searchTerm.toLowerCase());
-    const emailMatch = customer.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    const phoneMatch = customer.phone?.includes(searchTerm);
+    // Get display data with fallbacks for search
+    const displayData = getCustomerDisplayData(customer);
+    
+    // Check if customer matches search term (using fallback data)
+    const nameMatch = displayData.name?.toLowerCase().includes(searchTerm.toLowerCase());
+    const emailMatch = displayData.email?.toLowerCase().includes(searchTerm.toLowerCase());
+    const phoneMatch = displayData.phone?.includes(searchTerm);
     const matchesSearch = nameMatch || emailMatch || phoneMatch;
     
     // Check if customer matches filter type
@@ -267,18 +283,20 @@ const SalesCustomers = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredCustomers.map((customer) => (
-                <tr key={customer._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">{customer.name}</div>
-                      <div className="text-sm text-gray-500">{customer.email}</div>
-                      <div className="text-sm text-gray-500">{customer.phone}</div>
-                      {customer.companyName && (
-                        <div className="text-sm text-gray-500">{customer.companyName}</div>
-                      )}
-                    </div>
-                  </td>
+              {filteredCustomers.map((customer) => {
+                const displayData = getCustomerDisplayData(customer);
+                return (
+                  <tr key={customer._id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">{displayData.name}</div>
+                        <div className="text-sm text-gray-500">{displayData.email}</div>
+                        <div className="text-sm text-gray-500">{displayData.phone}</div>
+                        {customer.companyName && (
+                          <div className="text-sm text-gray-500">{customer.companyName}</div>
+                        )}
+                      </div>
+                    </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       {customer.type?.charAt(0).toUpperCase() + customer.type?.slice(1) || "Regular"}
@@ -293,54 +311,55 @@ const SalesCustomers = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     {getStatusBadge(customer.blocked)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleViewCustomer(customer)}
-                        className="p-2 border rounded hover:bg-gray-50"
-                        title="View Customer"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleViewPaymentHistory(customer)}
-                        className="p-2 border rounded hover:bg-gray-50"
-                        title="Payment History"
-                      >
-                        <History className="h-4 w-4" />
-                      </button>
-                      {customer.type === "wholesale" && (
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex gap-2">
                         <button
-                          onClick={() => handleUpdateCustomer(customer)}
+                          onClick={() => handleViewCustomer(customer)}
                           className="p-2 border rounded hover:bg-gray-50"
-                          title="Edit Customer"
+                          title="View Customer"
                         >
-                          <Edit2 className="h-4 w-4" />
+                          <Eye className="h-4 w-4" />
                         </button>
-                      )}
-                      <button
-                        onClick={() => handleQuickBlockToggle(customer)}
-                        className={`flex items-center gap-1 px-3 py-2 border rounded hover:bg-gray-50 ${
-                          customer.blocked ? "hover:bg-green-50" : "hover:bg-red-50"
-                        }`}
-                        title={customer.blocked ? "Unblock Customer" : "Block Customer"}
-                      >
-                        {customer.blocked ? (
-                          <>
-                            <UserCheck className="h-4 w-4 text-electric-blue" />
-                            <span className="text-xs text-electric-blue">Unblock</span>
-                          </>
-                        ) : (
-                          <>
-                            <UserX className="h-4 w-4 text-red-500" />
-                            <span className="text-xs text-red-500">Block</span>
-                          </>
+                        <button
+                          onClick={() => handleViewPaymentHistory(customer)}
+                          className="p-2 border rounded hover:bg-gray-50"
+                          title="Payment History"
+                        >
+                          <History className="h-4 w-4" />
+                        </button>
+                        {customer.type === "wholesale" && (
+                          <button
+                            onClick={() => handleUpdateCustomer(customer)}
+                            className="p-2 border rounded hover:bg-gray-50"
+                            title="Edit Customer"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </button>
                         )}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        <button
+                          onClick={() => handleQuickBlockToggle(customer)}
+                          className={`flex items-center gap-1 px-3 py-2 border rounded hover:bg-gray-50 ${
+                            customer.blocked ? "hover:bg-green-50" : "hover:bg-red-50"
+                          }`}
+                          title={customer.blocked ? "Unblock Customer" : "Block Customer"}
+                        >
+                          {customer.blocked ? (
+                            <>
+                              <UserCheck className="h-4 w-4 text-electric-blue" />
+                              <span className="text-xs text-electric-blue">Unblock</span>
+                            </>
+                          ) : (
+                            <>
+                              <UserX className="h-4 w-4 text-red-500" />
+                              <span className="text-xs text-red-500">Block</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
