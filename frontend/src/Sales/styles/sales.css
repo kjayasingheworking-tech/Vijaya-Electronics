@@ -11,6 +11,26 @@ body {
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
+/* Sidebar Navigation Styles */
+.sidebar-nav-active {
+  background-color: #0057B8 !important;
+  color: white !important;
+}
+
+.sidebar-nav-inactive:hover {
+  background-color: #f3f4f6 !important;
+}
+
+/* Ensure no horizontal navigation overrides */
+.sales-layout nav {
+  flex-direction: column !important;
+}
+
+.sales-layout nav > * {
+  display: block !important;
+  width: 100% !important;
+}
+
 /* theme utilities */
 .bg-gradient-primary {
   background: linear-gradient(90deg, #0057B8, #FFA500);

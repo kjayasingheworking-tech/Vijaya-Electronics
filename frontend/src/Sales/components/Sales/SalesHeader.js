@@ -13,16 +13,21 @@ const SalesHeader = ({ salesManagerId, user }) => { // Add user parameter
   };
 
   return (
-    <header className="bg-gradient-primary text-white shadow-elegant sticky top-0 z-50">
+    <header className="bg-gradient-primary text-white shadow-elegant fixed top-0 left-0 right-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo & Title */}
           <div className="flex items-center space-x-4">
-            <div className="h-10 w-10 rounded-md flex items-center justify-center shadow-button overflow-hidden">
+            <div className="h-12 w-12 rounded-md flex items-center justify-center shadow-button overflow-hidden bg-white/10">
               <img 
-                src="/logo.jpeg" 
+                src="/vijayaElectronics.jpg" 
                 alt="Vijaya Electronics Logo" 
                 className="h-full w-full object-contain"
+                style={{ maxWidth: '100%', maxHeight: '100%' }}
+                onError={(e) => {
+                  console.log('Logo failed to load');
+                  e.target.style.display = 'none';
+                }}
               />
             </div>
             <div>
