@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import "../../styles/sales.css";
+import "../../styles/customer-dark.css";
 import { 
   validateRedeemPoints, 
   validateCustomerAccount, 
@@ -325,12 +326,12 @@ const CheckoutModal = ({ customerId, cart, onClose, onSuccess }) => {
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-        <div className="bg-white w-full max-w-xl rounded shadow p-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xl font-bold">Checkout</h3>
-            <button onClick={onClose} className="text-gray-500 text-xl">✕</button>
+        <div className="customer-modal w-full max-w-xl rounded shadow p-6">
+          <div className="modal-header flex justify-between items-center pb-4">
+            <h3 className="modal-title text-xl font-bold">Checkout</h3>
+            <button onClick={onClose} className="modal-close text-xl">✕</button>
           </div>
-        <div className="text-sm text-gray-500 mb-4">
+        <div className="text-sm text-gray-300 mb-4">
           You have {pointsBalance} User Points
         </div>
 
@@ -338,9 +339,9 @@ const CheckoutModal = ({ customerId, cart, onClose, onSuccess }) => {
           <>
             {/* Blocked Customer Warning */}
             {customer.blocked && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className="customer-error mb-4 p-3 rounded-lg">
                 <div className="flex items-center">
-                  <span className="text-red-600 text-sm font-medium">
+                  <span className="text-sm font-medium">
                     ⚠️ Your account is blocked and you cannot place orders. Please contact support.
                   </span>
                 </div>
@@ -348,9 +349,9 @@ const CheckoutModal = ({ customerId, cart, onClose, onSuccess }) => {
             )}
             
             <div className="mb-4">
-              <div className="font-medium">Payment Method</div>
+              <div className="font-medium text-white">Payment Method</div>
               <select
-                className="border p-2 rounded w-full"
+                className="customer-select border p-2 rounded w-full"
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
               >
@@ -361,30 +362,30 @@ const CheckoutModal = ({ customerId, cart, onClose, onSuccess }) => {
 
             {/* Discount code */}
             <div className="mb-4">
-              <div className="font-medium mb-2">Discount code</div>
+              <div className="font-medium mb-2 text-white">Discount code</div>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={discountCode}
                   onChange={(e) => setDiscountCode(e.target.value)}
-                  className="border p-2 rounded w-full"
+                  className="customer-input border p-2 rounded w-full"
                   placeholder="Enter code"
                 />
                 <button
                   onClick={applyDiscount}
                   disabled={applying}
-                  className="flex items-center gap-2 bg-electric-blue text-white px-4 py-2 rounded hover:bg-electric-blue-dark transition"
+                  className="customer-btn-primary flex items-center gap-2 px-4 py-2 rounded transition"
                 >
                   {applying ? "Applying..." : "Apply"}
                 </button>
               </div>
               {discountMessage && (
-                <p className={`text-xs mt-1 ${discount ? "text-green-600" : "text-red-600"}`}>
+                <p className={`text-xs mt-1 ${discount ? "text-green-400" : "text-red-400"}`}>
                   {discountMessage}
                 </p>
               )}
               {discount && (
-                <p className="text-xs text-gray-600 mt-1">
+                <p className="text-xs text-gray-400 mt-1">
                   Applied: {discount.code} ({discount.discountType === "Percentage" ? `${discount.discountAmount}%` : `Rs.${discount.discountAmount}`})
                 </p>
               )}
@@ -399,7 +400,7 @@ const CheckoutModal = ({ customerId, cart, onClose, onSuccess }) => {
                   onChange={toggleRedeem}
                   className="accent-orange-500"
                 />
-                <span className="text-sm font-medium">Use redeem points</span>
+                <span className="text-sm font-medium text-white">Use redeem points</span>
               </label>
 
               <input
@@ -409,12 +410,12 @@ const CheckoutModal = ({ customerId, cart, onClose, onSuccess }) => {
                 value={pointsToRedeem}
                 onChange={(e) => handlePointsChange(e.target.value)}
                 disabled={!useRedeem}
-                className={`border p-2 rounded no-spinner w-full ${!useRedeem ? "bg-gray-100 cursor-not-allowed" : ""
+                className={`customer-input border p-2 rounded no-spinner w-full ${!useRedeem ? "bg-gray-700 cursor-not-allowed" : ""
                   } ${error ? "border-red-500" : ""}`}
               />
-              {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+              {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
               {useRedeem && (
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-400 mt-1">
                   Conversion: 1 point = Rs.1
                 </p>
               )}
@@ -422,25 +423,25 @@ const CheckoutModal = ({ customerId, cart, onClose, onSuccess }) => {
 
             {/* Cart items list */}
             <div className="mb-4">
-              <h4 className="font-medium mb-2">Cart</h4>
-              <div className="divide-y border rounded">
+              <h4 className="font-medium mb-2 text-white">Cart</h4>
+              <div className="divide-y border border-gray-600 rounded">
                 {(cart.items || []).map((it) => {
                   const stockStatus = getStockStatus(it);
                   
                   return (
-                    <div key={it._id} className={`flex justify-between items-center p-2 ${stockStatus.statusType === 'error' ? 'bg-red-50 border-red-200' : ''}`}>
+                    <div key={it._id} className={`flex justify-between items-center p-2 ${stockStatus.statusType === 'error' ? 'bg-red-900/20 border-red-400' : ''}`}>
                       <div>
-                        <div className="font-medium">{it.name}</div>
-                        <div className="text-xs text-gray-500">
+                        <div className="font-medium text-white">{it.name}</div>
+                        <div className="text-xs text-gray-400">
                           Qty: {it.quantity} × Rs.{it.unitPrice}
                         </div>
                         {stockStatus.statusType === 'error' && (
-                          <div className="text-xs text-red-600 font-medium">
+                          <div className="text-xs text-red-400 font-medium">
                             {stockStatus.statusMessage}
                           </div>
                         )}
                       </div>
-                      <div className="font-semibold">
+                      <div className="font-semibold text-white">
                         Rs.{(it.unitPrice * it.quantity).toFixed(2)}
                       </div>
                     </div>
@@ -450,29 +451,29 @@ const CheckoutModal = ({ customerId, cart, onClose, onSuccess }) => {
             </div>
 
             {/* Display subtotal and total amount*/}
-            <div className="border-t pt-4 space-y-2 mb-4">
+            <div className="border-t border-gray-600 pt-4 space-y-2 mb-4">
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Subtotal</span>
-                <span className="text-sm font-medium">Rs.{subtotal.toFixed(2)}</span>
+                <span className="text-sm text-gray-300">Subtotal</span>
+                <span className="text-sm font-medium text-white">Rs.{subtotal.toFixed(2)}</span>
               </div>
 
               {discount && computedDiscount > 0 && (
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Discount</span>
-                  <span className="text-sm font-medium text-red-600">- Rs.{computedDiscount.toFixed(2)}</span>
+                  <span className="text-sm text-gray-300">Discount</span>
+                  <span className="text-sm font-medium text-red-400">- Rs.{computedDiscount.toFixed(2)}</span>
                 </div>
               )}
 
               {useRedeem && (
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Points Redeemed</span>
-                  <span className="text-sm font-medium  text-honeycomb-orange">- Rs.{pointsToRedeem.toFixed(2)}</span>
+                  <span className="text-sm text-gray-300">Points Redeemed</span>
+                  <span className="text-sm font-medium text-orange-400">- Rs.{pointsToRedeem.toFixed(2)}</span>
                 </div>
               )}
 
-              <div className="flex justify-between border-t pt-2">
-                <span className="font-semibold">Total</span>
-                <span className="font-bold text-lg text-gray-900">
+              <div className="flex justify-between border-t border-gray-600 pt-2">
+                <span className="font-semibold text-white">Total</span>
+                <span className="font-bold text-lg text-white">
                   Rs.{estimatedTotal.toFixed(2)}
                 </span>
               </div>
@@ -484,9 +485,9 @@ const CheckoutModal = ({ customerId, cart, onClose, onSuccess }) => {
               
               if (cartValidation.hasStockIssues) {
                 return (
-                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="customer-error mb-4 p-3 rounded-lg">
                     <div className="flex items-center">
-                      <span className="text-red-600 text-sm font-medium">
+                      <span className="text-sm font-medium">
                         ⚠️ Cannot proceed with checkout due to stock issues. Please update your cart.
                       </span>
                     </div>
@@ -499,21 +500,21 @@ const CheckoutModal = ({ customerId, cart, onClose, onSuccess }) => {
             <div className="flex justify-end gap-2">
               <button
                 onClick={onClose}
-                className="px-4 py-2 border rounded hover:bg-gray-100"
+                className="customer-btn-secondary px-4 py-2 rounded"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={submitting || !!error || validateCartStock(cart.items || []).hasStockIssues}
-                className="flex items-center gap-2 bg-electric-blue text-white px-4 py-2 rounded hover:bg-electric-blue-dark transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="customer-btn-primary flex items-center gap-2 px-4 py-2 rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {submitting ? "Processing..." : "Place order"}
               </button>
             </div>
           </>
         ) : (
-          <p>Loading customer...</p>
+          <p className="customer-loading">Loading customer...</p>
         )}
       </div>
     </div>

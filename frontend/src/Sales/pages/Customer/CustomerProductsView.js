@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useCart } from "../../context/CartContext";
 import "../../styles/sales.css";
+import "../../styles/customer-dark.css";
 import CustomerHeader from "../../components/Customer/CustomerHeader";
 import Toast from "../../components/Toast";
 import { API, API_ENDPOINTS } from "../../constants/salesApi";
@@ -67,7 +68,7 @@ const ProductCard = ({ product, productImages, onAddToCart, isLoading }) => {
     : null;
 
   return (
-    <div className="bg-white rounded-lg shadow-card border border-light-gray hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+    <div className="product-card-dark customer-card rounded-lg shadow-card border border-light-gray hover:shadow-lg transition-shadow duration-300 overflow-hidden">
       {/* Product Image */}
       <div className="aspect-square bg-gradient-to-br from-electric-blue/10 to-honeycomb-orange/10 flex items-center justify-center p-4">
         {productImage ? (
@@ -90,24 +91,24 @@ const ProductCard = ({ product, productImages, onAddToCart, isLoading }) => {
       {/* Product Info */}
       <div className="p-4">
         <div className="flex items-start justify-between mb-2">
-          <h3 className="font-semibold text-dark-charcoal text-lg line-clamp-2">
+          <h3 className="product-title font-semibold text-lg line-clamp-2">
             {product.productName}
           </h3>
-          <Badge className="ml-2 flex-shrink-0">
+          <Badge className="customer-badge ml-2 flex-shrink-0">
             {product.category?.categoryName || 'Uncategorized'}
           </Badge>
         </div>
 
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+        <p className="product-description text-sm mb-3 line-clamp-2">
           {product.description || 'No description available'}
         </p>
 
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-1">
             <Star className="h-4 w-4 text-yellow-400 fill-current" />
-            <span className="text-sm text-gray-600">4.5</span>
+            <span className="text-sm text-gray-400">4.5</span>
           </div>
-          <span className="text-lg font-bold text-electric-blue">
+          <span className="product-price text-lg font-bold">
             Rs. {product.price}
           </span>
         </div>
@@ -115,7 +116,7 @@ const ProductCard = ({ product, productImages, onAddToCart, isLoading }) => {
         {/* Stock Information */}
         <div className="mb-2">
           <span className={`text-sm font-medium ${
-            stockStatus.statusType === 'error' ? 'text-red-500' : 'text-gray-600'
+            stockStatus.statusType === 'error' ? 'text-red-400' : 'text-gray-400'
           }`}>
             {stockStatus.statusMessage}
           </span>
@@ -123,18 +124,18 @@ const ProductCard = ({ product, productImages, onAddToCart, isLoading }) => {
 
         {/* Quantity and Add to Cart */}
         <div className="flex items-center space-x-2">
-          <div className="flex items-center border border-light-gray rounded-lg">
+          <div className="flex items-center border border-gray-600 rounded-lg">
             <button
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="px-2 py-1 text-gray-600 hover:text-electric-blue disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2 py-1 text-gray-300 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={quantity <= 1}
             >
               -
             </button>
-            <span className="px-3 py-1 text-sm font-medium">{quantity}</span>
+            <span className="px-3 py-1 text-sm font-medium text-white">{quantity}</span>
             <button
               onClick={() => setQuantity(quantity + 1)}
-              className="px-2 py-1 text-gray-600 hover:text-electric-blue disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2 py-1 text-gray-300 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={quantity >= stockStatus.availableStock}
             >
               +
@@ -144,7 +145,7 @@ const ProductCard = ({ product, productImages, onAddToCart, isLoading }) => {
             onClick={handleAddToCart}
             disabled={isLoading || !quantityValidation.isValid}
             size="sm"
-            className="flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="customer-btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ShoppingCart className="h-4 w-4 mr-1" />
             {quantityValidation.isOutOfStock ? 'Out of Stock' : !quantityValidation.isValid ? 'Invalid Quantity' : 'Add to Cart'}
@@ -291,12 +292,12 @@ const CustomerProductsView = ({ customerId }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-electric-blue/5 to-honeycomb-orange/5">
+      <div className="customer-app min-h-screen">
         <CustomerHeader customerId={customerId} />
         <div className="pt-20 flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-electric-blue mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading products...</p>
+            <div className="customer-spinner animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4"></div>
+            <p className="customer-loading">Loading products...</p>
           </div>
         </div>
       </div>
@@ -304,7 +305,7 @@ const CustomerProductsView = ({ customerId }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-electric-blue/5 to-honeycomb-orange/5">
+    <div className="customer-app min-h-screen">
       <CustomerHeader customerId={customerId} />
       
       {/* Toast Notification */}
@@ -319,8 +320,8 @@ const CustomerProductsView = ({ customerId }) => {
         <div className="container mx-auto px-4 py-6">
           {/* Header */}
           <div className="mb-4">
-            <h1 className="text-3xl font-bold text-dark-charcoal mb-2">Our Products</h1>
-            <p className="text-gray-600">Discover our wide range of electronic products</p>
+            <h1 className="text-3xl font-bold text-white mb-2">Our Products</h1>
+            <p className="text-gray-300">Discover our wide range of electronic products</p>
           </div>
 
           {/* Filters and Search */}
@@ -335,7 +336,7 @@ const CustomerProductsView = ({ customerId }) => {
                     placeholder="Search products..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-electric-blue"
+                    className="customer-input w-full pl-10 pr-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
               </div>
@@ -345,7 +346,7 @@ const CustomerProductsView = ({ customerId }) => {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-electric-blue"
+                  className="customer-select w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 >
                   <option value="all">All Categories</option>
                   {categories.map((category) => (
@@ -361,7 +362,7 @@ const CustomerProductsView = ({ customerId }) => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-electric-blue"
+                  className="customer-select w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
                 >
                   <option value="name">Sort by Name</option>
                   <option value="price">Sort by Price</option>
@@ -374,7 +375,7 @@ const CustomerProductsView = ({ customerId }) => {
 
           {/* Results Count */}
           <div className="mb-6">
-            <p className="text-gray-600">
+            <p className="text-gray-300">
               Showing {filteredProducts.length} of {products.length} products
             </p>
           </div>
@@ -383,8 +384,8 @@ const CustomerProductsView = ({ customerId }) => {
            {filteredProducts.length === 0 ? (
              <div className="text-center py-12">
                <Package className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-               <h3 className="text-lg font-semibold text-gray-600 mb-2">No products found</h3>
-               <p className="text-gray-500">Try adjusting your search or filter criteria</p>
+               <h3 className="text-lg font-semibold text-gray-300 mb-2">No products found</h3>
+               <p className="text-gray-400">Try adjusting your search or filter criteria</p>
              </div>
            ) : (
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

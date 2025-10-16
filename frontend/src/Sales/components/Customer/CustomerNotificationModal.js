@@ -5,6 +5,7 @@ import {
   clearAllNotifications
 } from "../../services/notificationApi.js";
 import ModalWrapper from "../ModalWrapper";
+import "../../styles/customer-dark.css";
 
 // UI Components
 const Button = ({ children, variant = "solid", size = "md", className = "", ...props }) => {
@@ -73,7 +74,7 @@ const NotificationItem = ({ notification, onMarkAsRead, onDelete, onMarkAsUnread
   };
 
   return (
-    <div className={`flex items-start space-x-3 p-3 hover:bg-light-gray rounded-lg transition-colors border-l-4 ${getTypeColor(notification.type)} ${notification.isRead ? 'opacity-60' : ''}`}>
+    <div className={`notification-item-dark flex items-start space-x-3 p-3 rounded-lg transition-colors border-l-4 ${getTypeColor(notification.type)} ${notification.isRead ? 'opacity-60' : ''}`}>
       <div className="flex-shrink-0 mt-0.5">
         {getIcon(notification.type)}
       </div>
@@ -81,13 +82,13 @@ const NotificationItem = ({ notification, onMarkAsRead, onDelete, onMarkAsUnread
       <div className="flex-1 min-w-0 mb-1">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <p className={`font-medium text-sm ${notification.isRead ? 'text-slate-gray' : 'text-dark-charcoal'}`}>
+            <p className={`notification-title font-medium text-sm ${notification.isRead ? 'text-gray-400' : 'text-white'}`}>
               {notification.title}
             </p>
-            <p className="text-xs text-slate-gray mt-1">
+            <p className="notification-message text-xs text-gray-400 mt-1">
               {notification.message}
             </p>
-            <p className="text-xs text-slate-gray mt-1">
+            <p className="text-xs text-gray-500 mt-1">
               {notification.time}
             </p>
           </div>
@@ -285,14 +286,14 @@ const CustomerNotificationModal = ({ customerId, isOpen, onClose }) => {
   return (
     <ModalWrapper>
       <div className="fixed inset-0 z-50 flex items-start justify-end pt-20 pr-4">
-        <div className="notification-modal bg-white rounded-lg shadow-elegant border border-light-gray w-2/5 max-h-[80vh] flex flex-col">
+        <div className="customer-modal notification-modal rounded-lg shadow-elegant border border-gray-600 w-2/5 max-h-[80vh] flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-light-gray">
+          <div className="flex items-center justify-between p-4 border-b border-gray-600">
             <div className="flex items-center space-x-2">
-              <Bell className="h-5 w-5 text-electric-blue" />
-              <h3 className="font-semibold text-dark-charcoal">Notifications</h3>
+              <Bell className="h-5 w-5 text-orange-400" />
+              <h3 className="font-semibold text-white">Notifications</h3>
               {unreadCount > 0 && (
-                <Badge className="bg-honeycomb-orange text-white">
+                <Badge className="customer-badge">
                   {unreadCount}
                 </Badge>
               )}
@@ -300,7 +301,7 @@ const CustomerNotificationModal = ({ customerId, isOpen, onClose }) => {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 p-0 hover:bg-light-gray"
+              className="h-8 w-8 p-0 hover:bg-gray-600 text-white"
               onClick={onClose}
             >
               <X className="h-4 w-4" />
@@ -308,7 +309,7 @@ const CustomerNotificationModal = ({ customerId, isOpen, onClose }) => {
           </div>
 
           {/* Filter Tabs */}
-          <div className="flex border-b border-light-gray">
+          <div className="flex border-b border-gray-600">
             {[
               { key: 'all', label: 'All' },
               { key: 'unread', label: 'Unread' },
@@ -317,8 +318,8 @@ const CustomerNotificationModal = ({ customerId, isOpen, onClose }) => {
               <button
                 key={tab.key}
                 className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${filter === tab.key
-                    ? 'text-electric-blue border-b-2 border-electric-blue'
-                    : 'text-slate-gray hover:text-dark-charcoal'
+                    ? 'text-orange-400 border-b-2 border-orange-400'
+                    : 'text-gray-400 hover:text-white'
                   }`}
                 onClick={() => setFilter(tab.key)}
               >
@@ -329,13 +330,13 @@ const CustomerNotificationModal = ({ customerId, isOpen, onClose }) => {
 
           {/* Actions */}
           {notifications.length > 0 && (
-            <div className="flex items-center justify-between p-3 bg-light-gray/30">
+            <div className="flex items-center justify-between p-3 bg-gray-700/30">
               <div className="flex space-x-2">
                 {unreadCount > 0 && (
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-xs"
+                    className="text-xs text-gray-300 hover:text-white"
                     onClick={handleMarkAllAsRead}
                   >
                     Mark all as read
@@ -344,13 +345,13 @@ const CustomerNotificationModal = ({ customerId, isOpen, onClose }) => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-xs text-red-500 hover:text-red-600"
+                  className="text-xs text-red-400 hover:text-red-300"
                   onClick={handleClearAll}
                 >
                   Clear all
                 </Button>
               </div>
-              <span className="text-xs text-slate-gray">
+              <span className="text-xs text-gray-400">
                 {filteredNotifications.length} of {notifications.length}
               </span>
             </div>
@@ -360,13 +361,13 @@ const CustomerNotificationModal = ({ customerId, isOpen, onClose }) => {
           <div className="flex-1 overflow-y-auto">
             {loading ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-electric-blue mb-3"></div>
-                <p className="text-slate-gray text-sm">Loading notifications...</p>
+                <div className="customer-spinner animate-spin rounded-full h-8 w-8 border-b-2 mb-3"></div>
+                <p className="customer-loading text-sm">Loading notifications...</p>
               </div>
             ) : filteredNotifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">
-                <Bell className="h-12 w-12 text-slate-gray mb-3" />
-                <p className="text-slate-gray text-sm">
+                <Bell className="h-12 w-12 text-gray-400 mb-3" />
+                <p className="text-gray-400 text-sm">
                   {filter === 'all'
                     ? 'No notifications yet'
                     : `No ${filter} notifications`

@@ -1,0 +1,316 @@
+/* Customer Dark Theme CSS */
+
+:root {
+  --orange: #FFA500;
+  --blue: #0057B8;
+  --bg: #0b0f1a;
+  --card: #0f1729;
+  --text: #f2f6ff;
+  --muted: #98a2b3;
+  --nav-h: 58px;
+  --hp-gap: clamp(14px, 2.2vw, 28px);
+  --mid-gap: clamp(14px, 3.5vw, 40px);
+  --pulse-h: 18vh;
+  --pulse-min: 96px;
+  --pulse-max: 180px;
+}
+
+/* Customer App Dark Theme */
+.customer-app {
+  color: var(--text);
+  min-height: calc(100vh - var(--nav-h));
+  background: linear-gradient(
+    180deg,
+    rgba(0, 15, 40, 0.98) 0%,
+    rgba(0, 35, 70, 0.96) 30%,
+    rgba(5, 25, 55, 0.95) 60%,
+    rgba(8, 12, 24, 0.98) 85%,
+    rgba(10, 10, 20, 1) 100%
+  );
+}
+
+/* Customer Header Dark Theme */
+.customer-header {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 15, 40, 0.95) 0%,
+    rgba(0, 35, 70, 0.9) 50%,
+    rgba(5, 25, 55, 0.95) 100%
+  );
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.customer-header .logo-text {
+  color: var(--text);
+}
+
+.customer-header .subtitle {
+  color: var(--muted);
+}
+
+/* Customer Navigation Dark Theme */
+.customer-nav-button {
+  color: var(--muted);
+  transition: all 0.3s ease;
+}
+
+.customer-nav-button:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Customer Cards Dark Theme */
+.customer-card {
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.customer-card:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Customer Product Cards */
+.product-card-dark {
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+
+.product-card-dark .product-title {
+  color: var(--text);
+}
+
+.product-card-dark .product-description {
+  color: var(--muted);
+}
+
+.product-card-dark .product-price {
+  color: var(--orange);
+}
+
+/* Customer Buttons Dark Theme */
+.customer-btn-primary {
+  background: linear-gradient(90deg, var(--orange), var(--blue));
+  color: #002;
+  border: none;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  transition: all 0.3s ease;
+}
+
+.customer-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+.customer-btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.customer-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Customer Modals Dark Theme */
+.customer-modal {
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(20px);
+}
+
+.customer-modal .modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.customer-modal .modal-title {
+  color: var(--text);
+}
+
+.customer-modal .modal-close {
+  color: var(--muted);
+}
+
+.customer-modal .modal-close:hover {
+  color: var(--text);
+}
+
+/* Customer Form Elements Dark Theme */
+.customer-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text);
+  backdrop-filter: blur(10px);
+}
+
+.customer-input:focus {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.2);
+}
+
+.customer-input::placeholder {
+  color: var(--muted);
+}
+
+.customer-select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text);
+  backdrop-filter: blur(10px);
+}
+
+.customer-select option {
+  background: var(--card);
+  color: var(--text);
+}
+
+/* Customer Tables Dark Theme */
+.customer-table {
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.customer-table th {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.customer-table td {
+  color: var(--text);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.customer-table tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Customer Notifications Dark Theme */
+.notification-item-dark {
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+
+.notification-item-dark:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.notification-item-dark .notification-title {
+  color: var(--text);
+}
+
+.notification-item-dark .notification-message {
+  color: var(--muted);
+}
+
+/* Customer Cart Dark Theme */
+.cart-item-dark {
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+
+.cart-item-dark:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cart-summary-dark {
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+
+/* Customer Loading States */
+.customer-loading {
+  color: var(--muted);
+}
+
+.customer-spinner {
+  border-color: var(--orange);
+}
+
+/* Customer Success/Error States */
+.customer-success {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+}
+
+.customer-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.customer-warning {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+}
+
+/* Customer Badges Dark Theme */
+.customer-badge {
+  background: var(--orange);
+  color: #002;
+  border: none;
+}
+
+.customer-badge-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .customer-app {
+    padding: 1rem;
+  }
+  
+  .customer-card {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Animation Enhancements */
+@keyframes glowPulse {
+  from { 
+    opacity: 0.7; 
+    transform: scale(1); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1.05); 
+  }
+}
+
+.customer-card:hover {
+  animation: glowPulse 2s ease-in-out infinite alternate;
+}
+
+/* Custom Scrollbar for Dark Theme */
+.customer-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.customer-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.customer-scroll::-webkit-scrollbar-thumb {
+  background: var(--orange);
+  border-radius: 4px;
+}
+
+.customer-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--blue);
+}
