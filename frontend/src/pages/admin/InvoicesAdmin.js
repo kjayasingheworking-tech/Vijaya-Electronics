@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { adminListInvoices } from "../../api/invoices";
+import { generateInvoicesReport } from "../../utils/pdfGenerator";
 
 const money = (n) =>
   new Intl.NumberFormat("en-LK", { style: "currency", currency: "LKR" }).format(Number(n || 0));
@@ -26,6 +27,22 @@ export default function InvoicesAdmin() {
       setRows(Array.isArray(data) ? data : []);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const downloadInvoicesPDF = () => {
+    try {
+      const filters = {
+        status: status,
+        type: type,
+        search: invoiceNumber
+      };
+      const pdf = generateInvoicesReport(rows, filters);
+      const filename = `invoices-report-${new Date().toISOString().split('T')[0]}.pdf`;
+      pdf.save(filename);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert("Failed to generate PDF report");
     }
   };
 
@@ -137,6 +154,24 @@ export default function InvoicesAdmin() {
             <option key={s} value={s}>{s || "All types"}</option>
           ))}
         </select>
+
+        {/* PDF Export Button */}
+        <button
+          onClick={downloadInvoicesPDF}
+          style={{
+            ...btn,
+            background: '#FFA500',
+            color: '#212529',
+            border: 'none',
+            fontWeight: '600',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '5px',
+            minWidth: 'fit-content'
+          }}
+        >
+          📄 Export PDF
+        </button>
       </section>
 
 
