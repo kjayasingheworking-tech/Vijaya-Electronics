@@ -20,3 +20,4 @@ const AuthRedirect = ({ children }) => {
 };
 
 export default AuthRedirect;
+
