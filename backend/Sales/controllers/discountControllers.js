@@ -1,6 +1,6 @@
 const Discount = require("../models/DiscountModel.js");
 const Customer = require("../models/CustomerModel.js");
-const { notifyNewDiscount, notifyDiscountStart, notifyDiscountEnd } = require("../services/notificationService.js");
+const { notifyNewDiscount, notifyAllSalesManagers, notifyDiscountEnd } = require("../services/notificationService.js");
 
 function normalizeDayBounds(startDate, endDate) {
   // Handle both string dates (YYYY-MM-DD) and Date objects
@@ -79,17 +79,20 @@ const createDiscount = async (req, res, next) => {
       );
       await Promise.all(notificationPromises);
 
-      // Notify sales manager about discount start
-      // Note: In a real app, you'd get the sales manager ID from the request or session
-      // For now, we'll use a placeholder or get the first admin user
-      const salesManagerId = req.user?.id || "all"; // All sales managers see the same notifications
-      await notifyDiscountStart(salesManagerId, {
-        discountId: discount._id,
-        discountName: discount.name,
-        discountCode: discount.code,
-        discountPercentage: discount.percentage,
-        validUntil: discount.endDate
-      });
+      // Notify all sales managers about discount start
+      await notifyAllSalesManagers(
+        'info',
+        'Discount Started',
+        `Discount "${discount.name}" (${discount.code}) with ${discount.percentage}% off has started. Valid until ${discount.endDate}`,
+        {
+          relatedEntity: 'discount',
+          relatedEntityId: discount._id,
+          discountName: discount.name,
+          discountCode: discount.code,
+          discountPercentage: discount.percentage,
+          validUntil: discount.endDate
+        }
+      );
     } catch (notificationError) {
       console.error("Error sending discount notifications:", notificationError);
       // Don't fail the discount creation if notifications fail

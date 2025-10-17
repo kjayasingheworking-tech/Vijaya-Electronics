@@ -1,6 +1,6 @@
 const Customer = require("../models/CustomerModel.js");
 const Payment = require("../models/PaymentModel.js");
-const { notifyCreditDueDateApproaching } = require("./notificationService.js");
+const { notifyCreditDueDateApproaching, notifyAllSalesManagers } = require("./notificationService.js");
 
 // Calculate credit limit based on tier and total purchase amount
 function calculateCreditLimit(customer) {
@@ -178,6 +178,27 @@ async function checkOverdueCreditPayments() {
         customer.blocked = true;
         customer.blockedReason = "overdue";
         await customer.save();
+        
+        // Notify sales managers about customer being blocked due to overdue payments
+        try {
+          await notifyAllSalesManagers(
+            'error',
+            'Customer Blocked - Overdue Payment',
+            `Customer ${customer.name} has been automatically blocked due to overdue credit payment of Rs. ${payment.amount}. Invoice: ${payment.invoiceNumber}`,
+            {
+              relatedEntity: 'customer',
+              relatedEntityId: customer._id,
+              customerName: customer.name,
+              reason: 'overdue',
+              blockedBy: 'System',
+              amount: payment.amount,
+              invoiceNumber: payment.invoiceNumber
+            }
+          );
+        } catch (notificationError) {
+          console.error("Error sending overdue payment block notification:", notificationError);
+          // Don't fail the block operation if notifications fail
+        }
       }
     }
     

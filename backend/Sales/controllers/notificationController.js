@@ -9,8 +9,15 @@ const getNotifications = async (req, res) => {
     // Build query based on filter
     let query = { recipientType };
     
-    // Set recipientId for all cases (no special "all" handling)
-    query.recipientId = recipientId;
+    // Handle sales manager notifications - include both specific and "all" notifications
+    if (recipientType === 'sales_manager') {
+      query.$or = [
+        { recipientId: recipientId },
+        { recipientId: "all" }
+      ];
+    } else {
+      query.recipientId = recipientId;
+    }
     
     if (filter === 'unread') {
       query.isRead = false;
@@ -29,7 +36,21 @@ const getNotifications = async (req, res) => {
 
     // Get total count for pagination
     const totalCount = await Notification.countDocuments(query);
-    const unreadCount = await Notification.getUnreadCount(recipientType, recipientId);
+    
+    // Get unread count for sales managers (including "all" notifications)
+    let unreadCount;
+    if (recipientType === 'sales_manager') {
+      unreadCount = await Notification.countDocuments({
+        recipientType: 'sales_manager',
+        $or: [
+          { recipientId: recipientId },
+          { recipientId: "all" }
+        ],
+        isRead: false
+      });
+    } else {
+      unreadCount = await Notification.getUnreadCount(recipientType, recipientId);
+    }
 
     res.json({
       success: true,
@@ -61,11 +82,22 @@ const markAsRead = async (req, res) => {
     const { notificationId } = req.params;
     const { recipientType, recipientId } = req.body;
 
-    const notification = await Notification.findOne({
+    // Build query for sales managers to include both specific and "all" notifications
+    let query = {
       _id: notificationId,
-      recipientType,
-      recipientId
-    });
+      recipientType
+    };
+
+    if (recipientType === 'sales_manager') {
+      query.$or = [
+        { recipientId: recipientId },
+        { recipientId: "all" }
+      ];
+    } else {
+      query.recipientId = recipientId;
+    }
+
+    const notification = await Notification.findOne(query);
 
     if (!notification) {
       return res.status(404).json({
@@ -97,11 +129,22 @@ const markAsUnread = async (req, res) => {
     const { notificationId } = req.params;
     const { recipientType, recipientId } = req.body;
 
-    const notification = await Notification.findOne({
+    // Build query for sales managers to include both specific and "all" notifications
+    let query = {
       _id: notificationId,
-      recipientType,
-      recipientId
-    });
+      recipientType
+    };
+
+    if (recipientType === 'sales_manager') {
+      query.$or = [
+        { recipientId: recipientId },
+        { recipientId: "all" }
+      ];
+    } else {
+      query.recipientId = recipientId;
+    }
+
+    const notification = await Notification.findOne(query);
 
     if (!notification) {
       return res.status(404).json({
@@ -137,8 +180,22 @@ const markAllAsRead = async (req, res) => {
 
     let result;
     
-    // Mark all notifications as read for the specific recipient
-    result = await Notification.markAllAsRead(recipientType, recipientId);
+    // Handle sales managers - mark both specific and "all" notifications as read
+    if (recipientType === 'sales_manager') {
+      result = await Notification.updateMany(
+        {
+          recipientType: 'sales_manager',
+          $or: [
+            { recipientId: recipientId },
+            { recipientId: "all" }
+          ],
+          isRead: false
+        },
+        { isRead: true, readAt: new Date() }
+      );
+    } else {
+      result = await Notification.markAllAsRead(recipientType, recipientId);
+    }
 
     res.json({
       success: true,
@@ -161,11 +218,22 @@ const deleteNotification = async (req, res) => {
     const { notificationId } = req.params;
     const { recipientType, recipientId } = req.body;
 
-    const notification = await Notification.findOneAndDelete({
+    // Build query for sales managers to include both specific and "all" notifications
+    let query = {
       _id: notificationId,
-      recipientType,
-      recipientId
-    });
+      recipientType
+    };
+
+    if (recipientType === 'sales_manager') {
+      query.$or = [
+        { recipientId: recipientId },
+        { recipientId: "all" }
+      ];
+    } else {
+      query.recipientId = recipientId;
+    }
+
+    const notification = await Notification.findOneAndDelete(query);
 
     if (!notification) {
       return res.status(404).json({
@@ -195,11 +263,21 @@ const clearAllNotifications = async (req, res) => {
 
     let result;
     
-    // Clear all notifications for the specific recipient
-    result = await Notification.deleteMany({
-      recipientType,
-      recipientId
-    });
+    // Handle sales managers - clear both specific and "all" notifications
+    if (recipientType === 'sales_manager') {
+      result = await Notification.deleteMany({
+        recipientType: 'sales_manager',
+        $or: [
+          { recipientId: recipientId },
+          { recipientId: "all" }
+        ]
+      });
+    } else {
+      result = await Notification.deleteMany({
+        recipientType,
+        recipientId
+      });
+    }
 
     res.json({
       success: true,
@@ -223,11 +301,15 @@ const getUnreadCount = async (req, res) => {
 
     let unreadCount;
     
-    // Handle special case for sales managers - if recipientId is "all", get all sales manager unread count
-    if (recipientType === 'sales_manager' && recipientId === 'all') {
-      unreadCount = await Notification.countDocuments({ 
-        recipientType: 'sales_manager', 
-        isRead: false 
+    // Handle sales managers - include both specific and "all" notifications
+    if (recipientType === 'sales_manager') {
+      unreadCount = await Notification.countDocuments({
+        recipientType: 'sales_manager',
+        $or: [
+          { recipientId: recipientId },
+          { recipientId: "all" }
+        ],
+        isRead: false
       });
     } else {
       unreadCount = await Notification.getUnreadCount(recipientType, recipientId);

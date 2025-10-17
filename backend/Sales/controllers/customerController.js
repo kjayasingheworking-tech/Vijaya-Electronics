@@ -151,13 +151,35 @@ const updateCustomerBlockStatus = async (req, res, next) => {
     }
 
     // Step 2: Update the blocked status
+    const wasBlocked = customer.blocked;
     customer.blocked = Boolean(blockedStatus);
     await customer.save();
 
     // Step 3: Get user details if customer has user account
     await customer.populate('user', 'name email role isActive');
 
-    // Step 4: Send response with success message
+    // Step 4: Send notification to sales managers if customer was blocked
+    if (customer.blocked && !wasBlocked) {
+      try {
+        await notifyAllSalesManagers(
+          'warning',
+          'Customer Blocked',
+          `Customer ${customer.name} has been blocked. Reason: ${customer.blockedReason || 'Manual block'}. Blocked by: ${req.user?.name || 'System'}`,
+          {
+            relatedEntity: 'customer',
+            relatedEntityId: customer._id,
+            customerName: customer.name,
+            reason: customer.blockedReason || 'Manual block',
+            blockedBy: req.user?.name || 'System'
+          }
+        );
+      } catch (notificationError) {
+        console.error("Error sending customer block notification:", notificationError);
+        // Don't fail the block operation if notifications fail
+      }
+    }
+
+    // Step 5: Send response with success message
     let message;
     if (customer.blocked) {
       message = "Customer blocked successfully";

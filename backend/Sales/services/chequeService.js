@@ -1,7 +1,19 @@
 const Customer = require("../models/CustomerModel.js");
 const Payment = require("../models/PaymentModel.js");
 const Invoice = require("../models/InvoiceModel.js");
-const { notifyChequeStatusUpdate } = require("./notificationService.js");
+const { notifyAllSalesManagers } = require("./notificationService.js");
+
+// Helper function to get status message
+function getStatusMessage(status) {
+  const statusMessages = {
+    'pending': 'is pending approval',
+    'approved': 'has been approved',
+    'rejected': 'has been rejected',
+    'cleared': 'has been cleared',
+    'bounced': 'has bounced'
+  };
+  return statusMessages[status] || 'status updated';
+}
 
 // Check if customer can use cheque payment
 async function canUseCheque(customerId) {
@@ -108,18 +120,23 @@ async function updateChequeStatus(paymentId, status, clearedDate = null, bounced
       }
     }
 
-    // Send notification to sales manager about cheque status update
+    // Send notification to all sales managers about cheque status update
     try {
       const customer = await Customer.findById(payment.customerId);
-      const salesManagerId = "all"; // All sales managers see the same notifications
       
-      await notifyChequeStatusUpdate(salesManagerId, {
-        chequeId: payment._id,
-        chequeNumber: payment.chequeDetails.chequeNumber,
-        status: status,
-        customerName: customer?.name || "Unknown Customer",
-        amount: payment.amount
-      });
+      await notifyAllSalesManagers(
+        status === 'rejected' || status === 'bounced' ? 'error' : 'info',
+        'Cheque Status Update',
+        `Cheque ${payment.chequeDetails.chequeNumber} for Rs. ${payment.amount} from ${customer?.name || "Unknown Customer"} ${getStatusMessage(status)}`,
+        {
+          relatedEntity: 'cheque',
+          relatedEntityId: payment._id,
+          chequeNumber: payment.chequeDetails.chequeNumber,
+          status: status,
+          customerName: customer?.name || "Unknown Customer",
+          amount: payment.amount
+        }
+      );
     } catch (notificationError) {
       console.error("Error sending cheque status notification:", notificationError);
       // Don't fail the cheque update if notifications fail
