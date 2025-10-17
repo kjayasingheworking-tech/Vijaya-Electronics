@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import "../../styles/sales.css";
+import "../../styles/customer-dark.css";
 import CheckoutModal from "../../components/Customer/CheckoutModal";
 import CustomerHeader from "../../components/Customer/CustomerHeader";
 import { useCart } from "../../context/CartContext";
@@ -121,24 +122,24 @@ const CartPage = ({ customerId }) => {
     }, 0);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col p-4">
+    <div className="customer-app min-h-screen flex flex-col p-4">
       <CustomerHeader customerId={customerId}/>
 
       <main className="pt-16 flex-1 container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6 mt-5">Shopping Cart</h2>
+        <h2 className="text-3xl font-bold text-white mb-6 mt-5">Shopping Cart</h2>
 
         {loading ? (
-          <p>Loading...</p>
+          <p className="customer-loading">Loading...</p>
         ) : cart.items.length === 0 ? (
           <div className="text-center py-16">
-            <div className="inline-flex items-center justify-center h-24 w-24 rounded-full bg-gray-200 mx-auto mb-6">
+            <div className="inline-flex items-center justify-center h-24 w-24 rounded-full bg-gray-700 mx-auto mb-6">
               <span className="text-4xl">🛒</span>
             </div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">Your cart is empty</h3>
-            <p className="text-gray-500 mb-4">Add some items to get started</p>
+            <h3 className="text-2xl font-bold text-white mb-2">Your cart is empty</h3>
+            <p className="text-gray-300 mb-4">Add some items to get started</p>
             <button
               onClick={() => (window.location.href = "/")}
-              className="px-6 py-2 bg-electric-blue text-white rounded hover:bg-electric-blue-dark"
+              className="customer-btn-primary px-6 py-2 rounded"
             >
               Continue Shopping
             </button>
@@ -155,9 +156,9 @@ const CartPage = ({ customerId }) => {
                   Object.values(selectedItems).every(Boolean)
                 }
                 onChange={toggleSelectAll}
-                className="mr-2 w-4 h-4"
+                className="mr-2 w-4 h-4 accent-orange-500"
               />
-              <span className="font-medium text-gray-700">Select All</span>
+              <span className="font-medium text-white">Select All</span>
             </div>
 
             <div className="flex flex-col lg:flex-row gap-8 w-full">
@@ -169,8 +170,8 @@ const CartPage = ({ customerId }) => {
                   return (
                     <div
                       key={item._id}
-                      className={`flex gap-4 items-center bg-white p-4 rounded shadow ${
-                        stockStatus.statusType === 'error' ? 'border border-red-200 bg-red-50' : ''
+                      className={`cart-item-dark flex gap-4 items-center p-4 rounded shadow ${
+                        stockStatus.statusType === 'error' ? 'border border-red-400 bg-red-900/20' : ''
                       }`}
                     >
                       {/* Checkbox */}
@@ -181,19 +182,19 @@ const CartPage = ({ customerId }) => {
                         className="w-4 h-4"
                       />
 
-                      <div className="w-20 h-20 bg-gray-200 flex items-center justify-center rounded">
+                      <div className="w-20 h-20 bg-gray-700 flex items-center justify-center rounded">
                         <span className="text-gray-400 text-2xl">🛍️</span>
                       </div>
 
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-800">{item.name || item.productId?.productName}</h3>
+                        <h3 className="font-semibold text-white">{item.name || item.productId?.productName}</h3>
                         {item.description && (
-                          <p className="text-gray-500 text-sm">{item.description}</p>
+                          <p className="text-gray-300 text-sm">{item.description}</p>
                         )}
-                        <p className="font-bold text-electric-blue">
+                        <p className="font-bold text-orange-400">
                           Rs.{(item.unitPrice || item.productId?.price).toFixed(2)}
                         </p>
-                        <p className={`text-xs ${stockStatus.statusType === 'error' ? 'text-red-600 font-medium' : 'text-gray-500'}`}>
+                        <p className={`text-xs ${stockStatus.statusType === 'error' ? 'text-red-400 font-medium' : 'text-gray-400'}`}>
                           {stockStatus.statusMessage}
                         </p>
                       </div>
@@ -201,15 +202,15 @@ const CartPage = ({ customerId }) => {
                       <div className="flex flex-col items-end gap-2">
                         <div className="flex items-center gap-2">
                           <button
-                            className="px-2 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-2 py-1 border border-gray-600 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-white"
                             onClick={() => updateQty(item._id, item.quantity - 1)}
                             disabled={item.quantity <= 1}
                           >
                             -
                           </button>
-                          <span className="w-8 text-center">{item.quantity}</span>
+                          <span className="w-8 text-center text-white">{item.quantity}</span>
                           <button
-                            className="px-2 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-2 py-1 border border-gray-600 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-white"
                             onClick={() => updateQty(item._id, item.quantity + 1)}
                             disabled={item.quantity >= stockStatus.availableStock}
                           >
@@ -217,13 +218,13 @@ const CartPage = ({ customerId }) => {
                           </button>
                         </div>
                         <button
-                          className="flex items-center gap-1 text-red-600 text-sm hover:underline"
+                          className="flex items-center gap-1 text-red-400 text-sm hover:underline"
                           onClick={() => removeItem(item._id)}
                         >
-                          <Trash2 size={16} className="text-red-600" />
+                          <Trash2 size={16} className="text-red-400" />
                           Remove
                         </button>
-                        <p className="font-semibold">
+                        <p className="font-semibold text-white">
                           Rs.{((item.unitPrice || item.productId?.price) * item.quantity).toFixed(2)}
                         </p>
                       </div>
@@ -237,16 +238,16 @@ const CartPage = ({ customerId }) => {
                 <div className="bg-white p-6 rounded shadow sticky top-24">
                   <h3 className="font-bold text-lg text-gray-800 mb-4">Order Summary</h3>
                   <div className="space-y-2 mb-4">
-                    <div className="flex justify-between text-gray-500">
+                    <div className="flex justify-between text-gray-300">
                       <span>Subtotal ({Object.values(selectedItems).filter(Boolean).length} items)</span>
                       <span>Rs.{subtotal.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-gray-500">
+                    <div className="flex justify-between text-gray-300">
                       <span>Shipping</span>
                       <span>Free</span>
                     </div>
-                    <div className="border-t border-gray-200 pt-2 mt-2">
-                      <div className="flex justify-between font-bold text-gray-800 text-lg">
+                    <div className="border-t border-gray-600 pt-2 mt-2">
+                      <div className="flex justify-between font-bold text-white text-lg">
                         <span>Total</span>
                         <span>Rs.{subtotal.toFixed(2)}</span>
                       </div>
@@ -254,7 +255,7 @@ const CartPage = ({ customerId }) => {
                   </div>
                   <div className="space-y-2">
                     <button
-                      className="w-full px-4 py-2 bg-electric-blue text-white rounded hover:bg-electric-blue-dark"
+                      className="customer-btn-primary w-full px-4 py-2 rounded"
                       onClick={() => {
                         const itemsToCheckout = cart.items.filter(item => selectedItems[item._id]);
                         if (itemsToCheckout.length === 0) {
@@ -267,13 +268,13 @@ const CartPage = ({ customerId }) => {
                       Proceed to Checkout
                     </button>
                     <button
-                      className="w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+                      className="customer-btn-secondary w-full px-4 py-2 rounded"
                       onClick={() => (window.location.href = "/")}
                     >
                       Continue Shopping
                     </button>
                     <button
-                      className="w-full px-4 py-2 text-red-600 rounded hover:bg-red-50"
+                      className="w-full px-4 py-2 text-red-400 rounded hover:bg-red-900/20"
                       onClick={async () => {
                         await fetch(`${API}${API_ENDPOINTS.CART_CLEAR(customerId)}`, { method: "DELETE" });
                         setCart({ items: [] });
