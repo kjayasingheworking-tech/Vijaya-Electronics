@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import api from "../../api/axios";
 import useAdminPOCart from "../../hooks/useAdminPOCart";
 import QtyInput from "../../components/QtyInput";
+import { generateProductsReport } from "../../utils/pdfGenerator";
 import "../../styles/admin-po.css";
 
 export default function ProductsAdmin() {
@@ -99,6 +100,22 @@ const createPO = async () => {
   }
 };
 
+const downloadProductsPDF = () => {
+  try {
+    const filters = {
+      search: q,
+      category: category,
+      supplier: supplierName
+    };
+    const pdf = generateProductsReport(filtered, filters);
+    const filename = `products-report-${new Date().toISOString().split('T')[0]}.pdf`;
+    pdf.save(filename);
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    setError("Failed to generate PDF report");
+  }
+};
+
 
  return (
   <div className="po-page">
@@ -165,6 +182,24 @@ const createPO = async () => {
               </option>
             ))}
           </select>
+          <button 
+            onClick={downloadProductsPDF}
+            style={{
+              background: '#FFA500',
+              color: '#212529',
+              border: 'none',
+              padding: '10px 16px',
+              borderRadius: '8px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              minWidth: 'fit-content'
+            }}
+          >
+            📄 Export PDF
+          </button>
         </section>
 
 

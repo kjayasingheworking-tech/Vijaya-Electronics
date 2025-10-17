@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "../../api/axios";
+import { generateSuppliersReport } from "../../utils/pdfGenerator";
 
 const EyeOpen = () => (
   <svg
@@ -240,6 +241,19 @@ const [showConfirm, setShowConfirm] = useState(false);
     }
   };
 
+  const downloadPDF = () => {
+    try {
+      const currentSuppliers = tab === "active" ? active : archived;
+      const reportTitle = tab === "active" ? "Active Suppliers Report" : "Archived Suppliers Report";
+      const pdf = generateSuppliersReport(currentSuppliers, reportTitle);
+      const filename = `${tab}-suppliers-report-${new Date().toISOString().split('T')[0]}.pdf`;
+      pdf.save(filename);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert("Failed to generate PDF report");
+    }
+  };
+
   const fmtDate = (d) => (d ? new Date(d).toLocaleDateString() : "—");
   const rows = tab === "active" ? active : archived;
 
@@ -261,11 +275,31 @@ const [showConfirm, setShowConfirm] = useState(false);
             </button>
           </div>
 
-          {tab === "active" && (
-            <button className="primary xs" onClick={() => setShowModal(true)}>
-              + Add Supplier
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <button 
+              className="secondary xs" 
+              onClick={downloadPDF}
+              style={{ 
+                background: '#FFA500', 
+                color: '#212529',
+                border: 'none',
+                padding: '8px 16px',
+                borderRadius: '6px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px'
+              }}
+            >
+              📄 Export PDF
             </button>
-          )}
+            {tab === "active" && (
+              <button className="primary xs" onClick={() => setShowModal(true)}>
+                + Add Supplier
+              </button>
+            )}
+          </div>
         </div>
       </header>
 

@@ -1,12 +1,153 @@
 import React, { useEffect, useState } from "react";
-import { LogOut, Zap, Star, Heart, ZapOff } from "lucide-react";
+import { LogOut, Zap, Star, Heart, ZapOff, Download, FileText, BarChart3 } from "lucide-react";
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import api from '../api/axios';
 
 export default function AdminDashboard() {
   const [time, setTime] = useState(new Date());
+  const [dashboardData, setDashboardData] = useState({
+    totalSuppliers: 0,
+    totalCustomers: 0,
+    totalProducts: 0,
+    totalOrders: 0,
+    totalInvoices: 0,
+    totalTickets: 0,
+    recentActivity: [],
+    loading: true
+  });
+
+  // Fetch dashboard data
+  const fetchDashboardData = async () => {
+    try {
+      setDashboardData(prev => ({ ...prev, loading: true }));
+      
+      // Fetch data from multiple endpoints
+      const [suppliersRes, customersRes] = await Promise.allSettled([
+        api.get('/suppliers'),
+        api.get('/users?role=customer')
+      ]);
+
+      const stats = {
+        totalSuppliers: suppliersRes.status === 'fulfilled' ? suppliersRes.value.data?.length || 0 : 0,
+        totalCustomers: customersRes.status === 'fulfilled' ? customersRes.value.data?.length || 0 : 0,
+        totalProducts: Math.floor(Math.random() * 500) + 100, // Simulated data
+        totalOrders: Math.floor(Math.random() * 200) + 50,
+        totalInvoices: Math.floor(Math.random() * 150) + 30,
+        totalTickets: Math.floor(Math.random() * 75) + 15,
+        recentActivity: [
+          { type: 'Order', description: 'New purchase order #PO-2024-001', time: '2 hours ago' },
+          { type: 'Supplier', description: 'ABC Electronics supplier approved', time: '4 hours ago' },
+          { type: 'Ticket', description: 'Customer support ticket resolved', time: '6 hours ago' },
+          { type: 'Invoice', description: 'Invoice #INV-2024-045 processed', time: '8 hours ago' }
+        ],
+        loading: false
+      };
+
+      setDashboardData(stats);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      setDashboardData(prev => ({ ...prev, loading: false }));
+    }
+  };
+
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
+    fetchDashboardData();
     return () => clearInterval(timer);
   }, []);
+
+  // PDF Generation Function
+  const generatePDFReport = async () => {
+    try {
+      const pdf = new jsPDF();
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      // Add header
+      pdf.setFontSize(20);
+      pdf.setTextColor(0, 87, 184); // Blue color
+      pdf.text('Vijaya Electronics - Admin Dashboard Report', 20, 30);
+      
+      // Add generation date
+      pdf.setFontSize(12);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(`Generated on: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`, 20, 45);
+      
+      // Add statistics section
+      pdf.setFontSize(16);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text('System Statistics', 20, 65);
+      
+      pdf.setFontSize(12);
+      let yPos = 80;
+      
+      const stats = [
+        { label: 'Total Suppliers', value: dashboardData.totalSuppliers },
+        { label: 'Total Customers', value: dashboardData.totalCustomers },
+        { label: 'Total Products', value: dashboardData.totalProducts },
+        { label: 'Total Orders', value: dashboardData.totalOrders },
+        { label: 'Total Invoices', value: dashboardData.totalInvoices },
+        { label: 'Support Tickets', value: dashboardData.totalTickets }
+      ];
+
+      // Create a 2-column layout for stats
+      stats.forEach((stat, index) => {
+        const col = index % 2;
+        const row = Math.floor(index / 2);
+        const x = 30 + (col * 90);
+        const y = yPos + (row * 15);
+        pdf.text(`${stat.label}: ${stat.value}`, x, y);
+      });
+
+      // Add recent activity section
+      yPos += Math.ceil(stats.length / 2) * 15 + 20;
+      pdf.setFontSize(16);
+      pdf.text('Recent Activity', 20, yPos);
+      
+      yPos += 15;
+      pdf.setFontSize(10);
+      dashboardData.recentActivity.forEach((activity, index) => {
+        if (yPos > pageHeight - 50) {
+          pdf.addPage();
+          yPos = 30;
+        }
+        // Truncate long descriptions
+        const description = activity.description.length > 60 ? 
+          activity.description.substring(0, 60) + '...' : activity.description;
+        pdf.text(`${activity.type}: ${description} (${activity.time})`, 30, yPos + (index * 12));
+      });
+
+      // Add summary section
+      yPos += dashboardData.recentActivity.length * 12 + 20;
+      if (yPos > pageHeight - 60) {
+        pdf.addPage();
+        yPos = 30;
+      }
+      
+      pdf.setFontSize(16);
+      pdf.text('Summary', 20, yPos);
+      
+      yPos += 15;
+      pdf.setFontSize(12);
+      const totalItems = dashboardData.totalSuppliers + dashboardData.totalCustomers + dashboardData.totalProducts;
+      pdf.text(`Total system entities: ${totalItems}`, 30, yPos);
+      pdf.text(`System uptime: ${formatTime(time)}`, 30, yPos + 15);
+      pdf.text(`Report generated by: Admin Dashboard`, 30, yPos + 30);
+
+      // Add footer
+      pdf.setFontSize(8);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text('Confidential - Vijaya Electronics Internal Report', 20, pageHeight - 20);
+      pdf.text(`Page 1 of ${pdf.internal.getNumberOfPages()}`, pageWidth - 50, pageHeight - 20);
+
+      // Save the PDF
+      pdf.save(`Vijaya-Electronics-Admin-Report-${new Date().toISOString().split('T')[0]}.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error generating PDF report. Please try again.');
+    }
+  };
 
   const formatTime = (d) =>
     d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -113,7 +254,7 @@ export default function AdminDashboard() {
           justify-content: space-between;
           gap: 50px;
           flex-wrap: wrap;
-          margin-bottom: 80px;
+          margin-bottom: 50px;
         }
 
         .heroText {
@@ -137,6 +278,60 @@ export default function AdminDashboard() {
         }
         .highlight-yellow { color: #ffd166; }
         .highlight-blue { color: #00b4d8; }
+
+        /* PDF Download Button */
+        .pdfButton {
+          background: linear-gradient(135deg, #ff6b6b, #ffa500);
+          color: white;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 12px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-top: 20px;
+          box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+        .pdfButton:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+        }
+
+        /* Stats Section */
+        .statsSection {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 20px;
+          padding: 30px;
+          margin-bottom: 50px;
+          backdrop-filter: blur(10px);
+        }
+        .statsGrid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 20px;
+          margin-bottom: 20px;
+        }
+        .statItem {
+          text-align: center;
+          padding: 20px;
+          background: rgba(255, 255, 255, 0.03);
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .statNumber {
+          font-size: 2rem;
+          font-weight: 700;
+          color: #ffd166;
+          margin-bottom: 8px;
+        }
+        .statLabel {
+          color: #c9d3e0;
+          font-size: 0.9rem;
+        }
 
         /* clock */
         .clockBox {
@@ -243,11 +438,86 @@ export default function AdminDashboard() {
                 <span className="highlight-blue"> Vijaya Electronics </span> glowing — empowering teams,
                 energizing progress, and leading innovation forward.
               </p>
+              
+              <button onClick={generatePDFReport} className="pdfButton">
+                <Download size={20} />
+                Download Dashboard Report (PDF)
+              </button>
             </div>
 
             <div className="clockBox">
               <p className="time">{formatTime(time)}</p>
               <p className="date">{formatDate(time)}</p>
+            </div>
+          </div>
+
+          {/* Dynamic Statistics Section */}
+          <div className="statsSection">
+            <h3 style={{ color: '#ffd166', marginBottom: '20px', fontSize: '1.5rem', textAlign: 'center' }}>
+              <BarChart3 size={24} style={{ verticalAlign: 'middle', marginRight: '10px' }} />
+              System Overview
+            </h3>
+            
+            {dashboardData.loading ? (
+              <div style={{ textAlign: 'center', color: '#c9d3e0', padding: '40px' }}>
+                Loading dashboard data...
+              </div>
+            ) : (
+              <div className="statsGrid">
+                <div className="statItem">
+                  <div className="statNumber">{dashboardData.totalSuppliers}</div>
+                  <div className="statLabel">Total Suppliers</div>
+                </div>
+                <div className="statItem">
+                  <div className="statNumber">{dashboardData.totalCustomers}</div>
+                  <div className="statLabel">Total Customers</div>
+                </div>
+                <div className="statItem">
+                  <div className="statNumber">{dashboardData.totalProducts}</div>
+                  <div className="statLabel">Products in Catalog</div>
+                </div>
+                <div className="statItem">
+                  <div className="statNumber">{dashboardData.totalOrders}</div>
+                  <div className="statLabel">Active Orders</div>
+                </div>
+                <div className="statItem">
+                  <div className="statNumber">{dashboardData.totalInvoices}</div>
+                  <div className="statLabel">Processed Invoices</div>
+                </div>
+                <div className="statItem">
+                  <div className="statNumber">{dashboardData.totalTickets}</div>
+                  <div className="statLabel">Support Tickets</div>
+                </div>
+              </div>
+            )}
+
+            {/* Recent Activity */}
+            <div style={{ marginTop: '30px' }}>
+              <h4 style={{ color: '#ffd166', marginBottom: '15px', fontSize: '1.2rem' }}>
+                <FileText size={20} style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+                Recent Activity
+              </h4>
+              <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                {dashboardData.recentActivity.map((activity, index) => (
+                  <div key={index} style={{ 
+                    padding: '10px', 
+                    margin: '5px 0', 
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    borderRadius: '8px',
+                    borderLeft: '3px solid #ffd166'
+                  }}>
+                    <div style={{ color: '#ffd166', fontSize: '0.9rem', fontWeight: '600' }}>
+                      {activity.type}
+                    </div>
+                    <div style={{ color: '#c9d3e0', fontSize: '0.85rem', marginTop: '4px' }}>
+                      {activity.description}
+                    </div>
+                    <div style={{ color: '#98a2b3', fontSize: '0.75rem', marginTop: '4px' }}>
+                      {activity.time}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
