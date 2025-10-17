@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import "../../styles/customer-dark.css";
 import CheckoutModal from "../../components/Customer/CheckoutModal";
-import CustomerHeader from "../../components/Customer/CustomerHeader";
 import { useCart } from "../../context/CartContext";
 import { validateQuantity, getStockStatus } from "../../utils/validation";
 import { API, API_ENDPOINTS } from "../../constants/salesApi";
@@ -122,8 +121,6 @@ const CartPage = ({ customerId }) => {
 
   return (
     <div className="customer-app min-h-screen flex flex-col p-4">
-      <CustomerHeader customerId={customerId}/>
-
       <main className="pt-16 flex-1 container mx-auto px-4">
         <h2 className="text-3xl font-bold text-white mb-6 mt-5">Shopping Cart</h2>
 

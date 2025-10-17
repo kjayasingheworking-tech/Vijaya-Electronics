@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useCart } from "../../context/CartContext";
 import "../../styles/customer-dark.css";
-import CustomerHeader from "../../components/Customer/CustomerHeader";
 import Toast from "../../components/Toast";
 import { API, API_ENDPOINTS } from "../../constants/salesApi";
 import { validateQuantity, getStockStatus } from "../../utils/validation";
@@ -292,7 +291,6 @@ const CustomerProductsView = ({ customerId }) => {
   if (loading) {
     return (
       <div className="customer-app min-h-screen">
-        <CustomerHeader customerId={customerId} />
         <div className="pt-20 flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="customer-spinner animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4"></div>
@@ -305,7 +303,6 @@ const CustomerProductsView = ({ customerId }) => {
 
   return (
     <div className="customer-app min-h-screen">
-      <CustomerHeader customerId={customerId} />
       
       {/* Toast Notification */}
       <Toast
