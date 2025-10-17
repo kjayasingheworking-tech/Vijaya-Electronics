@@ -16,6 +16,7 @@ const feedbackSchema = new Schema(
     title: { type: String, trim: true },
     body: { type: String, trim: true },
     comments: [commentSchema],
+    upvotes: [{ type: Types.ObjectId, ref: "User" }], // Users who upvoted this feedback
   },
   { timestamps: true }
 );

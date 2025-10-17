@@ -11,11 +11,13 @@ export default function FeedbackCard({
   onEditComment,
   onDeleteComment,
   onAddComment,
+  onUpvote,
   onRequireLogin,
 }) {
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [upvoting, setUpvoting] = useState(false);
 
   const isOwner = useMemo(
     () => currentUser?._id && feedback?.author?._id && currentUser._id === feedback.author._id,
@@ -23,6 +25,12 @@ export default function FeedbackCard({
   );
   const isAdmin = (currentUser?.role || "").toLowerCase() === "admin";
   const canManageFeedback = isOwner || isAdmin;
+
+  const upvoteCount = feedback.upvotes?.length || 0;
+  const hasUpvoted = useMemo(
+    () => currentUser?._id && feedback.upvotes?.some(id => id === currentUser._id),
+    [currentUser, feedback.upvotes]
+  );
 
   const glowStyle = isTop
     ? { boxShadow: "0 10px 40px rgba(99,102,241,.35), 0 0 0 1px rgba(99,102,241,.25)" }
@@ -38,6 +46,16 @@ export default function FeedbackCard({
       setComment("");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleUpvote = async () => {
+    if (!localStorage.getItem("token")) { onRequireLogin?.(); return; }
+    setUpvoting(true);
+    try {
+      await onUpvote?.(feedback._id);
+    } finally {
+      setUpvoting(false);
     }
   };
 
@@ -79,9 +97,33 @@ export default function FeedbackCard({
                   whiteSpace: "nowrap",
                 }}
               >
-                Top Rated
+                Most Discussed
               </motion.span>
             )}
+            {/* Upvote button */}
+            <button
+              onClick={handleUpvote}
+              disabled={upvoting}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                background: hasUpvoted ? "linear-gradient(90deg,#6366f1,#7c3aed)" : "#0c1426",
+                color: hasUpvoted ? "#fff" : "#93c5fd",
+                border: hasUpvoted ? "none" : "1px solid #22304f",
+                borderRadius: 20,
+                padding: "6px 12px",
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: hasUpvoted ? "0 8px 20px rgba(99,102,241,.35)" : "none",
+                opacity: upvoting ? 0.7 : 1,
+              }}
+              title={hasUpvoted ? "Remove upvote" : "Upvote this review"}
+            >
+              <span style={{ fontSize: 16 }}>{hasUpvoted ? "👍" : "👍🏻"}</span>
+              <span>{upvoteCount}</span>
+            </button>
           </div>
 
           {canManageFeedback && (

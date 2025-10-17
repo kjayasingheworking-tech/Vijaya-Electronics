@@ -19,4 +19,7 @@ router.post("/:id/comments", requireFields("text"), ctrl.addComment);
 router.patch("/:id/comments/:commentId", ctrl.updateComment);
 router.delete("/:id/comments/:commentId", ctrl.deleteComment);
 
+// Upvotes
+router.post("/:id/upvote", ctrl.toggleUpvote);
+
 module.exports = router;
