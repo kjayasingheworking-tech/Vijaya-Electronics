@@ -161,9 +161,9 @@ const CartPage = ({ customerId }) => {
               <span className="font-medium text-white">Select All</span>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-8">
+            <div className="flex flex-col lg:flex-row gap-8 w-full">
               {/* Cart Items */}
-              <div className="lg:col-span-2 space-y-4">
+              <div className="flex-1 space-y-4">
                 {cart.items.map((item) => {
                   const stockStatus = getStockStatus(item);
                   
@@ -234,9 +234,9 @@ const CartPage = ({ customerId }) => {
               </div>
 
               {/* Order Summary */}
-              <div className="lg:col-span-1">
-                <div className="cart-summary-dark p-6 rounded shadow sticky top-24">
-                  <h3 className="font-bold text-lg text-white mb-4">Order Summary</h3>
+              <div className="flex-1">
+                <div className="bg-white p-6 rounded shadow sticky top-24">
+                  <h3 className="font-bold text-lg text-gray-800 mb-4">Order Summary</h3>
                   <div className="space-y-2 mb-4">
                     <div className="flex justify-between text-gray-300">
                       <span>Subtotal ({Object.values(selectedItems).filter(Boolean).length} items)</span>

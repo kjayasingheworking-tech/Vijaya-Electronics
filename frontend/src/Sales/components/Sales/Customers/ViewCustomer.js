@@ -3,6 +3,7 @@ import ModalWrapper from "../../ModalWrapper";
 import "../../../styles/sales.css";
 
 import { API, API_ENDPOINTS } from "../../../constants/salesApi";
+import { getCustomerDisplayData } from "../../../utils/customerDataUtils";
 
 const ViewCustomer = ({ customer, onClose, onCustomerUpdate, onEdit }) => {
   const [customerDetails, setCustomerDetails] = useState(null);
@@ -160,7 +161,7 @@ const ViewCustomer = ({ customer, onClose, onCustomerUpdate, onEdit }) => {
         {/* Header */}
         <div className="flex justify-between items-start border-b pb-4">
           <div>
-            <h3 className="text-2xl font-bold text-gray-900">{customerDetails.name}</h3>
+            <h3 className="text-2xl font-bold text-gray-900">{getCustomerDisplayData(customerDetails).name}</h3>
             <p className="text-gray-600">{customerDetails.companyName || "Individual Customer"}</p>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-700 text-xl font-bold">
@@ -176,7 +177,7 @@ const ViewCustomer = ({ customer, onClose, onCustomerUpdate, onEdit }) => {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-gray-600">Email:</span>
-                <span className="font-medium">{customerDetails.email || "N/A"}</span>
+                <span className="font-medium">{getCustomerDisplayData(customerDetails).email}</span>
               </div>
               
               <div className="flex justify-between">

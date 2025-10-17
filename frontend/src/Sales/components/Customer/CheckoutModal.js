@@ -11,6 +11,7 @@ import {
 } from "../../utils/validation";
 import { API, API_ENDPOINTS } from "../../constants/salesApi";
 import PaymentModal from "./PaymentModal";
+import { getCustomerDisplayData } from "../../utils/customerDataUtils";
 
 const CheckoutModal = ({ customerId, cart, onClose, onSuccess }) => {
   const [customer, setCustomer] = useState(null);
@@ -526,7 +527,7 @@ const CheckoutModal = ({ customerId, cart, onClose, onSuccess }) => {
       onPaymentSuccess={handlePaymentSuccess}
       onPaymentCancel={handlePaymentCancel}
       totalAmount={checkoutSession?.totalAmount || 0}
-      customerName={customer?.name || ""}
+      customerName={getCustomerDisplayData(customer).name}
     />
     </>
   );

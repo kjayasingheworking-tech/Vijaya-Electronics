@@ -4,7 +4,8 @@ import "../../../styles/sales.css";
 import { validateInvoice, validateInvoiceStock, getInvoiceItemsStockStatus } from "../../../utils/validateInvoice.js";
 import { validateRedeemPoints } from "../../../utils/validation.js";
 import { API, API_ENDPOINTS } from "../../../constants/salesApi";
-import ModalWrapper from "../../ModalWrapper"
+import ModalWrapper from "../../ModalWrapper";
+import { getCustomerDisplayData } from "../../../utils/customerDataUtils";
 
 const CreateInvoice = ({ onClose, onCreate }) => {
   const [invoiceForm, setInvoiceForm] = useState({
@@ -66,12 +67,13 @@ const CreateInvoice = ({ onClose, onCreate }) => {
         const customer = await response.json();
         
         if (customer) {
-          // Customer found - fill in their details
+          // Customer found - fill in their details using user data
+          const displayData = getCustomerDisplayData(customer);
           setInvoiceForm(prev => ({
             ...prev,
             customerId: customer._id,
-            customerName: customer.name,
-            customerEmail: customer.email,
+            customerName: displayData.name,
+            customerEmail: displayData.email,
             customerAddress: [customer.addressLine1, customer.addressLine2, customer.city].filter(Boolean).join(', '),
             customerType: customer.type,
             customerPoints: customer.pointsBalance,
@@ -112,12 +114,13 @@ const CreateInvoice = ({ onClose, onCreate }) => {
         const customer = await response.json();
         
         if (customer) {
-          // Customer found - fill in their details
+          // Customer found - fill in their details using user data
+          const displayData = getCustomerDisplayData(customer);
           setInvoiceForm(prev => ({
             ...prev,
             customerId: customer._id,
-            customerName: customer.name,
-            customerPhone: customer.phone,
+            customerName: displayData.name,
+            customerPhone: displayData.phone,
             customerAddress: [customer.addressLine1, customer.addressLine2, customer.city].filter(Boolean).join(', '),
             customerType: customer.type,
             customerPoints: customer.pointsBalance,

@@ -5,6 +5,7 @@ import "../../styles/sales.css";
 import CreateInvoice from "../../components/Sales/Invoices/CreateInvoice";
 import CreateWholesaleCustomer from "../../components/Sales/Customers/CreateWholesaleCustomer";
 import { API, API_ENDPOINTS } from "../../constants/salesApi";
+import { getCustomerDisplayData } from "../../utils/customerDataUtils";
 
 const Dashboard = () => {
   const { user } = useAuth(); // Get logged-in user
@@ -179,9 +180,9 @@ const Dashboard = () => {
       </div>
 
       {/* Charts and Tables Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="flex flex-col lg:flex-row gap-8 w-full">
         {/* Recent Invoices */}
-        <div className="bg-white rounded-2xl shadow-elegant p-6">
+        <div className="bg-white rounded-2xl shadow-elegant p-6 flex-1">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">Recent Invoices</h3>
           </div>
@@ -212,7 +213,7 @@ const Dashboard = () => {
         </div>
 
         {/* Top Customers */}
-        <div className="bg-white rounded-2xl shadow-elegant p-6">
+        <div className="bg-white rounded-2xl shadow-elegant p-6 flex-1">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">Top Customers</h3>
           </div>
@@ -224,7 +225,7 @@ const Dashboard = () => {
                     <Users className="h-4 w-4 text-honeycomb-orange" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">{customer.name}</p>
+                    <p className="font-medium text-gray-900">{getCustomerDisplayData(customer).name}</p>
                     <p className="text-sm text-gray-600">{customer.tier} Tier</p>
                   </div>
                 </div>

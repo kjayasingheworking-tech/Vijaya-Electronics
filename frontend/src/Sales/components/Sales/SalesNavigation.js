@@ -13,25 +13,60 @@ const navItems = [
 ];
 
 const SalesNavigation = () => {
-  return (
-    <aside className="w-64 bg-white border-r shadow-md min-h-screen fixed left-0 top-0 z-10 pt-20">
-      <nav className="p-4 space-y-2">
-        {navItems.map(({ name, path, icon: Icon }) => (
-          <NavLink
-            key={path}
-            to={path}
-            end={path === "/sales"}
-            className={({ isActive }) =>
-              `flex items-center space-x-3 p-3 rounded-md font-medium transition-colors ${isActive ? "bg-electric-blue text-white" : "text-gray-700 hover:bg-gray-100"
-              }`
-            }
-          >
 
-            <Icon className="h-5 w-5" />
-            <span>{name}</span>
-          </NavLink>
-        ))}
+  return (
+    <aside 
+      style={{ 
+        position: 'fixed',
+        left: '0',
+        top: '80px',
+        width: '256px',
+        height: 'calc(100vh - 80px)',
+        backgroundColor: 'white',
+        borderRight: '1px solid #e5e7eb',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        zIndex: 1000,
+        overflowY: 'auto'
+      }}
+    >
+      <nav style={{ padding: '16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {navItems.map(({ name, path, icon: Icon }) => (
+            <NavLink
+              key={path}
+              to={path}
+              end={path === ROUTES.SALES_DASHBOARD}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                fontWeight: '500',
+                transition: 'all 0.2s',
+                color: '#374151'
+              }}
+              className={({ isActive }) =>
+                isActive ? "sidebar-nav-active" : "sidebar-nav-inactive"
+              }
+            >
+              <Icon size={20} />
+              <span>{name}</span>
+            </NavLink>
+          ))}
+        </div>
       </nav>
+      
+      <style>{`
+        .sidebar-nav-active {
+          background-color: #0057B8 !important;
+          color: white !important;
+        }
+        .sidebar-nav-inactive:hover {
+          background-color: #f3f4f6 !important;
+        }
+      `}</style>
     </aside>
   );
 };

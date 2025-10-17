@@ -1,17 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Eye, Users, Edit2, History, UserCheck, UserX } from "lucide-react";
-import { useAuth } from "../../../context/AuthContext";
 import "../../styles/sales.css";
 import CreateWholesaleCustomer from "../../components/Sales/Customers/CreateWholesaleCustomer";
 import ViewCustomer from "../../components/Sales/Customers/ViewCustomer";
 import UpdateWholesaleCustomer from "../../components/Sales/Customers/UpdateWholesaleCustomer";
 import { API, API_ENDPOINTS } from "../../constants/salesApi";
 import { ROUTES } from "../../constants/salesRoutes";
+import { getCustomerDisplayData } from "../../utils/customerDataUtils";
 
 const SalesCustomers = () => {
   const navigate = useNavigate();
-  const { user } = useAuth(); // Get main app user data for fallback
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -21,16 +20,6 @@ const SalesCustomers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all"); // all, regular, wholesale
 
-  // Helper function to merge customer data with user data for fallback
-  const getCustomerDisplayData = (customer) => {
-    return {
-      ...customer,
-      name: customer.name || user?.name ,
-      email: customer.email || user?.email ,
-      phone: customer.phone || user?.phone ,
-      // Keep original customer data but provide fallbacks for missing fields
-    };
-  };
 
   useEffect(() => {
     fetchCustomers();
@@ -87,7 +76,8 @@ const SalesCustomers = () => {
     const action = newBlockedStatus ? "block" : "unblock";
     
     // Ask for confirmation
-    const confirmMessage = `Are you sure you want to ${action} ${customer.name}?`;
+    const displayData = getCustomerDisplayData(customer);
+    const confirmMessage = `Are you sure you want to ${action} ${displayData.name}?`;
     if (!window.confirm(confirmMessage)) {
       return;
     }

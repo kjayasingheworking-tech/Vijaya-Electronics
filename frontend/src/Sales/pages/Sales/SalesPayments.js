@@ -4,6 +4,7 @@ import "../../styles/sales.css";
 import { useNavigate } from "react-router-dom";
 import { API, API_ENDPOINTS } from "../../constants/salesApi";
 import { ROUTES } from "../../constants/salesRoutes";
+import { getCustomerDisplayData } from "../../utils/customerDataUtils";
 
 const SalesPayments = () => {
   const navigate = useNavigate();
@@ -16,8 +17,9 @@ const SalesPayments = () => {
   // Filter payments based on search and filter criteria
   const filteredPayments = recentPayments.filter(payment => {
     // Check if payment matches search term
-    const customerName = payment.customer?.name?.toLowerCase() || "";
-    const customerEmail = payment.customer?.email?.toLowerCase() || "";
+    const customerData = getCustomerDisplayData(payment.customer || {});
+    const customerName = customerData.name?.toLowerCase() || "";
+    const customerEmail = customerData.email?.toLowerCase() || "";
     const invoiceNumber = payment.invoice?.invoiceNumber?.toLowerCase() || "";
     const searchMatch = customerName.includes(searchTerm.toLowerCase()) ||
       customerEmail.includes(searchTerm.toLowerCase()) ||
@@ -199,9 +201,9 @@ const SalesPayments = () => {
       </div>
 
       {/* Payment Management Sections */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="flex flex-col md:flex-row gap-6 w-full">
         {/* Credit Payments Section */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6 flex-1">
           <div className="flex items-center mb-4">
             <CreditCard className="h-6 w-6 text-honeycomb-orange mr-3" />
             <h3 className="text-lg font-semibold">Credit Payment Management</h3>
@@ -221,7 +223,7 @@ const SalesPayments = () => {
         </div>
 
         {/* Cheque Payments Section */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6 flex-1">
           <div className="flex items-center mb-4">
             <FileText className="h-6 w-6 text-electric-blue mr-3" />
             <h3 className="text-lg font-semibold">Cheque Payment Management</h3>
@@ -288,10 +290,10 @@ const SalesPayments = () => {
                   <tr key={payment._id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {payment.customer?.name || "Walk-in Customer"}
+                        {getCustomerDisplayData(payment.customer || {}).name || "Walk-in Customer"}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {payment.customer?.email}
+                        {getCustomerDisplayData(payment.customer || {}).email}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

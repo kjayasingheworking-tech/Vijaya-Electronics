@@ -3,6 +3,7 @@ import ModalWrapper from "../../ModalWrapper";
 import "../../../styles/sales.css";
 import { validateCustomer, sanitizeCustomerForm } from "../../../utils/validateCustomer.js";
 import { API, API_ENDPOINTS } from "../../../constants/salesApi";
+import { getCustomerDisplayData } from "../../../utils/customerDataUtils";
 
 const UpdateWholesaleCustomer = ({ customer, onClose, onUpdate }) => {
   const [form, setForm] = useState({
@@ -26,10 +27,11 @@ const UpdateWholesaleCustomer = ({ customer, onClose, onUpdate }) => {
   // Initialize form with customer data
   useEffect(() => {
     if (customer) {
+      const displayData = getCustomerDisplayData(customer);
       setForm({
-        name: customer.name || "",
-        email: customer.email || "",
-        phone: customer.phone || "",
+        name: displayData.name || "",
+        email: displayData.email || "",
+        phone: displayData.phone || "",
         addressLine1: customer.addressLine1 || "",
         addressLine2: customer.addressLine2 || "",
         city: customer.city || "",

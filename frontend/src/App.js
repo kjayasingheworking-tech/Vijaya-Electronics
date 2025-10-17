@@ -1,7 +1,8 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './routes/ProtectedRoute';
 import { ToastProvider } from './components/ToastProvider'; // ⬅️ add this
+import AuthRedirect from './components/AuthRedirect';
 import SalesApp from './Sales/SalesApp';
 import CustomerApp from './Sales/CustomerApp';
 
@@ -38,21 +39,24 @@ import CustomersList from './pages/admin/CustomersList';
 
 
 export default function App() {
-
+  const location = useLocation();
+  // don't show default Navbar for sales-related routes which have their own nav
+  const hideDefaultNavbar = location.pathname.startsWith('/sales');
   return (
     <AuthProvider>
       <ToastProvider>{/* ⬅️ wrap the whole app so useToast works anywhere */}
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<CustomerHome />} />
-          <Route path="/notifications" element={<AllNotifications />} />
+        <AuthRedirect>
+          {!hideDefaultNavbar && <Navbar />}
+          <Routes>
+            <Route path="/" element={<CustomerHome />} />
+            <Route path="/notifications" element={<AllNotifications />} />
 
 
-          {/* Supplier pages */}
+            {/* Supplier pages */}
 
-          <Route path="/supplier" element={
-            <ProtectedRoute roles={['supplier']}><DashboardSupplier /></ProtectedRoute>
-          } />
+            <Route path="/supplier" element={
+              <ProtectedRoute roles={['supplier']}><DashboardSupplier /></ProtectedRoute>
+            } />
           <Route path="/supplier/myproducts" element={
             <ProtectedRoute roles={['supplier']}><MyProducts /></ProtectedRoute>
           } />
@@ -116,11 +120,16 @@ export default function App() {
           } />
 
           {/* Sales Module Routes */}
-          <Route path="/sales/*" element={<SalesApp />} />
+          <Route path="/sales/*" element={
+            <ProtectedRoute roles={['sales_manager']}>
+              <SalesApp />
+            </ProtectedRoute>
+          } />
 
 
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </AuthRedirect>
       </ToastProvider>
     </AuthProvider>
   );

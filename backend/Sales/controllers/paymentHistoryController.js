@@ -7,8 +7,8 @@ const getCustomerPaymentHistory = async (req, res, next) => {
   try {
     const customerId = req.params.customerId;
     
-    // Check if customer exists (for registered customers)
-    const customer = await Customer.findById(customerId);
+    // Check if customer exists (for registered customers) and populate user data
+    const customer = await Customer.findById(customerId).populate('user', 'name email role isActive');
     
     let payments = [];
     let invoices = [];
@@ -31,12 +31,7 @@ const getCustomerPaymentHistory = async (req, res, next) => {
 
     // Combine all payment history
     const paymentHistory = {
-      customer: {
-        id: customer._id,
-        name: customer.name,
-        email: customer.email,
-        type: customer.type
-      },
+      customer: customer, // Send the full customer object with populated user data
       cashHistory: cashStats,
       cardHistory: cardStats,
       chequeHistory: chequeStats,
