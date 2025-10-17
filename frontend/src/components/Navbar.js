@@ -122,6 +122,9 @@ const isInvoicesActive = location.pathname.startsWith("/admin/invoices");
      {/* About Us: visible only for guests and customers */}
     {(!user || user?.role === 'customer') && (
       <>
+      <Link to="/products" className={loc.pathname === "/products" ? "active" : ""}>
+        Products
+      </Link>
       <Link to="/about" className={loc.pathname === "/about" ? "active" : ""}>
         About Us
       </Link>
@@ -145,11 +148,47 @@ const isInvoicesActive = location.pathname.startsWith("/admin/invoices");
     <div className="rightTools">
       {user ? (
         <>
+          {/* Cart icon for customers */}
+          {user.role === 'customer' && (
+            <Link 
+              to="/cart" 
+              style={{
+                position: 'relative',
+                marginRight: '15px',
+                fontSize: '24px',
+                color: '#0057B8',
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center'
+              }}
+              title="Shopping Cart"
+            >
+              🛒
+            </Link>
+          )}
           <NotificationsBell onOpenModal={() => setNotifOpen(true)} />
           <button onClick={logout} className="logout">Logout</button>
         </>
       ) : (
-        <button className="loginBtn" onClick={() => setOpen(true)}>Login</button>
+        <>
+          {/* Cart icon for guests */}
+          <Link 
+            to="/cart" 
+            style={{
+              position: 'relative',
+              marginRight: '15px',
+              fontSize: '24px',
+              color: '#0057B8',
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center'
+            }}
+            title="Shopping Cart"
+          >
+            🛒
+          </Link>
+          <button className="loginBtn" onClick={() => setOpen(true)}>Login</button>
+        </>
       )}
     </div>
 
