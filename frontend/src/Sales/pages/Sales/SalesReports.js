@@ -1570,9 +1570,10 @@ const SalesReports = () => {
         </div>
       </div>
 
-      {/* Date/Filter Controls */}
-      <div className="section-container">
-        <h3 className="card-header">Filters</h3>
+      {/* Date/Filter Controls - Only show for non-dashboard reports */}
+      {reportType !== 'dashboard' && (
+        <div className="section-container">
+          <h3 className="card-header">Filters</h3>
         <div className="content-grid">
           {(reportType === 'daily') && (
             <div className="form-group">
@@ -1654,6 +1655,7 @@ const SalesReports = () => {
           )}
         </div>
       </div>
+      )}
 
       {/* Loading State */}
       {loading && (
