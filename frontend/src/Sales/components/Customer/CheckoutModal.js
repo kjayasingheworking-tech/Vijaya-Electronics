@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from "react";
-import "../../styles/sales.css";
 import "../../styles/customer-dark.css";
 import { 
   validateRedeemPoints, 
@@ -394,15 +393,17 @@ const CheckoutModal = ({ customerId, cart, onClose, onSuccess }) => {
 
             {/* Redeem points option */}
             <div className="mb-4">
-              <label className="flex items-center gap-2 mb-2">
-                <input
-                  type="checkbox"
-                  checked={useRedeem}
-                  onChange={toggleRedeem}
-                  className="accent-orange-500"
-                />
-                <span className="text-sm font-medium text-white">Use redeem points</span>
-              </label>
+              <div className="mb-2">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={useRedeem}
+                    onChange={toggleRedeem}
+                    className="accent-orange-500 w-4 h-4"
+                  />
+                  <span className="text-sm font-medium text-white">Use redeem points</span>
+                </label>
+              </div>
 
               <input
                 type="number"

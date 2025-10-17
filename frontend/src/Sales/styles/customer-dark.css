@@ -13,6 +13,13 @@
   --pulse-h: 18vh;
   --pulse-min: 96px;
   --pulse-max: 180px;
+  
+  /* Color variables from sales.css */
+  --electric-blue: #0057B8;
+  --electric-blue-dark: #004494;
+  --honeycomb-orange: #FFA500;
+  --light-gray: #f3f4f6;
+  --dark-charcoal: #212529;
 }
 
 /* Customer App Dark Theme */
@@ -313,4 +320,104 @@
 
 .customer-scroll::-webkit-scrollbar-thumb:hover {
   background: var(--blue);
+}
+
+/* ===== STYLES FROM SALES.CSS ===== */
+
+/* Gradient backgrounds */
+.bg-gradient-primary {
+  background: linear-gradient(90deg, #0057B8, #FFA500);
+}
+
+/* Color utilities */
+.bg-electric-blue { 
+  background-color: var(--electric-blue); 
+}
+
+.text-electric-blue { 
+  color: var(--electric-blue); 
+}
+
+.bg-honeycomb-orange { 
+  background-color: var(--honeycomb-orange); 
+}
+
+.text-honeycomb-orange { 
+  color: var(--honeycomb-orange); 
+}
+
+.bg-electric-blue-dark { 
+  background-color: var(--electric-blue-dark); 
+}
+
+.text-tech-white { 
+  color: #FFFFFF; 
+}
+
+.bg-light-gray { 
+  background-color: var(--light-gray); 
+}
+
+.text-dark-charcoal { 
+  color: var(--dark-charcoal); 
+}
+
+/* Shadow utilities */
+.shadow-card {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-button {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Backdrop blur */
+.backdrop-blur {
+  backdrop-filter: blur(8px);
+}
+
+/* Remove spinner from number inputs */
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Checkbox and radio accent color */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: #0057B8;
+}
+
+/* Override input and select backgrounds for customer pages */
+.customer-app input[type="text"],
+.customer-app input[type="email"],
+.customer-app input[type="password"],
+.customer-app input[type="number"],
+.customer-app input[type="tel"],
+.customer-app input[type="url"],
+.customer-app input[type="date"],
+.customer-app input[type="datetime-local"],
+.customer-app input[type="time"],
+.customer-app input[type="search"],
+.customer-app textarea,
+.customer-app select {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text) !important;
+}
+
+.customer-app input[type="text"]:focus,
+.customer-app input[type="email"]:focus,
+.customer-app input[type="password"]:focus,
+.customer-app input[type="number"]:focus,
+.customer-app input[type="tel"]:focus,
+.customer-app input[type="url"]:focus,
+.customer-app input[type="date"]:focus,
+.customer-app input[type="datetime-local"]:focus,
+.customer-app input[type="time"]:focus,
+.customer-app input[type="search"]:focus,
+.customer-app textarea:focus,
+.customer-app select:focus {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text) !important;
 }

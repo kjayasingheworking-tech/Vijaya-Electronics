@@ -1,6 +1,7 @@
 const Customer = require("../models/CustomerModel.js");
 const User = require("../models/UserModel.js");
 const { calculateCreditLimit, updateCustomerCredit } = require("../services/creditService.js");
+const { v4: uuidv4 } = require("uuid");
 
 const listCustomers = async (req, res, next) => {
   try {
@@ -15,6 +16,12 @@ const createCustomer = async (req, res, next) => {
   try {
     const customerData = req.body;
     
+    // Check if user with this email already exists
+    const existingUser = await User.findOne({ email: customerData.email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already registered" });
+    }
+    
     // Create User account for both regular and wholesale customers
     const userData = {
       name: customerData.name,
@@ -28,6 +35,11 @@ const createCustomer = async (req, res, next) => {
     
     // Create Customer record with User ID
     customerData.user = user._id;
+    
+    // Generate customerId if not provided
+    if (!customerData.customerId) {
+      customerData.customerId = `CUST-${uuidv4()}`;
+    }
     
     // Set tier to silver for all new customers
     customerData.tier = "silver";

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
-import "../../styles/sales.css";
 import "../../styles/customer-dark.css";
 import CheckoutModal from "../../components/Customer/CheckoutModal";
 import CustomerHeader from "../../components/Customer/CustomerHeader";
@@ -163,7 +162,7 @@ const CartPage = ({ customerId }) => {
 
             <div className="flex flex-col lg:flex-row gap-8 w-full">
               {/* Cart Items */}
-              <div className="flex-1 space-y-4">
+              <div className="flex-[2] space-y-4">
                 {cart.items.map((item) => {
                   const stockStatus = getStockStatus(item);
                   
@@ -234,9 +233,9 @@ const CartPage = ({ customerId }) => {
               </div>
 
               {/* Order Summary */}
-              <div className="flex-1">
-                <div className="bg-white p-6 rounded shadow sticky top-24">
-                  <h3 className="font-bold text-lg text-gray-800 mb-4">Order Summary</h3>
+              <div className="flex-[1]">
+                <div className="customer-modal p-6 rounded shadow sticky top-24">
+                  <h3 className="font-bold text-lg text-white mb-4">Order Summary</h3>
                   <div className="space-y-2 mb-4">
                     <div className="flex justify-between text-gray-300">
                       <span>Subtotal ({Object.values(selectedItems).filter(Boolean).length} items)</span>
