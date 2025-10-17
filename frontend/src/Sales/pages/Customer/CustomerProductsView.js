@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useCart } from "../../context/CartContext";
-import "../../styles/sales.css";
 import "../../styles/customer-dark.css";
 import CustomerHeader from "../../components/Customer/CustomerHeader";
 import Toast from "../../components/Toast";

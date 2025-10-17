@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
-import "../../styles/sales.css";
 import CustomerNotificationModal from "./CustomerNotificationModal";
 import { ROUTES } from "../../constants/salesRoutes";
 

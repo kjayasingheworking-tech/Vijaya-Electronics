@@ -1,5 +1,4 @@
 import CustomerHeader from "../../components/Customer/CustomerHeader";
-import "../../styles/sales.css";
 import "../../styles/customer-dark.css";
 
 const CustomerHome = ({ customerId }) => {

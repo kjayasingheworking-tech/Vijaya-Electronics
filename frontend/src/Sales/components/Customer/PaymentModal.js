@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { CreditCard, X, CheckCircle, AlertCircle } from "lucide-react";
-import "../../styles/sales.css";
 import {
   validatePaymentForm,
   formatCardNumber,
