@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Eye, DollarSign } from "lucide-react";
 import "../../styles/sales.css";
 import { API, API_ENDPOINTS } from "../../constants/salesApi";
+import { getCustomerDisplayData } from "../../utils/customerDataUtils";
 
 const CreditPayments = () => {
   const [creditPayments, setCreditPayments] = useState([]);
@@ -59,8 +60,9 @@ const CreditPayments = () => {
 
   // Filter credit payments
   const filteredPayments = creditPayments.filter(payment => {
-    const customerMatch = payment.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         payment.customer?.email?.toLowerCase().includes(searchTerm.toLowerCase());
+    const customerData = getCustomerDisplayData(payment.customer || {});
+    const customerMatch = customerData.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         customerData.email?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const statusMatch = filterStatus === "all" || payment.creditDetails?.status === filterStatus;
     
@@ -156,10 +158,10 @@ const CreditPayments = () => {
                   <div className="mb-3">
                     <p className="text-sm text-gray-600">Customer</p>
                     <p className="font-medium text-gray-900">
-                      {payment.customer?.name || "Unknown Customer"}
+                      {getCustomerDisplayData(payment.customer || {}).name || "Unknown Customer"}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {payment.customer?.email}
+                      {getCustomerDisplayData(payment.customer || {}).email}
                     </p>
                   </div>
 
@@ -245,11 +247,11 @@ const CreditPayments = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <span className="font-medium text-gray-600">Customer:</span>
-                  <p className="text-gray-900">{selectedPayment.customer?.name}</p>
+                  <p className="text-gray-900">{getCustomerDisplayData(selectedPayment.customer || {}).name}</p>
                 </div>
                 <div>
                   <span className="font-medium text-gray-600">Email:</span>
-                  <p className="text-gray-900">{selectedPayment.customer?.email}</p>
+                  <p className="text-gray-900">{getCustomerDisplayData(selectedPayment.customer || {}).email}</p>
                 </div>
               </div>
 

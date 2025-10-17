@@ -61,7 +61,8 @@ const createCustomer = async (req, res, next) => {
 
 const getCustomerById = async (req, res, next) => {
   try {
-    const customer = await Customer.findById(req.params.id);
+    const customer = await Customer.findById(req.params.id)
+      .populate('user', 'name email role isActive');
     if (!customer) return res.status(404).json({ message: "Customer not found" });
     res.json(customer);
   } catch (err) { next(err); }
@@ -93,7 +94,8 @@ const updateCustomer = async (req, res, next) => {
 const getCustomerByPhone = async (req, res) => {
   try {
     const { phone } = req.params;
-    const customer = await Customer.findOne({ phone });
+    const customer = await Customer.findOne({ phone })
+      .populate('user', 'name email role isActive');
 
     if (!customer) {
       return res.status(404).json({ message: "Customer not found" });
@@ -110,7 +112,8 @@ const getCustomerByPhone = async (req, res) => {
 const getCustomerByEmail = async (req, res) => {
   try {
     const { email } = req.params;
-    const customer = await Customer.findOne({ email });
+    const customer = await Customer.findOne({ email })
+      .populate('user', 'name email role isActive');
 
     if (!customer) {
       return res.status(404).json({ message: "Customer not found" });

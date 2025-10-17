@@ -5,6 +5,7 @@ import "../../styles/sales.css";
 import CreateInvoice from "../../components/Sales/Invoices/CreateInvoice";
 import CreateWholesaleCustomer from "../../components/Sales/Customers/CreateWholesaleCustomer";
 import { API, API_ENDPOINTS } from "../../constants/salesApi";
+import { getCustomerDisplayData } from "../../utils/customerDataUtils";
 
 const Dashboard = () => {
   const { user } = useAuth(); // Get logged-in user
@@ -224,7 +225,7 @@ const Dashboard = () => {
                     <Users className="h-4 w-4 text-honeycomb-orange" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">{customer.name}</p>
+                    <p className="font-medium text-gray-900">{getCustomerDisplayData(customer).name}</p>
                     <p className="text-sm text-gray-600">{customer.tier} Tier</p>
                   </div>
                 </div>

@@ -13,6 +13,7 @@ const navItems = [
 ];
 
 const SalesNavigation = () => {
+
   return (
     <aside 
       style={{ 
@@ -34,7 +35,7 @@ const SalesNavigation = () => {
             <NavLink
               key={path}
               to={path}
-              end={path === "/sales"}
+              end={path === ROUTES.SALES_DASHBOARD}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -57,7 +58,7 @@ const SalesNavigation = () => {
         </div>
       </nav>
       
-      <style jsx>{`
+      <style>{`
         .sidebar-nav-active {
           background-color: #0057B8 !important;
           color: white !important;

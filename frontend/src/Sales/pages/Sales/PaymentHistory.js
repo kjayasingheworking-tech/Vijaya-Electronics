@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import "../../styles/sales.css";
 import { CreditCard, FileText, DollarSign, AlertTriangle, CheckCircle, Clock, Banknote, CreditCard as CardIcon } from "lucide-react";
 import { API, API_ENDPOINTS } from "../../constants/salesApi";
+import { getCustomerDisplayData } from "../../utils/customerDataUtils";
 
 const PaymentHistory = () => {
   const { customerId } = useParams();
@@ -114,7 +115,7 @@ const PaymentHistory = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Payment History</h1>
-          <p className="text-gray-600">{paymentHistory.customer.name} ({paymentHistory.customer.email})</p>
+          <p className="text-gray-600">{getCustomerDisplayData(paymentHistory.customer).name} ({getCustomerDisplayData(paymentHistory.customer).email})</p>
         </div>
       </div>
 
