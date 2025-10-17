@@ -122,7 +122,7 @@ const isInvoicesActive = location.pathname.startsWith("/admin/invoices");
      {/* About Us: visible only for guests and customers */}
     {(!user || user?.role === 'customer') && (
       <>
-      <Link to="/products" className={loc.pathname === "/products" ? "active" : ""}>
+      <Link to="/customer/products" className={loc.pathname === "/customer/products" ? "active" : ""}>
         Products
       </Link>
       <Link to="/about" className={loc.pathname === "/about" ? "active" : ""}>
@@ -151,7 +151,7 @@ const isInvoicesActive = location.pathname.startsWith("/admin/invoices");
           {/* Cart icon for customers */}
           {user.role === 'customer' && (
             <Link 
-              to="/cart" 
+              to="/customer/cart" 
               style={{
                 position: 'relative',
                 marginRight: '15px',
@@ -173,7 +173,7 @@ const isInvoicesActive = location.pathname.startsWith("/admin/invoices");
         <>
           {/* Cart icon for guests */}
           <Link 
-            to="/cart" 
+            to="/customer/cart" 
             style={{
               position: 'relative',
               marginRight: '15px',
