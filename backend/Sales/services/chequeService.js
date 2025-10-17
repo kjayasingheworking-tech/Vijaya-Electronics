@@ -2,6 +2,7 @@ const Customer = require("../models/CustomerModel.js");
 const Payment = require("../models/PaymentModel.js");
 const Invoice = require("../models/InvoiceModel.js");
 const { notifyAllSalesManagers } = require("./notificationService.js");
+const { findOrCreateCustomer } = require("../utils/customerHelper.js");
 
 // Helper function to get status message
 function getStatusMessage(status) {
@@ -18,7 +19,7 @@ function getStatusMessage(status) {
 // Check if customer can use cheque payment
 async function canUseCheque(customerId) {
   try {
-    const customer = await Customer.findById(customerId);
+    const customer = await findOrCreateCustomer(customerId);
     if (!customer || customer.type !== "wholesale") {
       return { canUse: false, reason: "Not a wholesale customer" };
     }
@@ -61,7 +62,7 @@ async function createChequePayment(customerId, invoiceId, chequeDetails, amount)
     await payment.save();
     
     // Block customer until cheque is cleared
-    const customer = await Customer.findById(customerId);
+    const customer = await findOrCreateCustomer(customerId);
     if (customer) {
       customer.blocked = true;
       customer.blockedReason = "cheque_pending";

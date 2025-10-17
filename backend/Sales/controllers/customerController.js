@@ -2,6 +2,7 @@ const Customer = require("../models/CustomerModel.js");
 const User = require("../models/UserModel.js");
 const { calculateCreditLimit, updateCustomerCredit } = require("../services/creditService.js");
 const { v4: uuidv4 } = require("uuid");
+const { findOrCreateCustomer, getSalesCustomerId } = require("../utils/customerHelper.js");
 
 const listCustomers = async (req, res, next) => {
   try {
@@ -73,8 +74,56 @@ const createCustomer = async (req, res, next) => {
 
 const getCustomerById = async (req, res, next) => {
   try {
-    const customer = await Customer.findById(req.params.id)
+    const customerId = req.params.id;
+    
+    // First try to find by Customer ID
+    let customer = await Customer.findById(customerId)
       .populate('user', 'name email role isActive');
+    
+    // If not found, try to find by User ID (for authenticated users)
+    if (!customer) {
+      customer = await Customer.findOne({ user: customerId })
+        .populate('user', 'name email role isActive');
+    }
+    
+    // If still not found, try to create a customer record for the user
+    if (!customer) {
+      // Try to find user in main User collection first
+      const MainUser = require("../../models/User.js");
+      const mainUser = await MainUser.findById(customerId);
+      
+      if (mainUser && mainUser.role === 'customer') {
+        // Create a corresponding user in Sales UserTemp collection
+        const SalesUser = require("../models/UserModel.js");
+        let salesUser = await SalesUser.findOne({ email: mainUser.email });
+        
+        if (!salesUser) {
+          // Create sales user
+          salesUser = new SalesUser({
+            name: mainUser.name,
+            email: mainUser.email,
+            role: mainUser.role,
+            isActive: mainUser.isActive || true
+          });
+          await salesUser.save();
+        }
+        
+        // Create Sales Customer record
+        const customerData = {
+          user: salesUser._id,
+          name: mainUser.name,
+          email: mainUser.email,
+          type: 'regular', // default to regular customer
+          tier: 'silver'
+        };
+        
+        customer = new Customer(customerData);
+        await customer.save();
+        customer = await Customer.findById(customer._id)
+          .populate('user', 'name email role isActive');
+      }
+    }
+    
     if (!customer) return res.status(404).json({ message: "Customer not found" });
     res.json(customer);
   } catch (err) { next(err); }
@@ -229,6 +278,31 @@ const updateCustomerCreditInfo = async (req, res, next) => {
   }
 };
 
+// Get Sales Customer ID from main User ID
+const getSalesCustomerIdByUserId = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+    
+    const salesCustomerId = await getSalesCustomerId(userId);
+    
+    if (!salesCustomerId) {
+      return res.status(404).json({ message: "Sales Customer not found" });
+    }
+    
+    res.json({ 
+      success: true, 
+      salesCustomerId: salesCustomerId,
+      message: "Sales Customer ID retrieved successfully"
+    });
+  } catch (err) { 
+    next(err); 
+  }
+};
+
 module.exports = {
   listCustomers,
   createCustomer,
@@ -237,5 +311,6 @@ module.exports = {
   getCustomerByPhone,
   getCustomerByEmail,
   updateCustomerBlockStatus,
-  updateCustomerCreditInfo
+  updateCustomerCreditInfo,
+  getSalesCustomerIdByUserId
 };
