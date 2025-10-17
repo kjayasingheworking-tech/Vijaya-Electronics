@@ -120,6 +120,13 @@ exports.getMySupplierProfile = async (req, res) => {
   try {
     const sup = await Supplier.findOne({ user: req.user._id, archived: false });
     if (!sup) return res.status(404).json({ message: "Profile not found" });
+    
+    console.log("=== GET PROFILE DEBUG ===");
+    console.log("Raw supplier from DB:", JSON.stringify(sup, null, 2));
+    console.log("Supplier branch:", sup.branch);
+    console.log("Supplier bankAccount:", JSON.stringify(sup.bankAccount, null, 2));
+    console.log("=== END GET DEBUG ===");
+    
     res.json(sup);
   } catch (e) {
     res.status(500).json({ message: e.message });
@@ -129,17 +136,47 @@ exports.getMySupplierProfile = async (req, res) => {
 // SUPPLIER: update own profile
 exports.updateMySupplierProfile = async (req, res) => {
   try {
+    console.log("=== UPDATE PROFILE RECEIVED ===");
+    console.log("Request body keys:", Object.keys(req.body));
+    console.log("Full request body:", JSON.stringify(req.body, null, 2));
+    
     const sup = await Supplier.findOne({ user: req.user._id, archived: false });
     if (!sup) return res.status(404).json({ message: "Profile not found" });
 
-    const allowed = ["companyName", "address", "contactDetails", "bankAccount", "contactPerson"];
-    allowed.forEach((k) => {
-      if (Object.prototype.hasOwnProperty.call(req.body, k)) sup[k] = req.body[k];
-    });
+    console.log("Found supplier ID:", sup._id);
+    console.log("Current branch before update:", sup.branch);
+    console.log("Current bankAccount before update:", JSON.stringify(sup.bankAccount));
 
-    await sup.save();
-    res.json({ message: "Profile updated", supplier: sup });
+    // Direct assignment approach
+    if (req.body.companyName) sup.companyName = req.body.companyName;
+    if (req.body.address) sup.address = req.body.address;
+    if (req.body.hasOwnProperty('branch')) {
+      console.log("Setting branch to:", req.body.branch);
+      sup.branch = req.body.branch;
+    }
+    if (req.body.contactDetails) sup.contactDetails = req.body.contactDetails;
+    if (req.body.contactPerson) sup.contactPerson = req.body.contactPerson;
+    if (req.body.bankAccount) {
+      console.log("Setting bankAccount to:", JSON.stringify(req.body.bankAccount));
+      sup.bankAccount = req.body.bankAccount;
+      sup.markModified('bankAccount');
+    }
+
+    console.log("After assignment - branch:", sup.branch);
+    console.log("After assignment - bankAccount:", JSON.stringify(sup.bankAccount));
+
+    const saved = await sup.save();
+    
+    console.log("After save - branch:", saved.branch);
+    console.log("After save - bankAccount:", JSON.stringify(saved.bankAccount));
+    console.log("Full saved document:", JSON.stringify(saved.toObject()));
+    console.log("=== END UPDATE ===");
+
+    res.json({ message: "Profile updated", supplier: saved });
   } catch (e) {
+    console.error("=== UPDATE ERROR ===");
+    console.error("Error updating profile:", e);
+    console.error("Error stack:", e.stack);
     res.status(500).json({ message: e.message });
   }
 };

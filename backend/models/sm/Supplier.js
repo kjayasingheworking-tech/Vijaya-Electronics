@@ -23,6 +23,7 @@ const supplierSchema = new mongoose.Schema(
     bankAccount: {
       accountNumber: { type: String, required: true },
       bankName: { type: String, required: true },
+      branch: { type: String },
     },
     contactPerson: {
       name: { type: String, required: true },

@@ -17,6 +17,24 @@ export default function MySupProfile() {
     try {
       setLoading(true);
       const { data } = await api.get("/suppliers/me");
+      console.log("Loaded profile data:", data);
+      console.log("Company Branch:", data.branch);
+      console.log("Bank Branch:", data.bankAccount?.branch);
+      
+      // Initialize branch fields ONLY if they're undefined (not if they're empty string)
+      if (data.branch === undefined) {
+        data.branch = "";
+      }
+      if (!data.bankAccount) {
+        data.bankAccount = {};
+      }
+      if (data.bankAccount.branch === undefined) {
+        data.bankAccount.branch = "";
+      }
+      
+      console.log("After initialization - Company Branch:", data.branch);
+      console.log("After initialization - Bank Branch:", data.bankAccount?.branch);
+      
       setProfile(data);
       setOriginalProfile(JSON.parse(JSON.stringify(data)));
     } catch (err) {
@@ -43,7 +61,15 @@ export default function MySupProfile() {
       const clone = { ...prev };
       const keys = path.split(".");
       let obj = clone;
-      for (let i = 0; i < keys.length - 1; i++) obj = obj[keys[i]];
+      
+      // Create nested objects if they don't exist
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!obj[keys[i]]) {
+          obj[keys[i]] = {};
+        }
+        obj = obj[keys[i]];
+      }
+      
       obj[keys[keys.length - 1]] = value;
       return clone;
     });
@@ -108,7 +134,13 @@ export default function MySupProfile() {
     if (!window.confirm("Are you sure you want to save changes?")) return;
 
     try {
+      console.log("Saving profile data:", profile);
+      console.log("Company Branch to save:", profile.branch);
+      console.log("Bank Branch to save:", profile.bankAccount?.branch);
+      
       const { data } = await api.put("/suppliers/me", profile);
+
+      console.log("Response after save:", data);
 
       // handle both response structures safely
       const updated = data?.supplier || data;
