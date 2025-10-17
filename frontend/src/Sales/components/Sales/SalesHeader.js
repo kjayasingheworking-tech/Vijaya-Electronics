@@ -33,7 +33,7 @@ const SalesHeader = ({ salesManagerId, user }) => { // Add user parameter
             <div>
               <h1 className="text-2xl font-bold">Vijaya Electronics</h1>
               <p className="text-sm text-white/70 font-medium">
-                Sales Management Portal - {user?.name || 'Sales Manager'}
+                Sales Management Portal
               </p>
             </div>
           </div>

@@ -132,6 +132,63 @@ input[type="radio"] {
   accent-color: #0057B8;
 }
 
+/* Input field styles to ensure white backgrounds */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"],
+input[type="search"],
+textarea,
+select,
+input.border,
+input.p-2,
+input.rounded {
+  background-color: white !important;
+  color: #212529 !important;
+  border: 1px solid #d1d5db !important;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="date"]:focus,
+input[type="datetime-local"]:focus,
+input[type="time"]:focus,
+input[type="search"]:focus,
+textarea:focus,
+select:focus,
+input.border:focus,
+input.p-2:focus,
+input.rounded:focus {
+  background-color: white !important;
+  color: #212529 !important;
+  border-color: #0057B8 !important;
+  box-shadow: 0 0 0 2px rgba(0, 87, 184, 0.2) !important;
+}
+
+/* Additional specific overrides for common input patterns */
+.sales-layout input,
+.sales-layout textarea,
+.sales-layout select {
+  background-color: white !important;
+  color: #212529 !important;
+}
+
+.sales-layout input:focus,
+.sales-layout textarea:focus,
+.sales-layout select:focus {
+  background-color: white !important;
+  color: #212529 !important;
+}
+
 /* Status themes */
 .status-pending {
   @apply bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs font-medium;

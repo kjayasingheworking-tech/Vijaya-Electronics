@@ -180,9 +180,9 @@ const Dashboard = () => {
       </div>
 
       {/* Charts and Tables Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="flex flex-col lg:flex-row gap-8 w-full">
         {/* Recent Invoices */}
-        <div className="bg-white rounded-2xl shadow-elegant p-6">
+        <div className="bg-white rounded-2xl shadow-elegant p-6 flex-1">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">Recent Invoices</h3>
           </div>
@@ -213,7 +213,7 @@ const Dashboard = () => {
         </div>
 
         {/* Top Customers */}
-        <div className="bg-white rounded-2xl shadow-elegant p-6">
+        <div className="bg-white rounded-2xl shadow-elegant p-6 flex-1">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-gray-900">Top Customers</h3>
           </div>

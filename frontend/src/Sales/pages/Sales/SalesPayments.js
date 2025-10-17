@@ -201,9 +201,9 @@ const SalesPayments = () => {
       </div>
 
       {/* Payment Management Sections */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="flex flex-col md:flex-row gap-6 w-full">
         {/* Credit Payments Section */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6 flex-1">
           <div className="flex items-center mb-4">
             <CreditCard className="h-6 w-6 text-honeycomb-orange mr-3" />
             <h3 className="text-lg font-semibold">Credit Payment Management</h3>
@@ -223,7 +223,7 @@ const SalesPayments = () => {
         </div>
 
         {/* Cheque Payments Section */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-6 flex-1">
           <div className="flex items-center mb-4">
             <FileText className="h-6 w-6 text-electric-blue mr-3" />
             <h3 className="text-lg font-semibold">Cheque Payment Management</h3>

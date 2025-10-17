@@ -82,7 +82,13 @@ const cancelPayment = async (req, res, next) => {
 const getCreditPayments = async (req, res, next) => {
   try {
     const payments = await Payment.find({ paymentType: "Credit" })
-      .populate('customerId', 'name email type tier')
+      .populate({
+        path: 'customerId',
+        populate: {
+          path: 'user',
+          select: 'name email role isActive'
+        }
+      })
       .populate('invoiceId', 'invoiceNumber status')
       .sort({ createdAt: -1 });
 
@@ -106,7 +112,13 @@ const getCreditPayments = async (req, res, next) => {
 const getChequePayments = async (req, res, next) => {
   try {
     const payments = await Payment.find({ paymentType: "Cheque" })
-      .populate('customerId', 'name email type tier')
+      .populate({
+        path: 'customerId',
+        populate: {
+          path: 'user',
+          select: 'name email role isActive'
+        }
+      })
       .populate('invoiceId', 'invoiceNumber status')
       .sort({ createdAt: -1 });
 
