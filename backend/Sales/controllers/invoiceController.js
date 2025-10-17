@@ -1,13 +1,14 @@
 const { createInvoice, getInvoices, getInvoiceById } = require("../services/invoiceService.js");
 const Invoice = require("../models/InvoiceModel.js");
 const Customer = require("../models/CustomerModel.js");
+const { findOrCreateCustomer } = require("../utils/customerHelper.js");
 
 /** POST /api/invoices */
 async function createInvoiceController(req, res, next) {
   try {
     // Check if customer is blocked (if customerId is provided)
     if (req.body.customerId) {
-      const customer = await Customer.findById(req.body.customerId);
+      const customer = await findOrCreateCustomer(req.body.customerId);
       if (customer && customer.blocked) {
         return res.status(400).json({ 
           message: "Cannot create invoice for blocked customer. Please unblock the customer first." 

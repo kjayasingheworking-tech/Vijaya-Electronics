@@ -1,6 +1,7 @@
 const Discount = require("../models/DiscountModel.js");
 const Customer = require("../models/CustomerModel.js");
 const { notifyNewDiscount, notifyAllSalesManagers, notifyDiscountEnd } = require("../services/notificationService.js");
+const { findOrCreateCustomer } = require("../utils/customerHelper.js");
 
 function normalizeDayBounds(startDate, endDate) {
   // Handle both string dates (YYYY-MM-DD) and Date objects
@@ -167,8 +168,8 @@ const redeemDiscount = async (req, res, next) => {
       return res.status(400).json({ message: "Customer ID is required" });
     }
 
-    // Find the customer
-    const customer = await Customer.findById(customerId);
+    // Find the customer using helper function
+    const customer = await findOrCreateCustomer(customerId);
     if (!customer) {
       return res.status(404).json({ message: "Customer not found" });
     }

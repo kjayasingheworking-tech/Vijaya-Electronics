@@ -1,6 +1,7 @@
 const Payment = require("../models/PaymentModel.js");
 const Invoice = require("../models/InvoiceModel.js");
 const Customer = require("../models/CustomerModel.js");
+const { findOrCreateCustomer } = require("../utils/customerHelper.js");
 
 // Get payment history for a customer
 const getCustomerPaymentHistory = async (req, res, next) => {
@@ -8,7 +9,10 @@ const getCustomerPaymentHistory = async (req, res, next) => {
     const customerId = req.params.customerId;
     
     // Check if customer exists (for registered customers) and populate user data
-    const customer = await Customer.findById(customerId).populate('user', 'name email role isActive');
+    const customer = await findOrCreateCustomer(customerId);
+    if (customer) {
+      await customer.populate('user', 'name email role isActive');
+    }
     
     let payments = [];
     let invoices = [];

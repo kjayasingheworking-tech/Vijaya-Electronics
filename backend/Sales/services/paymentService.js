@@ -6,6 +6,7 @@ const Payment = require("../models/PaymentModel.js");
 const { redeemPoints } = require("./pointsService.js");
 const { createInvoice } = require("./invoiceService.js");
 const { notifyPaymentSuccess, notifyOrderPlaced } = require("./notificationService.js");
+const { findOrCreateCustomer, ensureCustomerDataPopulated } = require("../utils/customerHelper.js");
 
 async function prepareCheckout({
   customerId,
@@ -18,9 +19,15 @@ async function prepareCheckout({
   conversionRateForPoints = 1,
   selectedItemIds = []
 }) {
-  // get customer
-  const customer = await Customer.findById(customerId);
+  // get customer using helper function
+  const customer = await findOrCreateCustomer(customerId);
   if (!customer) throw new Error("Customer not found");
+  
+  // Ensure customer data is properly populated
+  await ensureCustomerDataPopulated(customer);
+  
+  // Use Sales Customer ID for all operations
+  const salesCustomerId = customer._id;
 
   // check if customer is blocked
   if (customer.blocked) {
@@ -54,8 +61,8 @@ async function prepareCheckout({
     }
   }
 
-  // get cart
-  const cart = await Cart.findOne({ customerId });
+  // get cart using Sales Customer ID
+  const cart = await Cart.findOne({ customerId: salesCustomerId });
   if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
 
   // filter only selected items if provided
@@ -167,14 +174,20 @@ async function completeCheckout({
     }
   }
 
+  // Customer data should now be properly populated by ensureCustomerDataPopulated
+  const customerName = customer.name || 'Unknown Customer';
+  const customerEmail = customer.email || 'No email provided';
+  const customerPhone = customer.phone || '';
+  const customerAddress = [customer.addressLine1, customer.addressLine2, customer.city].filter(Boolean).join(', ') || '';
+
   // create invoice
   const invoiceData = {
-    customerId: customer._id,
+    customerId: customer._id, // Use Sales Customer ID
     customerSnapshot: {
-      name: customer.name,
-      email: customer.email,
-      phone: customer.phone,
-      address: [customer.addressLine1, customer.addressLine2, customer.city].filter(Boolean).join(', ')
+      name: customerName,
+      email: customerEmail,
+      phone: customerPhone,
+      address: customerAddress
     },
     items,
     subtotal,

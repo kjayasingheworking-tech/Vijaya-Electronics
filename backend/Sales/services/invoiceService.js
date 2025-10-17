@@ -6,6 +6,7 @@ const { calculatePointsToAward, awardPoints, redeemPoints } = require("./pointsS
 const { updateCustomerCredit } = require("./creditService.js");
 const { updateCustomerTier } = require("./tierService.js");
 const { createChequePayment, createCreditPayment } = require("./chequeService.js");
+const { findOrCreateCustomer } = require("../utils/customerHelper.js");
 
 /**
  * Reduce product quantities when invoice is created
@@ -57,8 +58,7 @@ async function createInvoice(data) {
   
   // Check if customer has pending invoices (for wholesale customers)
   if (data.customerId) {
-    const Customer = require("../models/CustomerModel.js");
-    const customer = await Customer.findById(data.customerId);
+    const customer = await findOrCreateCustomer(data.customerId);
     
     if ((customer && customer.type === "wholesale") && (data.paymentMethod === "Credit" || data.paymentMethod === "Cheque")) {
       const existingPendingInvoices = await Invoice.find({
@@ -175,7 +175,7 @@ async function createInvoice(data) {
     await awardPoints(invoice.customerId, points);
     
     // Update customer's total purchase amount
-    const customer = await Customer.findById(invoice.customerId);
+    const customer = await findOrCreateCustomer(invoice.customerId);
     if (customer) {
       customer.totalPurchaseAmount = (customer.totalPurchaseAmount || 0) + invoice.totalAmount;
       await customer.save();

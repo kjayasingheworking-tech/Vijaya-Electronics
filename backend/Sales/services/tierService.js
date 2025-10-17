@@ -1,4 +1,5 @@
 const Customer = require("../models/CustomerModel.js");
+const { findOrCreateCustomer } = require("../utils/customerHelper.js");
 
 // Calculate customer tier based on total purchase amount
 function calculateCustomerTier(customerType, totalPurchaseAmount) {
@@ -29,7 +30,7 @@ function calculateCustomerTier(customerType, totalPurchaseAmount) {
 // Update customer tier based on current purchase amount
 async function updateCustomerTier(customerId) {
   try {
-    const customer = await Customer.findById(customerId);
+    const customer = await findOrCreateCustomer(customerId);
     if (!customer) {
       throw new Error("Customer not found");
     }

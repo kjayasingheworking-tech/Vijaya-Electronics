@@ -1,6 +1,7 @@
 const Customer = require("../models/CustomerModel.js");
 const Payment = require("../models/PaymentModel.js");
 const { notifyCreditDueDateApproaching, notifyAllSalesManagers } = require("./notificationService.js");
+const { findOrCreateCustomer } = require("../utils/customerHelper.js");
 
 // Calculate credit limit based on tier and total purchase amount
 function calculateCreditLimit(customer) {
@@ -26,7 +27,7 @@ function calculateCreditLimit(customer) {
 // Update customer credit information
 async function updateCustomerCredit(customerId) {
   try {
-    const customer = await Customer.findById(customerId);
+    const customer = await findOrCreateCustomer(customerId);
     if (!customer || customer.type !== "wholesale") {
       return customer;
     }
@@ -71,7 +72,7 @@ async function updateCustomerCredit(customerId) {
 // Check if customer can use credit for new purchase
 async function canUseCredit(customerId, amount) {
   try {
-    const customer = await Customer.findById(customerId);
+    const customer = await findOrCreateCustomer(customerId);
     if (!customer || customer.type !== "wholesale") {
       return { canUse: false, reason: "Not a wholesale customer" };
     }

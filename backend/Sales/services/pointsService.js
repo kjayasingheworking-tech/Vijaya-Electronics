@@ -1,4 +1,5 @@
 const Customer = require("../models/CustomerModel.js");
+const { findOrCreateCustomer } = require("../utils/customerHelper.js");
 
 const tierConfig = {
   diamond: { pointsPercent: 0.05 }, // 5% of bill as points
@@ -7,7 +8,7 @@ const tierConfig = {
 };
 
 async function calculatePointsToAward(customerId, amount) {
-  const customer = await Customer.findById(customerId);
+  const customer = await findOrCreateCustomer(customerId);
   const tier = (customer && customer.tier) || "silver";
   const pct = tierConfig[tier]?.pointsPercent || 0.01;
   const points = Math.floor(amount * pct); // store integer points
@@ -16,7 +17,7 @@ async function calculatePointsToAward(customerId, amount) {
 
 async function awardPoints(customerId, points) {
   if (!points || points <= 0) return null;
-  const customer = await Customer.findById(customerId);
+  const customer = await findOrCreateCustomer(customerId);
   if (!customer) throw new Error("Customer not found");
   
   // Update current balance
@@ -30,7 +31,7 @@ async function awardPoints(customerId, points) {
 }
 
 async function redeemPoints(customerId, pointsToRedeem, conversionRate = 1) {
-  const customer = await Customer.findById(customerId);
+  const customer = await findOrCreateCustomer(customerId);
   if (!customer) throw new Error("Customer not found");
   const balance = customer.pointsBalance || 0;
   const redeemable = Math.min(pointsToRedeem, balance);
