@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../../api/axios";
 import { useToast } from "../../components/ToastProvider";
+import { generateCustomersReport } from "../../utils/pdfGenerator";
 
 export default function CustomersList() {
   const toast = useToast();
@@ -34,6 +35,18 @@ export default function CustomersList() {
       c.user?.email?.toLowerCase().includes(term)
     );
   });
+
+  const downloadCustomersPDF = () => {
+    try {
+      const pdf = generateCustomersReport(filtered, search);
+      const filename = `customers-report-${new Date().toISOString().split('T')[0]}.pdf`;
+      pdf.save(filename);
+      toast.success("PDF exported successfully!");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast.error("Failed to generate PDF report");
+    }
+  };
 
   const exportCSV = () => {
     try {
@@ -208,6 +221,12 @@ export default function CustomersList() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
+          <button
+            onClick={downloadCustomersPDF}
+            style={styles.actionBtn("#FFA500", "#ffb733")}
+          >
+            📄 Export PDF
+          </button>
           <button
             onClick={exportCSV}
             style={styles.actionBtn("#1d4ed8", "#60a5fa")}

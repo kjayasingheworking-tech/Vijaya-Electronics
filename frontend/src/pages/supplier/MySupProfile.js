@@ -55,14 +55,11 @@ export default function MySupProfile() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     // Required field validation
-    if (!profile.name?.trim()) {
-      newErrors["name"] = "Company name is required.";
+    if (!profile.companyName?.trim()) {
+      newErrors["companyName"] = "Company name is required.";
     }
-    if (!profile.contactDetails?.address?.trim()) {
-      newErrors["contactDetails.address"] = "Address is required.";
-    }
-    if (!profile.contactDetails?.country?.trim()) {
-      newErrors["contactDetails.country"] = "Country is required.";
+    if (!profile.address?.trim()) {
+      newErrors["address"] = "Address is required.";
     }
     if (!profile.contactPerson?.name?.trim()) {
       newErrors["contactPerson.name"] = "Contact person name is required.";
@@ -90,9 +87,12 @@ export default function MySupProfile() {
         "Contact person number must be 10 digits.";
     }
 
-    // Business details validation
-    if (!profile.businessType?.trim()) {
-      newErrors["businessType"] = "Business type is required.";
+    // Bank details validation
+    if (!profile.bankAccount?.accountNumber?.trim()) {
+      newErrors["bankAccount.accountNumber"] = "Account number is required.";
+    }
+    if (!profile.bankAccount?.bankName?.trim()) {
+      newErrors["bankAccount.bankName"] = "Bank name is required.";
     }
 
     setErrors(newErrors);
@@ -156,12 +156,12 @@ export default function MySupProfile() {
                     }
                     disabled={!editMode}
                     style={{
-                      borderColor: errors["name"] ? '#ef4444' : '',
-                      backgroundColor: errors["name"] ? '#fef2f2' : ''
+                      borderColor: errors["companyName"] ? '#ef4444' : '',
+                      backgroundColor: errors["companyName"] ? '#fef2f2' : ''
                     }}
                   />
-                  {errors["name"] && (
-                    <span className="error" style={{color: '#ef4444', fontSize: '12px'}}>{errors["name"]}</span>
+                  {errors["companyName"] && (
+                    <span className="error" style={{color: '#ef4444', fontSize: '12px'}}>{errors["companyName"]}</span>
                   )}
                 </div>
 
@@ -173,12 +173,12 @@ export default function MySupProfile() {
                     onChange={(e) => handleChange("address", e.target.value)}
                     disabled={!editMode}
                     style={{
-                      borderColor: errors["contactDetails.address"] ? '#ef4444' : '',
-                      backgroundColor: errors["contactDetails.address"] ? '#fef2f2' : ''
+                      borderColor: errors["address"] ? '#ef4444' : '',
+                      backgroundColor: errors["address"] ? '#fef2f2' : ''
                     }}
                   />
-                  {errors["contactDetails.address"] && (
-                    <span className="error" style={{color: '#ef4444', fontSize: '12px'}}>{errors["contactDetails.address"]}</span>
+                  {errors["address"] && (
+                    <span className="error" style={{color: '#ef4444', fontSize: '12px'}}>{errors["address"]}</span>
                   )}
                 </div>
 
@@ -199,7 +199,7 @@ export default function MySupProfile() {
             <h3>💳 Bank Information</h3>
             <div className="formGrid">
               <div className="formGroup">
-                <label>Bank Name</label>
+                <label>Bank Name <span style={{color: '#ef4444'}}>*</span></label>
                 <input
                   type="text"
                   value={profile.bankAccount?.bankName || ""}
@@ -207,7 +207,14 @@ export default function MySupProfile() {
                     handleChange("bankAccount.bankName", e.target.value)
                   }
                   disabled={!editMode}
+                  style={{
+                    borderColor: errors["bankAccount.bankName"] ? '#ef4444' : '',
+                    backgroundColor: errors["bankAccount.bankName"] ? '#fef2f2' : ''
+                  }}
                 />
+                {errors["bankAccount.bankName"] && (
+                  <span className="error" style={{color: '#ef4444', fontSize: '12px'}}>{errors["bankAccount.bankName"]}</span>
+                )}
               </div>
 
               <div className="formGroup">
@@ -223,7 +230,7 @@ export default function MySupProfile() {
               </div>
 
               <div className="formGroup">
-                <label>Account Number</label>
+                <label>Account Number <span style={{color: '#ef4444'}}>*</span></label>
                 <input
                   type="text"
                   value={profile.bankAccount?.accountNumber || ""}
@@ -231,7 +238,14 @@ export default function MySupProfile() {
                     handleChange("bankAccount.accountNumber", e.target.value)
                   }
                   disabled={!editMode}
+                  style={{
+                    borderColor: errors["bankAccount.accountNumber"] ? '#ef4444' : '',
+                    backgroundColor: errors["bankAccount.accountNumber"] ? '#fef2f2' : ''
+                  }}
                 />
+                {errors["bankAccount.accountNumber"] && (
+                  <span className="error" style={{color: '#ef4444', fontSize: '12px'}}>{errors["bankAccount.accountNumber"]}</span>
+                )}
               </div>
             </div>
           </div>
@@ -321,7 +335,7 @@ export default function MySupProfile() {
                 </div>
 
                 <div className="formGroup">
-                  <label>Phone *</label>
+                  <label>Phone</label>
                   <input
                     type="text"
                     value={profile.contactPerson?.phone || ""}
@@ -333,9 +347,13 @@ export default function MySupProfile() {
                     }
                     disabled={!editMode}
                     maxLength={10}
+                    style={{
+                      borderColor: errors["contactPerson.phone"] ? '#ef4444' : '',
+                      backgroundColor: errors["contactPerson.phone"] ? '#fef2f2' : ''
+                    }}
                   />
                   {errors["contactPerson.phone"] && (
-                    <span className="error">{errors["contactPerson.phone"]}</span>
+                    <span className="error" style={{color: '#ef4444', fontSize: '12px'}}>{errors["contactPerson.phone"]}</span>
                   )}
                 </div>
               </div>
