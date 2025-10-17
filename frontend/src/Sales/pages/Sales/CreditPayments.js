@@ -136,7 +136,7 @@ const CreditPayments = () => {
       {loading ? (
         <p>Loading credit payments...</p>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="invoice-grid max-w-7xl mx-auto">
           {filteredPayments.length > 0 ? (
             filteredPayments.map((payment) => {
               const daysUntilDue = getDaysUntilDue(payment.creditDetails?.dueDate);

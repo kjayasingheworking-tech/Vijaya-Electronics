@@ -201,3 +201,34 @@ input.rounded:focus {
 .status-expired {
   @apply bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium;
 }
+
+/* Card Grid Layouts */
+.invoice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+.discount-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .invoice-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .discount-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .invoice-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .discount-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

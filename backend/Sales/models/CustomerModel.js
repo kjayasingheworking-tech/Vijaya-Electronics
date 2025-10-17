@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
 
 const customerSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "UserTemp" }, 
@@ -9,6 +10,14 @@ const customerSchema = new mongoose.Schema({
   addressLine2: String,
   city: String,
   companyName: String, // optional company name for wholesale customers
+
+  // customerId field
+  customerId: { 
+    type: String, 
+    unique: true, 
+    required: true,
+    default: () => `CUST-${uuidv4()}`
+  },
 
   // customer type: "regular" or "wholesale"
   type: { type: String, enum: ["regular","wholesale"], default: "regular" },
