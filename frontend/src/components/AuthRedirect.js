@@ -13,6 +13,11 @@ const AuthRedirect = ({ children }) => {
       if (user.role === 'sales_manager' && !location.pathname.startsWith('/sales')) {
         navigate('/sales', { replace: true });
       }
+      
+      // Redirect repair managers to their dashboard ONLY if they're not already on a repair route
+      if (user.role === 'repair_manager' && !location.pathname.startsWith('/repair')) {
+        navigate('/repair/admin', { replace: true });
+      }
     }
   }, [user, booted, navigate, location]);
 

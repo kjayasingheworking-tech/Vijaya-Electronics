@@ -16,7 +16,7 @@ function calculateCustomerTier(customerType, totalPurchaseAmount) {
     // Wholesale customer tier thresholds
     if (totalPurchaseAmount >= 1000000) {
       return "diamond";
-    } else if (totalPurchaseAmount >= 500000) {
+    } else if (totalPurchaseAmount >= 500100) {
       return "gold";
     } else {
       return "silver";

@@ -21,7 +21,7 @@ app.use("/notifications", notificationRoutes);
 //MongoDB connection
 mongoose
   .connect(
-    "mongodb+srv://Techa:36ZBZ10Fs9ZIeUsZ@cluster0.acae2ef.mongodb.net/repairdb",
+    "mongodb+srv://palindapasindu_db_user:pali921@cluster0.40qldfr.mongodb.net/electric_smart_db",
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -30,8 +30,8 @@ mongoose
   .then(() => {
     console.log("Connected to MongoDB");
 
-    app.listen(5000, () => {
-      console.log("🚀 Server running on http://localhost:5000");
+    app.listen(5001, () => {
+      console.log("🚀 Server running on http://localhost:5001");
     });
   })
   .catch((err) => console.error("❌ MongoDB connection error:", err));

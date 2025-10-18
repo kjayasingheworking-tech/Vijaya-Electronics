@@ -1,14 +1,14 @@
 @echo off
-echo This script will help free up port 5000 for your Node.js server
+echo This script will help free up port 5001 for your Node.js server
 echo You need to run this as Administrator
 
 echo.
-echo Checking what's using port 5000...
-netstat -aon | findstr :5000
+echo Checking what's using port 5001...
+netstat -aon | findstr :5001
 
 echo.
-echo Attempting to exclude port 5000 from Windows reserved ports...
-netsh int ipv4 add excludedportrange protocol=tcp startport=5000 numberofports=1
+echo Attempting to exclude port 5001 from Windows reserved ports...
+netsh int ipv4 add excludedportrange protocol=tcp startport=5001 numberofports=1
 
 echo.
 echo If the above failed, you may need to:

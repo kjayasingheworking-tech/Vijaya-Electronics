@@ -4,9 +4,19 @@ import mobileImg from "../../Assets/mobile.jpg";
 import laptopImg from "../../Assets/laptop.jpeg";
 import speakerImg from "../../Assets/speaker.jpeg";
 
+// Helper to get user from main auth system
+function getUser() {
+  try {
+    return JSON.parse(localStorage.getItem("electra_user") || "null");
+  } catch {
+    return null;
+  }
+}
+
 function Landing() {
   const navigate = useNavigate();
-  const [role, setRole] = useState(localStorage.getItem("role") || "");
+  const user = getUser();
+  const [role, setRole] = useState(user?.role || "");
 
   // 🖼 Carousel slides
   const slides = [

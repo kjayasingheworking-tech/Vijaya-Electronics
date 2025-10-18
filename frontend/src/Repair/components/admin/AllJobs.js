@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { REPAIR_API } from "../../config/api";
 
 const AllJobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -8,18 +9,25 @@ const AllJobs = () => {
   // ✅ Fetch jobs from backend
   useEffect(() => {
     const fetchJobs = async () => {
+      setLoading(true);
+      setError("");
       try {
-        const res = await fetch("http://localhost:5000/techs");
+        const res = await fetch(REPAIR_API.JOBS);
         const data = await res.json();
 
+        // If response is not OK but message is "No jobs found", treat as empty array not error
         if (!res.ok) {
-          throw new Error(data.message || "Failed to fetch jobs");
+          if (data.message && data.message.toLowerCase().includes('no jobs')) {
+            setJobs([]);
+          } else {
+            throw new Error(data.message || "Failed to fetch jobs");
+          }
+        } else {
+          setJobs(Array.isArray(data) ? data : []);
         }
-
-        setJobs(data);
       } catch (err) {
         console.error("Error fetching jobs:", err);
-        setError("⚠️ Failed to load jobs. Please try again later.");
+        setError(err.message || "Failed to load jobs");
       } finally {
         setLoading(false);
       }
@@ -55,13 +63,39 @@ const AllJobs = () => {
         <p className="text-gray-500 animate-pulse">Loading job data...</p>
       )}
       {error && (
-        <p className="text-red-600 font-medium bg-red-50 border-l-4 border-red-500 p-3 rounded">
-          {error}
-        </p>
+        <div className="text-red-600 font-medium bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+          <p className="font-semibold">⚠️ Error Loading Jobs</p>
+          <p className="text-sm mt-1">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-3 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+          >
+            Try Again
+          </button>
+        </div>
+      )}
+
+      {/* No jobs found message */}
+      {!loading && !error && jobs.length === 0 && (
+        <div className="text-center py-12">
+          <div className="inline-block p-6 bg-blue-50 rounded-full mb-4">
+            <svg className="w-16 h-16 text-[#0057B8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-gray-700 mb-2">No Repair Jobs Found</h3>
+          <p className="text-gray-500 mb-4">There are currently no repair jobs in the system.</p>
+          <button 
+            onClick={() => window.location.href = '/repair/admin/create-job'} 
+            className="px-6 py-2 bg-[#0057B8] text-white rounded-lg hover:bg-[#00489a] transition"
+          >
+            Create First Job
+          </button>
+        </div>
       )}
 
       {/* Jobs table */}
-      {!loading && !error && (
+      {!loading && !error && jobs.length > 0 && (
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
