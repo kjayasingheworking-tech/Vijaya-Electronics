@@ -154,7 +154,7 @@ const isInvoicesActive = location.pathname.startsWith("/admin/invoices");
        <Link to="/customer/tickets"  className={isCustomerTicketsActive ? "active" : ""}>
               My Tickets
       </Link>
-      <Link to="/repair/check-status" className={loc.pathname === "/repair/check-status" ? "active" : ""}>
+      <Link to="/repair" className={loc.pathname === "/repair" || loc.pathname === "/repair/" ? "active" : ""}>
         My Repairs
       </Link>
            

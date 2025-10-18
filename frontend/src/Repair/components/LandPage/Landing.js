@@ -52,11 +52,11 @@ function Landing() {
   const nextSlide = () => setCurrent((prev) => (prev + 1) % slides.length);
 
   // Navigation handlers
-  const goCreateJob = () => navigate("/admin/create-job");
-  const goAddTechnician = () => navigate("/admin/add-technician");
-  const goAllJobs = () => navigate("/admin/all-jobs");
-  const goModifyJob = () => navigate("/admin/modify-jobs");
-  const goCheckStatus = () => navigate("/check-status");
+  const goCreateJob = () => navigate("/repair/admin/create-job");
+  const goAddTechnician = () => navigate("/repair/admin/add-technician");
+  const goAllJobs = () => navigate("/repair/admin/all-jobs");
+  const goModifyJob = () => navigate("/repair/admin/modify-jobs");
+  const goCheckStatus = () => navigate("/repair/check-status");
 
   return (
     <div className="bg-[#F8F9FA] min-h-screen font-sans">
@@ -97,8 +97,8 @@ function Landing() {
 
       {/* ⚙️ Role-Based Buttons */}
       <div className="text-center mt-10 flex flex-wrap justify-center gap-6">
-        {/* 🔧 Admin buttons */}
-        {role === "admin" && (
+        {/* 🔧 Admin & Repair Manager buttons */}
+        {(role === "admin" || role === "repair_manager") && (
           <>
             <button
               onClick={goCreateJob}
@@ -130,21 +130,14 @@ function Landing() {
           </>
         )}
 
-        {/* 👤 Customer buttons */}
-        {role === "customer" && (
+        {/* 👤 Customer & Guest buttons */}
+        {(role === "customer" || !role) && (
           <button
             onClick={goCheckStatus}
             className="bg-[#0057B8] text-white font-semibold px-8 py-3 rounded-full hover:bg-[#00489a] transition"
           >
-            🔍 Check Repair Status / Modify
+            🔍 Check Repair Status
           </button>
-        )}
-
-        {/* 🚫 No role */}
-        {!role && (
-          <p className="text-gray-500 italic">
-            Please select a role using the bottom-right role switcher.
-          </p>
         )}
       </div>
     </div>
