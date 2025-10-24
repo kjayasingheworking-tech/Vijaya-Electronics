@@ -1,11 +1,11 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './routes/ProtectedRoute';
-import { ToastProvider } from './components/ToastProvider'; // ⬅️ add this
+import { ToastProvider } from './components/ToastProvider';
 import AuthRedirect from './components/AuthRedirect';
 import SalesApp from './Sales/SalesApp';
 import CustomerApp from './Sales/CustomerApp';
-import RepairApp from './Repair/App'; // ⬅️ Repair module
+import RepairApp from './Repair/App'; 
 
 import Navbar from './components/Navbar';
 import CustomerHome from './pages/CustomerHome';

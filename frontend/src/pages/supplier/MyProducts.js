@@ -244,6 +244,7 @@ function HistoryDrawer({ product, open, onClose }) {
 
 function ProductForm({ initial, onCreated, onUpdated, onCancel }) {
   const editing = !!(initial && initial._id);
+  const [step, setStep] = useState(1); 
   const [name, setName] = useState(initial?.name || "");
   const [description, setDescription] = useState(initial?.description || "");
   const [unitPrice, setUnitPrice] = useState(initial?.unitPrice ?? "");
@@ -251,10 +252,29 @@ function ProductForm({ initial, onCreated, onUpdated, onCancel }) {
   const [categories, setCategories] = useState((initial?.categories || []).join(", "));
   const [sku, setSku] = useState(initial?.sku || "");
   const [specifications, setSpecifications] = useState(initial?.specifications || []);
-  const [images, setImages] = useState(null); // for create and edit
-  const [newImages, setNewImages] = useState(null); // for adding new images during edit
-  const [existingImages, setExistingImages] = useState(initial?.images || []); // current images for editing
+  const [images, setImages] = useState(null); 
+  const [newImages, setNewImages] = useState(null); 
+  const [existingImages, setExistingImages] = useState(initial?.images || []); 
   const [saving, setSaving] = useState(false);
+
+  const validateStep1 = () => {
+    if (!name.trim()) {
+      alert("Product name is required");
+      return false;
+    }
+    if (!unitPrice || parseFloat(unitPrice) < 0) {
+      alert("Valid unit price is required");
+      return false;
+    }
+    return true;
+  };
+
+  const goToStep2 = (e) => {
+    e.preventDefault();
+    if (validateStep1()) {
+      setStep(2);
+    }
+  };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -315,196 +335,253 @@ function ProductForm({ initial, onCreated, onUpdated, onCancel }) {
   };
 
   return (
-    <form onSubmit={submit} className="card modal-card">
-      <h3 style={{ marginTop: 0 }}>{editing ? "Edit Product" : "Add New Product"}</h3>
-      <div className="grid2">
-        <div>
-          <label>Name *</label>
-          <input className="inp" value={name} onChange={(e) => setName(e.target.value)} required />
-        </div>
-        <div>
-          <label>Unit Price *</label>
-          <input
-            className="inp"
-            type="number"
-            min="0"
-            step="0.01"
-            value={unitPrice}
-            onChange={(e) => setUnitPrice(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>SKU</label>
-          <input className="inp" value={sku} onChange={(e) => setSku(e.target.value)} />
-        </div>
-        <div>
-          <label>Available</label>
-          <select
-            className="inp"
-            value={String(isAvailable)}
-            onChange={(e) => setIsAvailable(e.target.value === "true")}
-          >
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </div>
-        <div className="col-span">
-          <label>Description</label>
-          <textarea
-            className="inp"
-            rows={3}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        <div className="col-span">
-          <label>Categories (comma separated)</label>
-          <input className="inp" value={categories} onChange={(e) => setCategories(e.target.value)} />
-        </div>
-        <div className="col-span">
-          <label>Specifications</label>
-          <SpecRows value={specifications} onChange={setSpecifications} />
-        </div>
-        {/* Images section for both create and edit */}
-        <div className="col-span">
-          <label>{editing ? 'Manage Product Images' : 'Images (max 5)'}</label>
-          
-          {/* Show existing images when editing */}
-          {editing && existingImages && existingImages.length > 0 && (
-            <div style={{ marginBottom: '12px' }}>
-              <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>Current Images:</p>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {existingImages.map((imageUrl, index) => (
-                  <div key={index} style={{ position: 'relative', display: 'inline-block' }}>
-                    <img 
-                      src={`http://localhost:5001${imageUrl}`} 
-                      alt={`Product ${index + 1}`}
-                      style={{ 
-                        width: '60px', 
-                        height: '60px', 
-                        objectFit: 'cover', 
-                        borderRadius: '4px',
-                        border: '1px solid #ddd'
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const updatedImages = existingImages.filter((_, i) => i !== index);
-                        setExistingImages(updatedImages);
-                      }}
-                      style={{
-                        position: 'absolute',
-                        top: '-4px',
-                        right: '-4px',
-                        width: '18px',
-                        height: '18px',
-                        borderRadius: '50%',
-                        background: '#ff4444',
-                        color: 'white',
-                        border: 'none',
-                        fontSize: '10px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                      title="Remove this image"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+    <form onSubmit={step === 1 ? goToStep2 : submit} className="card modal-card">
+      <h3 style={{ marginTop: 0 }}>
+        {editing ? "Edit Product" : "Add New Product"}
+        <span style={{ fontSize: 14, marginLeft: 12, color: C.sub }}>
+          Step {step} of 2
+        </span>
+      </h3>
 
-          {/* File input for new images */}
-          <input
-            className="inp"
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={(e) => {
-              if (editing) {
-                setNewImages(e.target.files);
-              } else {
-                setImages(e.target.files);
-              }
-            }}
-          />
-          
-          {/* Preview new images */}
-          {((editing && newImages && newImages.length > 0) || (!editing && images && images.length > 0)) && (
-            <div style={{ marginTop: '12px' }}>
-              <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
-                {editing ? 'New Images to Add:' : 'Preview:'}
-              </p>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {Array.from(editing ? newImages : images).map((file, index) => (
-                  <div key={index} style={{ position: 'relative', display: 'inline-block' }}>
-                    <img 
-                      src={URL.createObjectURL(file)} 
-                      alt={`Preview ${index + 1}`}
-                      style={{ 
-                        width: '60px', 
-                        height: '60px', 
-                        objectFit: 'cover', 
-                        borderRadius: '4px',
-                        border: '1px solid #ddd'
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (editing) {
-                          const updatedFiles = Array.from(newImages).filter((_, i) => i !== index);
-                          setNewImages(updatedFiles.length > 0 ? updatedFiles : null);
-                        } else {
-                          const updatedFiles = Array.from(images).filter((_, i) => i !== index);
-                          setImages(updatedFiles.length > 0 ? updatedFiles : null);
-                        }
-                      }}
-                      style={{
-                        position: 'absolute',
-                        top: '-4px',
-                        right: '-4px',
-                        width: '18px',
-                        height: '18px',
-                        borderRadius: '50%',
-                        background: '#ff4444',
-                        color: 'white',
-                        border: 'none',
-                        fontSize: '10px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                      title="Remove this image"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
+      {/* Step Progress Indicator */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+        <div
+          style={{
+            flex: 1,
+            height: 4,
+            borderRadius: 2,
+            background: step >= 1 ? C.primary : "#e5e7eb",
+          }}
+        />
+        <div
+          style={{
+            flex: 1,
+            height: 4,
+            borderRadius: 2,
+            background: step >= 2 ? C.primary : "#e5e7eb",
+          }}
+        />
+      </div>
+
+      {/* Step 1: Product Details */}
+      {step === 1 && (
+        <>
+          <div className="grid2">
+            <div>
+              <label>Name *</label>
+              <input className="inp" value={name} onChange={(e) => setName(e.target.value)} required />
             </div>
-          )}
-          
-          <small className="muted">
-            {editing ? 'Add new images or remove existing ones. Changes will be saved when you click Save.' : 'You can also store image URLs on the backend if supported.'}
-          </small>
-        </div>
-      </div>
-      <div style={{ display: "flex", gap: 12, marginTop: 16, justifyContent: "flex-end" }}>
-        <button type="button" className="btn ghost" onClick={onCancel}>
-          Cancel
-        </button>
-        <button className="btn" disabled={saving}>
-          {saving ? "Saving..." : "Save"}
-        </button>
-      </div>
+            <div>
+              <label>Unit Price *</label>
+              <input
+                className="inp"
+                type="number"
+                min="0"
+                step="0.01"
+                value={unitPrice}
+                onChange={(e) => setUnitPrice(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label>SKU</label>
+              <input className="inp" value={sku} onChange={(e) => setSku(e.target.value)} />
+            </div>
+            <div>
+              <label>Available</label>
+              <select
+                className="inp"
+                value={String(isAvailable)}
+                onChange={(e) => setIsAvailable(e.target.value === "true")}
+              >
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+            <div className="col-span">
+              <label>Description</label>
+              <textarea
+                className="inp"
+                rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+            <div className="col-span">
+              <label>Categories (comma separated)</label>
+              <input className="inp" value={categories} onChange={(e) => setCategories(e.target.value)} />
+            </div>
+            <div className="col-span">
+              <label>Specifications</label>
+              <SpecRows value={specifications} onChange={setSpecifications} />
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 12, marginTop: 16, justifyContent: "flex-end" }}>
+            <button type="button" className="btn ghost" onClick={onCancel}>
+              Cancel
+            </button>
+            <button type="submit" className="btn">
+              Next: Upload Images →
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* Step 2: Image Upload */}
+      {step === 2 && (
+        <>
+          <div className="col-span">
+            <label>{editing ? 'Manage Product Images' : 'Images (max 5)'}</label>
+            
+            {/* Show existing images when editing */}
+            {editing && existingImages && existingImages.length > 0 && (
+              <div style={{ marginBottom: '12px' }}>
+                <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>Current Images:</p>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {existingImages.map((imageUrl, index) => {
+                    // Handle both full URLs and relative paths
+                    const imageSrc = imageUrl.startsWith('http') 
+                      ? imageUrl 
+                      : `http://localhost:5001${imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl}`;
+                    
+                    return (
+                      <div key={index} style={{ position: 'relative', display: 'inline-block' }}>
+                        <img 
+                          src={imageSrc}
+                          alt={`Product ${index + 1}`}
+                          style={{ 
+                            width: '80px', 
+                            height: '80px', 
+                            objectFit: 'cover', 
+                            borderRadius: '8px',
+                            border: '2px solid #ddd'
+                          }}
+                          onError={(e) => {
+                            console.error('Image load error:', imageSrc);
+                            e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80"%3E%3Crect fill="%23ddd" width="80" height="80"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Image%3C/text%3E%3C/svg%3E';
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updatedImages = existingImages.filter((_, i) => i !== index);
+                            setExistingImages(updatedImages);
+                          }}
+                          style={{
+                            position: 'absolute',
+                            top: '-6px',
+                            right: '-6px',
+                            width: '24px',
+                            height: '24px',
+                            borderRadius: '50%',
+                            background: '#ff4444',
+                            color: 'white',
+                            border: 'none',
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontWeight: 'bold'
+                          }}
+                          title="Remove this image"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* File input for new images */}
+            <input
+              className="inp"
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={(e) => {
+                if (editing) {
+                  setNewImages(e.target.files);
+                } else {
+                  setImages(e.target.files);
+                }
+              }}
+            />
+            
+            {/* Preview new images */}
+            {((editing && newImages && newImages.length > 0) || (!editing && images && images.length > 0)) && (
+              <div style={{ marginTop: '12px' }}>
+                <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                  {editing ? 'New Images to Add:' : 'Preview:'}
+                </p>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {Array.from(editing ? newImages : images).map((file, index) => (
+                    <div key={index} style={{ position: 'relative', display: 'inline-block' }}>
+                      <img 
+                        src={URL.createObjectURL(file)} 
+                        alt={`Preview ${index + 1}`}
+                        style={{ 
+                          width: '80px', 
+                          height: '80px', 
+                          objectFit: 'cover', 
+                          borderRadius: '8px',
+                          border: '2px solid #ddd'
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (editing) {
+                            const updatedFiles = Array.from(newImages).filter((_, i) => i !== index);
+                            setNewImages(updatedFiles.length > 0 ? updatedFiles : null);
+                          } else {
+                            const updatedFiles = Array.from(images).filter((_, i) => i !== index);
+                            setImages(updatedFiles.length > 0 ? updatedFiles : null);
+                          }
+                        }}
+                        style={{
+                          position: 'absolute',
+                          top: '-6px',
+                          right: '-6px',
+                          width: '24px',
+                          height: '24px',
+                          borderRadius: '50%',
+                          background: '#ff4444',
+                          color: 'white',
+                          border: 'none',
+                          fontSize: '14px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: 'bold'
+                        }}
+                        title="Remove this image"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            <small className="muted" style={{ display: 'block', marginTop: 8 }}>
+              {editing ? 'Add new images or remove existing ones. Changes will be saved when you click Submit.' : 'Upload up to 5 product images. You can remove them before submitting.'}
+            </small>
+          </div>
+          <div style={{ display: "flex", gap: 12, marginTop: 24, justifyContent: "flex-end" }}>
+            <button type="button" className="btn ghost" onClick={() => setStep(1)}>
+              ← Back
+            </button>
+            <button type="submit" className="btn" disabled={saving}>
+              {saving ? "Saving..." : editing ? "Save Changes" : "Create Product"}
+            </button>
+          </div>
+        </>
+      )}
     </form>
   );
 }
