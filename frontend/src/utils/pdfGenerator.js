@@ -236,7 +236,7 @@ export const generateSuppliersReport = (suppliers, searchTerm = '') => {
   
   pdf.addHeader(title, subtitle);
   
-  // Summary stats
+  // Summary stats - use proper field access with fallbacks
   const activeSuppliers = suppliers.filter(s => s.user?.isActive).length;
   const inactiveSuppliers = suppliers.length - activeSuppliers;
   
@@ -248,15 +248,15 @@ export const generateSuppliersReport = (suppliers, searchTerm = '') => {
   
   pdf.addSummaryStats(stats);
   
-  // Suppliers table
-  const columns = ['Company', 'Email', 'Phone', 'City', 'Status', 'Joined'];
+  // Suppliers table - use correct field mappings
+  const columns = ['Company', 'Email', 'Phone', 'Contact Person', 'Status', 'Joined'];
   const data = suppliers.map(supplier => [
-    (supplier.user?.name || 'N/A').substring(0, 25) + ((supplier.user?.name || '').length > 25 ? '...' : ''),
-    (supplier.user?.email || 'N/A').substring(0, 30) + ((supplier.user?.email || '').length > 30 ? '...' : ''),
+    (supplier.companyName || 'N/A').substring(0, 25) + ((supplier.companyName || '').length > 25 ? '...' : ''),
+    (supplier.contactDetails?.email || supplier.user?.email || 'N/A').substring(0, 30) + (((supplier.contactDetails?.email || supplier.user?.email || '').length > 30) ? '...' : ''),
     supplier.contactDetails?.phone || 'N/A',
-    (supplier.contactDetails?.city || 'N/A').substring(0, 15) + ((supplier.contactDetails?.city || '').length > 15 ? '...' : ''),
+    (supplier.contactPerson?.name || 'N/A').substring(0, 20) + ((supplier.contactPerson?.name || '').length > 20 ? '...' : ''),
     supplier.user?.isActive ? 'Active' : 'Inactive',
-    supplier.user?.createdAt ? new Date(supplier.user.createdAt).toLocaleDateString() : 'N/A'
+    supplier.createdAt ? new Date(supplier.createdAt).toLocaleDateString() : 'N/A'
   ]);
   
   pdf.addTable(columns, data, 'Suppliers List');
@@ -277,30 +277,34 @@ export const generateProductsReport = (products, filters = {}) => {
   
   // Summary stats
   const totalValue = products.reduce((sum, p) => {
-    const price = Number(p.price) || 0;
-    const stock = Number(p.stock) || 0;
-    return sum + (price * stock);
+    const price = Number(p.unitPrice) || 0;
+    return sum + price;
   }, 0);
-  const lowStockItems = products.filter(p => (Number(p.stock) || 0) < 10).length;
+  const activeProducts = products.filter(p => p.isActive !== false && p.isAvailable !== false).length;
   
   const stats = [
     { label: 'Total Products', value: products.length },
-    { label: 'Low Stock Items', value: lowStockItems },
-    { label: 'Total Inventory Value', value: `$${totalValue.toLocaleString()}` },
+    { label: 'Active Products', value: activeProducts },
+    { label: 'Avg. Unit Price', value: `Rs. ${(totalValue / Math.max(products.length, 1)).toFixed(2)}` },
   ];
   
   pdf.addSummaryStats(stats);
   
   // Products table
-  const columns = ['Product', 'SKU', 'Category', 'Supplier', 'Price', 'Stock'];
-  const data = products.map(product => [
-    (product.name || 'N/A').substring(0, 25) + ((product.name || '').length > 25 ? '...' : ''),
-    (product.sku || 'N/A').substring(0, 15) + ((product.sku || '').length > 15 ? '...' : ''),
-    ((product.categories || []).join(', ') || 'N/A').substring(0, 20) + (((product.categories || []).join(', ') || '').length > 20 ? '...' : ''),
-    (product.supplier?.name || 'N/A').substring(0, 20) + ((product.supplier?.name || '').length > 20 ? '...' : ''),
-    `$${(Number(product.price) || 0).toFixed(2)}`,
-    (Number(product.stock) || 0).toString()
-  ]);
+  const columns = ['Product', 'SKU', 'Category', 'Supplier', 'Unit Price', 'Status'];
+  const data = products.map(product => {
+    const supplierName = product.supplier?.name || product.supplier?.companyName || 'N/A';
+    const status = (product.isActive === false || product.isAvailable === false) ? 'Inactive' : 'Active';
+    
+    return [
+      (product.name || 'N/A').substring(0, 30) + ((product.name || '').length > 30 ? '...' : ''),
+      (product.sku || 'N/A').substring(0, 15) + ((product.sku || '').length > 15 ? '...' : ''),
+      ((product.categories || []).join(', ') || 'N/A').substring(0, 20) + (((product.categories || []).join(', ') || '').length > 20 ? '...' : ''),
+      supplierName.substring(0, 20) + (supplierName.length > 20 ? '...' : ''),
+      `Rs. ${(Number(product.unitPrice) || 0).toFixed(2)}`,
+      status
+    ];
+  });
   
   pdf.addTable(columns, data, 'Products List');
   
@@ -356,31 +360,39 @@ export const generateInvoicesReport = (invoices, filters = {}) => {
   
   // Summary stats
   const totalAmount = invoices.reduce((sum, inv) => {
-    const amount = Number(inv.totalAmount) || 0;
+    const amount = Number(inv.totals?.grandTotal) || 0;
     return sum + amount;
   }, 0);
-  const paidInvoices = invoices.filter(inv => inv.status === 'paid').length;
-  const pendingInvoices = invoices.filter(inv => inv.status === 'pending').length;
+  const issuedInvoices = invoices.filter(inv => inv.status === 'issued').length;
+  const closedInvoices = invoices.filter(inv => inv.status === 'closed').length;
+  const cancelledInvoices = invoices.filter(inv => inv.status === 'cancelled').length;
   
   const stats = [
     { label: 'Total Invoices', value: invoices.length },
-    { label: 'Paid Invoices', value: paidInvoices },
-    { label: 'Pending Invoices', value: pendingInvoices },
-    { label: 'Total Amount', value: `$${totalAmount.toLocaleString()}` },
+    { label: 'Issued', value: issuedInvoices },
+    { label: 'Closed', value: closedInvoices },
+    { label: 'Total Amount', value: `Rs. ${totalAmount.toLocaleString()}` },
   ];
   
   pdf.addSummaryStats(stats);
   
-  // Invoices table
-  const columns = ['Invoice ID', 'Supplier', 'Date', 'Amount', 'Status', 'Due Date'];
-  const data = invoices.map(invoice => [
-    (invoice.invoiceNumber || invoice._id?.slice(-8) || 'N/A').substring(0, 15),
-    (invoice.supplier?.name || 'N/A').substring(0, 20) + ((invoice.supplier?.name || '').length > 20 ? '...' : ''),
-    invoice.createdAt ? new Date(invoice.createdAt).toLocaleDateString() : 'N/A',
-    `$${(Number(invoice.totalAmount) || 0).toFixed(2)}`,
-    (invoice.status || 'pending').toUpperCase(),
-    invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString() : 'N/A'
-  ]);
+  // Invoices table - include PO reference for better tracking
+  const columns = ['Invoice ID', 'Supplier', 'PO Number', 'Type', 'Amount', 'Status', 'Date'];
+  const data = invoices.map(invoice => {
+    const supplierName = invoice.supplier?.name || invoice.supplier?.companyName || 'N/A';
+    const invoiceType = invoice.type === 'recalculated' ? 'Recalc.' : 'Original';
+    const poNumber = invoice.purchaseOrder?.poNumber || invoice.purchaseOrder?._id?.slice(-6) || 'N/A';
+    
+    return [
+      (invoice.invoiceNumber || invoice._id?.slice(-8) || 'N/A').substring(0, 15),
+      supplierName.substring(0, 20) + (supplierName.length > 20 ? '...' : ''),
+      poNumber.substring(0, 15),
+      invoiceType,
+      `Rs. ${(Number(invoice.totals?.grandTotal) || 0).toFixed(2)}`,
+      (invoice.status || 'issued').toUpperCase(),
+      invoice.createdAt ? new Date(invoice.createdAt).toLocaleDateString() : 'N/A'
+    ];
+  });
   
   pdf.addTable(columns, data, 'Invoices List');
   

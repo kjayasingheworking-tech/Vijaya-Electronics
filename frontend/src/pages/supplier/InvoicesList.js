@@ -74,7 +74,7 @@ const downloadInvoicesReport = (invoices, filters) => {
       invoice.type || 'original',
       invoice.status || 'issued',
       `Rs. ${(invoice.totals?.grandTotal || 0).toLocaleString()}`,
-      invoice.purchaseOrder || 'N/A',
+      invoice.purchaseOrder?.poNumber || invoice.purchaseOrder?._id?.slice(-6) || 'N/A',
       new Date(invoice.createdAt).toLocaleDateString('en-GB')
     ]);
     

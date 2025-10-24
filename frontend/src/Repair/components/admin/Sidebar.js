@@ -1,13 +1,14 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Wrench, ClipboardList, UserPlus, Edit3, LogOut } from "lucide-react";
+import { useAuth } from "../../../context/AuthContext";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
-  const handleLogout = () => {
-    localStorage.removeItem("role");
-    navigate("/");
+  const handleLogout = async () => {
+    await logout(); // Uses the main app's logout which clears storage and redirects to /
   };
 
   const linkStyle =
@@ -22,7 +23,7 @@ const Sidebar = () => {
 
         <nav className="flex flex-col gap-3">
           <NavLink
-            to="/admin/create-job"
+            to="/repair/admin/create-job"
             className={({ isActive }) =>
               `${linkStyle} ${
                 isActive ? "bg-[#FFA500] text-[#212529]" : "hover:bg-[#00489a]"
@@ -33,7 +34,7 @@ const Sidebar = () => {
           </NavLink>
 
           <NavLink
-            to="/admin/add-technician"
+            to="/repair/admin/add-technician"
             className={({ isActive }) =>
               `${linkStyle} ${
                 isActive ? "bg-[#FFA500] text-[#212529]" : "hover:bg-[#00489a]"
@@ -44,7 +45,7 @@ const Sidebar = () => {
           </NavLink>
 
           <NavLink
-            to="/admin/all-jobs"
+            to="/repair/admin/all-jobs"
             className={({ isActive }) =>
               `${linkStyle} ${
                 isActive ? "bg-[#FFA500] text-[#212529]" : "hover:bg-[#00489a]"
@@ -55,7 +56,7 @@ const Sidebar = () => {
           </NavLink>
 
           <NavLink
-            to="/admin/modify-jobs"
+            to="/repair/admin/modify-jobs"
             className={({ isActive }) =>
               `${linkStyle} ${
                 isActive ? "bg-[#FFA500] text-[#212529]" : "hover:bg-[#00489a]"

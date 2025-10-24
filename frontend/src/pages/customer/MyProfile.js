@@ -22,8 +22,11 @@ export default function MyProfile() {
   });
 
   const [errors, setErrors] = useState({ 
+    name: "",
     phone: "", 
-    addressLine1: "", 
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
     country: "" 
   });
 
@@ -51,10 +54,13 @@ export default function MyProfile() {
   };
 
   const validateForm = () => {
+    const nameValid = validateRequired("name", form.name, "Name");
     const phoneValid = validatePhone(form.phone);
     const addressValid = validateRequired("addressLine1", form.addressLine1, "Address Line 1");
+    const address2Valid = validateRequired("addressLine2", form.addressLine2, "Address Line 2");
+    const cityValid = validateRequired("city", form.city, "City");
     const countryValid = validateRequired("country", form.country, "Country");
-    return phoneValid && addressValid && countryValid;
+    return nameValid && phoneValid && addressValid && address2Valid && cityValid && countryValid;
   };
 
   const load = async () => {
@@ -143,7 +149,15 @@ export default function MyProfile() {
       toast.success("Profile updated successfully!");
     } catch (e2) {
       console.error("Save profile error:", e2);
-      toast.error(e2?.response?.data?.message || "Error saving profile");
+      const errorMsg = e2?.response?.data?.message || "Error saving profile";
+      
+      // Check if it's a phone number duplicate error
+      if (errorMsg.toLowerCase().includes("phone number already exists")) {
+        setErrors((prev) => ({ ...prev, phone: "This phone number is already used by another account" }));
+        toast.error("Phone number already exists. Please use a different number.");
+      } else {
+        toast.error(errorMsg);
+      }
     } finally {
       setSaving(false);
     }
@@ -343,7 +357,7 @@ export default function MyProfile() {
                 form="profileForm"
                 type="submit"
                 style={styles.primary}
-                disabled={saving || !!errors.phone || !!errors.addressLine1 || !!errors.country}
+                disabled={saving || !!errors.name || !!errors.phone || !!errors.addressLine1 || !!errors.addressLine2 || !!errors.city || !!errors.country}
               >
                 {saving ? "Saving…" : "Save"}
               </button>
@@ -371,15 +385,24 @@ export default function MyProfile() {
 
           <div style={styles.grid}>
             <div style={styles.field}>
-              <label style={styles.label}>Name</label>
+              <label style={styles.label}>Name *</label>
               <input
                 name="name"
                 value={form.name}
-                onChange={onChange}
-                style={styles.input}
+                onChange={(e) => {
+                  onChange(e);
+                  if (editMode) validateRequired("name", e.target.value, "Name");
+                }}
+                style={{
+                  ...styles.input,
+                  ...(errors.name ? styles.inputError : {}),
+                }}
                 disabled={!editMode}
                 required
               />
+              {errors.name && (
+                <div style={styles.errorText}>{errors.name}</div>
+              )}
             </div>
 
             <div style={styles.field}>
@@ -414,14 +437,24 @@ export default function MyProfile() {
             </div>
 
             <div style={styles.field}>
-              <label style={styles.label}>City</label>
+              <label style={styles.label}>City *</label>
               <input
                 name="city"
                 value={form.city}
-                onChange={onChange}
-                style={styles.input}
+                onChange={(e) => {
+                  onChange(e);
+                  if (editMode) validateRequired("city", e.target.value, "City");
+                }}
+                style={{
+                  ...styles.input,
+                  ...(errors.city ? styles.inputError : {}),
+                }}
                 disabled={!editMode}
+                required
               />
+              {errors.city && (
+                <div style={styles.errorText}>{errors.city}</div>
+              )}
             </div>
 
             <div style={styles.field}>
@@ -445,14 +478,24 @@ export default function MyProfile() {
             </div>
 
             <div style={styles.field}>
-              <label style={styles.label}>Address Line 2</label>
+              <label style={styles.label}>Address Line 2 *</label>
               <input
                 name="addressLine2"
                 value={form.addressLine2}
-                onChange={onChange}
-                style={styles.input}
+                onChange={(e) => {
+                  onChange(e);
+                  if (editMode) validateRequired("addressLine2", e.target.value, "Address Line 2");
+                }}
+                style={{
+                  ...styles.input,
+                  ...(errors.addressLine2 ? styles.inputError : {}),
+                }}
                 disabled={!editMode}
+                required
               />
+              {errors.addressLine2 && (
+                <div style={styles.errorText}>{errors.addressLine2}</div>
+              )}
             </div>
 
             <div style={styles.field}>

@@ -1,41 +1,54 @@
-import "./App.css";
 import { Routes, Route, Navigate } from "react-router-dom";
+import "./App.css";
 
-import Landing from "./Components/LandPage/Landing";
-import CheckStatus from "./Components/Status/CheckStatus";
-import JobF from "./Components/JobF/JobForm";
-import AddTechnician from "./Components/AddTechnicians/AddTechnician";
-import AdminDashboard from "./Components/Admin/AdminDashboard";
-import AllJobs from "./Components/Admin/AllJobs";
-import ModifyJobs from "./Components/Admin/ModifyJobs";
-import NotificationPanel from "./Components/Admin/NotificationPanel";
-import RoleSwitcher from "./Components/utils/RoleSwitcher"; 
+import Landing from "./components/LandPage/Landing";
+import CheckStatus from "./components/Status/CheckStatus";
+import JobF from "./components/JobF/JobForm";
+import AddTechnician from "./components/AddTechnicians/AddTechnician";
+import AdminDashboard from "./components/admin/AdminDashboard";
+import AllJobs from "./components/admin/AllJobs";
+import ModifyJobs from "./components/admin/ModifyJobs";
+import NotificationPanel from "./components/admin/NotificationPanel";
 
-//Role protection wrapper
+// Helper to get user from main auth system
+function getUser() {
+  try {
+    return JSON.parse(localStorage.getItem("electra_user") || "null");
+  } catch {
+    return null;
+  }
+}
+
+//Role protection wrapper for Repair module internal routes
 function ProtectedRoute({ children, allowedRoles }) {
-  const role = localStorage.getItem("role");
+  const user = getUser();
+  const token = localStorage.getItem("token");
 
-  if (!allowedRoles.includes(role)) {
-    alert("Access denied. You must be an admin to view this page.");
+  if (!token || !user) {
+    alert("Please login to access this page.");
     return <Navigate to="/" replace />;
+  }
+
+  if (!allowedRoles.includes(user.role)) {
+    alert("Access denied. You must be an admin or repair manager to view this page.");
+    return <Navigate to="/repair" replace />;
   }
 
   return children;
 }
 
 function App() {
-  const role = localStorage.getItem("role");
+  const user = getUser();
+  const userRole = user?.role;
 
   return (
-    <div className="pt-[90px]">
-      <RoleSwitcher />
-
+    <div>
       <Routes>
         <Route
           path="/"
           element={
-            role === "admin" ? (
-              <Navigate to="/admin" replace />
+            userRole === "repair_manager" || userRole === "admin" ? (
+              <Navigate to="/repair/admin" replace />
             ) : (
               <Landing />
             )
@@ -46,19 +59,20 @@ function App() {
         <Route
           path="/admin"
           element={
-            <ProtectedRoute allowedRoles={["admin"]}>
+            <ProtectedRoute allowedRoles={["admin", "repair_manager"]}>
               <AdminDashboard />
             </ProtectedRoute>
           }
         >
+          <Route index element={<AllJobs />} />
           <Route path="create-job" element={<JobF />} />
           <Route path="add-technician" element={<AddTechnician />} />
           <Route path="all-jobs" element={<AllJobs />} />
           <Route path="modify-jobs" element={<ModifyJobs />} />
-          <Route path="/admin/notifications" element={<NotificationPanel />} />
+          <Route path="notifications" element={<NotificationPanel />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/repair" replace />} />
       </Routes>
     </div>
   );

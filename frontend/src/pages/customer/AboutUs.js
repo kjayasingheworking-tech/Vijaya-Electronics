@@ -54,7 +54,13 @@ export default function AboutUs() {
   useEffect(() => { load().catch(console.error); }, []);
 
   const topRated = useMemo(() => {
-    const sorted = [...items].sort((a, b) => (b.rating - a.rating) || (new Date(b.createdAt) - new Date(a.createdAt)));
+    // Sort by number of comments (descending), then by created date (newest first)
+    const sorted = [...items].sort((a, b) => {
+      const aComments = a.comments?.length || 0;
+      const bComments = b.comments?.length || 0;
+      if (bComments !== aComments) return bComments - aComments;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
     return sorted.slice(0, 3);
   }, [items]);
 
@@ -86,6 +92,17 @@ export default function AboutUs() {
     await load(page);
     toast.success("Comment added successfully!");
 
+  };
+
+  // upvote handler
+  const onUpvote = async (fid) => {
+    if (!isAuthed) { setShowLoginPrompt(true); return; }
+    try {
+      await api.post(`/feedback/${fid}/upvote`);
+      await load(page);
+    } catch (error) {
+      toast.error("Failed to update upvote.");
+    }
   };
 
   // open modals from cards
@@ -180,7 +197,7 @@ export default function AboutUs() {
 
         {/* TOP RATED */}
         <div style={{ marginTop: 34 }}>
-          <div style={sectionTitle}>🌟 Top Rated Feedback</div>
+          <div style={sectionTitle}>🌟 Most Discussed Feedback</div>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(320px, 1fr))", gap:16 }}>
             {topRated.map((fb) => (
               <FeedbackCard
@@ -188,6 +205,7 @@ export default function AboutUs() {
                 feedback={fb}
                 currentUser={currentUser}
                 onAddComment={onAddComment}
+                onUpvote={onUpvote}
                 onEditFeedback={handleEditFeedback}
                 onDeleteFeedback={handleDeleteFeedback}
                 onEditComment={handleEditComment}
@@ -247,6 +265,7 @@ export default function AboutUs() {
                   feedback={fb}
                   currentUser={currentUser}
                   onAddComment={onAddComment}
+                  onUpvote={onUpvote}
                   onEditFeedback={handleEditFeedback}
                   onDeleteFeedback={handleDeleteFeedback}
                   onEditComment={handleEditComment}

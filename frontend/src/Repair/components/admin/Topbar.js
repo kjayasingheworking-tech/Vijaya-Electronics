@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Bell, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { REPAIR_API } from "../../config/api";
 
 const Topbar = () => {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -9,7 +10,7 @@ const Topbar = () => {
   // ✅ Fetch notification count from backend
   const fetchUnreadCount = async () => {
     try {
-      const res = await fetch("http://localhost:5000/notifications");
+      const res = await fetch(REPAIR_API.NOTIFICATIONS);
       const data = await res.json();
 
       if (res.ok) {
@@ -38,7 +39,7 @@ const Topbar = () => {
       <div className="flex items-center gap-6">
         {/* Notification Icon */}
         <button
-         onClick={() => navigate("/admin/notifications")}
+         onClick={() => navigate("/repair/admin/notifications")}
           className="relative"
           title="View Notifications"
         >

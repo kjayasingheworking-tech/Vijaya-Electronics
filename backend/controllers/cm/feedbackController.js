@@ -168,3 +168,36 @@ exports.deleteComment = async (req, res) => {
     res.status(500).json({ message: e.message });
   }
 };
+
+// POST /api/feedback/:id/upvote - Toggle upvote on feedback
+exports.toggleUpvote = async (req, res) => {
+  try {
+    const fb = await Feedback.findById(req.params.id);
+    if (!fb) return res.status(404).json({ message: "Feedback not found" });
+
+    const userId = req.user._id;
+    const hasUpvoted = fb.upvotes.some(id => String(id) === String(userId));
+
+    if (hasUpvoted) {
+      // Remove upvote
+      fb.upvotes = fb.upvotes.filter(id => String(id) !== String(userId));
+    } else {
+      // Add upvote
+      fb.upvotes.push(userId);
+    }
+
+    await fb.save();
+
+    const populated = await Feedback.findById(fb._id)
+      .populate("author", "name email role")
+      .populate("comments.author", "name email role");
+    
+    res.json({ 
+      feedback: populated,
+      upvoteCount: populated.upvotes.length,
+      hasUpvoted: !hasUpvoted
+    });
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+};
