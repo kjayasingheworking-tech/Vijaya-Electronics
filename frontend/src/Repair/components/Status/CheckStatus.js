@@ -1,7 +1,19 @@
 import React, { useState } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import { REPAIR_API } from "../../config/api";
+
+// Helper to get user from main auth system
+function getUser() {
+  try {
+    return JSON.parse(localStorage.getItem("electra_user") || "null");
+  } catch {
+    return null;
+  }
+}
 
 function CheckStatus() {
+  const user = getUser();
+  
   const [formData, setFormData] = useState({ jobNo: "", nic: "" });
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
@@ -29,7 +41,7 @@ function CheckStatus() {
       const query = formData.jobNo
         ? `jobNo=${formData.jobNo}`
         : `nic=${formData.nic}`;
-      const res = await fetch(`http://localhost:5000/techs/status?${query}`);
+      const res = await fetch(`${REPAIR_API.JOBS}/status?${query}`);
       const data = await res.json();
       if (!res.ok) setError(data.message || "No job found");
       else setResult(data);
@@ -56,7 +68,7 @@ function CheckStatus() {
     if (!result?._id) return alert("Job ID not found.");
     setIsSaving(true);
     try {
-      const res = await fetch(`http://localhost:5000/techs/${result._id}`, {
+      const res = await fetch(`${REPAIR_API.JOBS}/${result._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editData),
@@ -80,7 +92,7 @@ function CheckStatus() {
     if (!result?._id) return alert("Job ID not found.");
     if (!window.confirm("Are you sure you want to delete this job?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/techs/${result._id}`, {
+      const res = await fetch(`${REPAIR_API.JOBS}/${result._id}`, {
         method: "DELETE",
       });
       if (res.ok) {
@@ -153,26 +165,37 @@ function CheckStatus() {
         )}
 
         {/* Job Details */}
-        {result && (
+        {result && (() => {
+          // Allow edit/delete if:
+          // 1. User is admin/repair_manager (full access)
+          // 2. User is a customer (customers can only find their own jobs via NIC/JobNo)
+          // 3. Guest users who found the job (they have the NIC/JobNo so they should be able to edit)
+          const isAdminOrRepairManager = user && (user.role === 'admin' || user.role === 'repair_manager');
+          const isCustomer = user && user.role === 'customer';
+          const canEditDelete = isAdminOrRepairManager || isCustomer || !user; // Allow guests too since they have the NIC/JobNo
+
+          return (
           <div className="mt-8 bg-white/70 backdrop-blur-md border border-gray-200 p-6 rounded-2xl shadow-md animate-slide-up relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-[#0057B8]/10 to-[#FFA500]/10 pointer-events-none"></div>
 
             <div className="flex justify-between items-center mb-3 relative z-10">
               <h5 className="text-lg font-semibold text-[#0057B8]">Job Details</h5>
-              <div className="flex gap-2">
-                <button
-                  onClick={handleEdit}
-                  className="border border-[#0057B8] text-[#0057B8] p-2 rounded hover:bg-[#0057B8] hover:text-white transition"
-                >
-                  <FaEdit />
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="border border-red-500 text-red-500 p-2 rounded hover:bg-red-500 hover:text-white transition"
-                >
-                  <FaTrash />
-                </button>
-              </div>
+              {canEditDelete && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleEdit}
+                    className="border border-[#0057B8] text-[#0057B8] p-2 rounded hover:bg-[#0057B8] hover:text-white transition"
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="border border-red-500 text-red-500 p-2 rounded hover:bg-red-500 hover:text-white transition"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="space-y-2 text-gray-700 relative z-10">
@@ -190,7 +213,8 @@ function CheckStatus() {
               </p>
             </div>
           </div>
-        )}
+          );
+        })()}
 
         {/* Edit Modal */}
         {showEdit && (

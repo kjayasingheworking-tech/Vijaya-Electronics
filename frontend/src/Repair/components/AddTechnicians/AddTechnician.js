@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { REPAIR_API } from "../../config/api";
 
 function AddTechnician() {
   const [formData, setFormData] = useState({
@@ -32,7 +33,7 @@ function AddTechnician() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/technicians", {
+      const res = await fetch(REPAIR_API.TECHNICIANS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -58,7 +59,7 @@ function AddTechnician() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/technicians");
+      const res = await fetch(REPAIR_API.TECHNICIANS);
       const data = await res.json();
 
       if (Array.isArray(data)) {
@@ -82,7 +83,7 @@ function AddTechnician() {
     if (!window.confirm("🗑️ Are you sure you want to delete this technician?"))
       return;
     try {
-      const res = await fetch(`http://localhost:5000/technicians/${id}`, {
+      const res = await fetch(`${REPAIR_API.TECHNICIANS}/${id}`, {
         method: "DELETE",
       });
       if (res.ok) {
@@ -110,7 +111,7 @@ function AddTechnician() {
   // Edit modal save
   const saveEdit = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/technicians/${editing}`, {
+      const res = await fetch(`${REPAIR_API.TECHNICIANS}/${editing}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editData),

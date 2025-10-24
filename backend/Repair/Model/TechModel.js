@@ -35,4 +35,4 @@ const techSchema = new mongoose.Schema({
 
 techSchema.plugin(AutoIncrement, { inc_field: "Job_No", start_seq: 1 });
 
-module.exports = mongoose.model("TechModel", techSchema);
+module.exports = mongoose.model("RepairJob", techSchema);

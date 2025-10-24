@@ -1,10 +1,11 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './routes/ProtectedRoute';
-import { ToastProvider } from './components/ToastProvider'; // ⬅️ add this
+import { ToastProvider } from './components/ToastProvider';
 import AuthRedirect from './components/AuthRedirect';
 import SalesApp from './Sales/SalesApp';
 import CustomerApp from './Sales/CustomerApp';
+import RepairApp from './Repair/App'; 
 
 import Navbar from './components/Navbar';
 import CustomerHome from './pages/CustomerHome';
@@ -40,8 +41,9 @@ import CustomersList from './pages/admin/CustomersList';
 
 export default function App() {
   const location = useLocation();
-  // don't show default Navbar for sales-related routes which have their own nav
-  const hideDefaultNavbar = location.pathname.startsWith('/sales');
+  // don't show default Navbar for sales routes and repair admin routes (but show for /repair/check-status)
+  const hideDefaultNavbar = location.pathname.startsWith('/sales') || 
+                            (location.pathname.startsWith('/repair') && !location.pathname.startsWith('/repair/check-status'));
   return (
     <AuthProvider>
       <ToastProvider>{/* ⬅️ wrap the whole app so useToast works anywhere */}
@@ -125,6 +127,9 @@ export default function App() {
               <SalesApp />
             </ProtectedRoute>
           } />
+
+          {/* Repair Module Routes - Protection handled internally by Repair App */}
+          <Route path="/repair/*" element={<RepairApp />} />
 
 
           <Route path="*" element={<NotFound />} />

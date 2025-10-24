@@ -19,6 +19,8 @@ export default function Navbar(){
     if (user.role === 'customer') return '/';
     if (user.role === 'admin') return '/admin';
     if (user.role === 'supplier') return '/supplier';
+    if (user.role === 'repair_manager') return '/repair/admin';
+    if (user.role === 'sales_manager') return '/sales';
     return '/';
   }, [user]);
 
@@ -98,6 +100,27 @@ const isInvoicesActive = location.pathname.startsWith("/admin/invoices");
       </>
     )}
 
+      {/* Repair Manager */}
+      {user?.role === 'repair_manager' && (
+        <>
+          <Link to="/repair/admin/create-job" className={loc.pathname.startsWith("/repair/admin/create-job") ? "active" : ""}>
+            Create Job
+          </Link>
+          <Link to="/repair/admin/all-jobs" className={loc.pathname.startsWith("/repair/admin/all-jobs") ? "active" : ""}>
+            All Jobs
+          </Link>
+          <Link to="/repair/admin/modify-jobs" className={loc.pathname.startsWith("/repair/admin/modify-jobs") ? "active" : ""}>
+            Modify Jobs
+          </Link>
+          <Link to="/repair/admin/add-technician" className={loc.pathname.startsWith("/repair/admin/add-technician") ? "active" : ""}>
+            Technicians
+          </Link>
+          <Link to="/repair/check-status" className={loc.pathname.startsWith("/repair/check-status") ? "active" : ""}>
+            Check Status
+          </Link>
+        </>
+      )}
+
 
       {/* Supplier-only */}
       {user?.role === 'supplier' && (
@@ -130,6 +153,9 @@ const isInvoicesActive = location.pathname.startsWith("/admin/invoices");
       </Link>
        <Link to="/customer/tickets"  className={isCustomerTicketsActive ? "active" : ""}>
               My Tickets
+      </Link>
+      <Link to="/repair" className={loc.pathname === "/repair" || loc.pathname === "/repair/" ? "active" : ""}>
+        My Repairs
       </Link>
            
         <Link to="/profile" >

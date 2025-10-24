@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import velogo from "../../Assets/velogo.jpg";
+import { REPAIR_API } from "../../config/api";
 
 function JobForm() {
   const [formData, setFormData] = useState({
@@ -23,7 +24,7 @@ function JobForm() {
   useEffect(() => {
     const loadTechs = async () => {
       try {
-        const res = await fetch("http://localhost:5000/technicians/available");
+        const res = await fetch(`${REPAIR_API.TECHNICIANS}/available`);
         const data = await res.json();
         setTechOptions(data);
       } catch (err) {
@@ -72,7 +73,7 @@ function JobForm() {
     if (!validate()) return;
 
     try {
-      const response = await fetch("http://localhost:5000/techs", {
+      const response = await fetch(REPAIR_API.JOBS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -85,7 +86,7 @@ function JobForm() {
         setJobNo(result.Job_No);
 
         // Refresh available technicians
-        const updated = await fetch("http://localhost:5000/technicians/available");
+        const updated = await fetch(`${REPAIR_API.TECHNICIANS}/available`);
         const newList = await updated.json();
         setTechOptions(newList);
 
@@ -114,7 +115,7 @@ function JobForm() {
   //Download job card PDF
   const downloadPDF = async () => {
     if (!jobNo) return alert("No job created yet!");
-    const response = await fetch(`http://localhost:5000/techs/${jobNo}/pdf`);
+    const response = await fetch(`${REPAIR_API.JOBS}/${jobNo}/pdf`);
     if (!response.ok) return alert("Failed to download PDF");
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);

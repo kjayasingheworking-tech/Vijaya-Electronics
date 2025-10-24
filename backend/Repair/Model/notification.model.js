@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const NotificationSchema = new mongoose.Schema(
+const RepairNotificationSchema = new mongoose.Schema(
   {
     type: { type: String, enum: ["Update", "Delete"], required: true },
     message: { type: String, required: true },
@@ -11,4 +11,4 @@ const NotificationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Notification", NotificationSchema);
+module.exports = mongoose.model("RepairNotification", RepairNotificationSchema);

@@ -14,6 +14,11 @@ const notificationRoutes = require("./routes/notificationRoutes");
 const invoiceRoutes = require("./routes/sm/invoiceRoutes");
 const ticketRoutes = require("./routes/cm/ticketRoutes");
 
+// Repair module routes
+const technicianRoutes = require("./Repair/Route/technician.routes");
+const jobRoutes = require("./Repair/Route/job.routes");
+const repairNotificationRoutes = require("./Repair/Route/notification.routes");
+
 
 dotenv.config();
 connectDB();
@@ -35,6 +40,11 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/inv", invoiceRoutes);
 
 app.use("/api/tickets", ticketRoutes);
+
+// Repair module routes
+app.use("/api/repair/technicians", technicianRoutes);
+app.use("/api/repair/jobs", jobRoutes);
+app.use("/api/repair/notifications", repairNotificationRoutes);
 
 //sales
 app.use("/api/sales", salesServer);

@@ -7,6 +7,7 @@ import {
   formatCVV,
   getCardType
 } from "../../utils/paymentValidation";
+import "../../styles/customer-dark.css";
 
 const PaymentModal = ({
   isOpen,
@@ -118,12 +119,12 @@ const PaymentModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="bg-white w-full max-w-md rounded-lg shadow-xl">
+      <div className="customer-modal w-full max-w-md rounded-lg shadow-xl">
         {/* Header */}
-        <div className="flex justify-between items-center p-5 border-b">
+        <div className="modal-header flex justify-between items-center p-5 border-b">
           <div className="flex items-center gap-2">
             <CreditCard className="h-6 w-6 text-electric-blue" />
-            <h3 className="text-xl font-bold">Payment</h3>
+            <h3 className="modal-title text-xl font-bold">Payment</h3>
           </div>
           <button
             onClick={handleCancel}
@@ -139,17 +140,17 @@ const PaymentModal = ({
           {step === "details" && (
             <>
               <div className="mb-4 pt-3">
-                <p className="text-sm text-gray-600 mb-2">
+                <p className="text-sm text-white/80">
                   Paying for: <span className="font-semibold">{customerName}</span>
                 </p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-2xl font-bold text-white/90">
                   Rs. {totalAmount.toFixed(2)}
                 </p>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-white/90 mb-1">
                     Card Number
                   </label>
                   <input
@@ -173,7 +174,7 @@ const PaymentModal = ({
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-white/90 mb-1">
                       Expiry Date
                     </label>
                     <input
@@ -190,7 +191,7 @@ const PaymentModal = ({
                     )}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-white/90 mb-1">
                       CVV
                     </label>
                     <input
@@ -209,7 +210,7 @@ const PaymentModal = ({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-white/90 mb-1">
                     Cardholder Name
                   </label>
                   <input
@@ -237,13 +238,13 @@ const PaymentModal = ({
               <div className="flex gap-3 mt-6 pb-4">
                 <button
                   onClick={handleCancel}
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-3 border customer-btn-secondary rounded-sm"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handlePayment}
-                  className="flex-1 px-4 py-3 bg-electric-blue text-white rounded-lg hover:bg-electric-blue-dark transition-colors"
+                  className="flex-1 px-4 py-3 bg-electric-blue text-white rounded-sm hover:bg-electric-blue-dark transition-colors"
                 >
                   Pay Rs. {totalAmount.toFixed(2)}
                 </button>
@@ -275,7 +276,7 @@ const PaymentModal = ({
               <div className="flex gap-3">
                 <button
                   onClick={handleCancel}
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-3 border customer-btn-secondary"
                 >
                   Cancel
                 </button>

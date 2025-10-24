@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Bell, Trash2, Check } from "lucide-react";
+import { REPAIR_API } from "../../config/api";
 
 const NotificationPanel = () => {
   const [notifications, setNotifications] = useState([]);
@@ -9,7 +10,7 @@ const NotificationPanel = () => {
   // ✅ Fetch all notifications
   const fetchNotifications = async () => {
     try {
-      const res = await fetch("http://localhost:5000/notifications");
+      const res = await fetch(REPAIR_API.NOTIFICATIONS);
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.message || "Failed to fetch notifications");
@@ -30,7 +31,7 @@ const NotificationPanel = () => {
   // ✅ Mark as read
   const markAsRead = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/notifications/${id}/read`, {
+      const res = await fetch(`${REPAIR_API.NOTIFICATIONS}/${id}/read`, {
         method: "PUT",
       });
       if (!res.ok) throw new Error("Failed to mark as read");
@@ -45,7 +46,7 @@ const NotificationPanel = () => {
   const deleteNotification = async (id) => {
     if (!window.confirm("Are you sure you want to delete this notification?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/notifications/${id}`, {
+      const res = await fetch(`${REPAIR_API.NOTIFICATIONS}/${id}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete notification");
