@@ -116,9 +116,9 @@ exports.updateSupProduct = async (req, res, next) => {
     const id = req.params.id;
     let { specifications, categories, unitPrice, isAvailable, existingImages } = req.body || {};
 
-    // Handle image updates
+ 
     const fileUrls = (req.files || []).map(
-      f => `/uploads/${f.filename}`
+      f => `${req.protocol}://${req.get("host")}/uploads/${f.filename}`
     );
 
     // Parse existing images if provided
